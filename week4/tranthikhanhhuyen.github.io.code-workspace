@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		},
+		{
+			"path": "../week1"
+		}
+	],
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "tranthikhanhhuyen.github.io"
+	}
+}

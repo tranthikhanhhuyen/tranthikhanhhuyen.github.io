@@ -1,0 +1,6 @@
+<style>
+        div { width: 400px; }
+        div:nth-child(even) { background: #f9f9f9; } /* even | odd */
+        div:nth-child(2n + 1) { background: #ff9; } /* an + b */
+    </style>
+    
