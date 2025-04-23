@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Circle Calculator</title>
+    <script language="javascript">
+        var radius = prompt("Enter the radius of the circle:");
+
+        if (radius == null || radius == "" || isNaN(radius)) {
+            document.write("<font color='red'>Radius is invalid.</font>");
+        } else {
+            var r = parseFloat(radius);
+            var pi = 3.14;
+            var perimeter = 2 * pi * r;
+            var area = pi * r * r;
+
+            document.write("<h3>Circle Information</h3>");
+            document.write("Radius = " + r + "<br>");
+            document.write("Perimeter (Circumference) = " + perimeter + "<br>");
+            document.write("Area = " + area);
+        }
+    </script>
+</head>
+<body>
+</body>
+</html>
