@@ -12,28 +12,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Plus+Jakarta+Sans:wght@200;300;400;500;600&display=swap" rel="stylesheet">
 
     <style>
-        /* Hiệu ứng mờ dần video khi cuộn xuống Story */
-section video {
-    transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-    will-change: transform;
-}
-
-/* Kiểu chữ tiêu đề đặc trưng của các brand mỹ phẩm high-end */
-.serif-display {
-    font-family: 'Cormorant Garamond', serif;
-    font-weight: 300;
-    letter-spacing: -0.02em;
-}
-
-/* Tạo khoảng nghỉ cho mắt trước khi vào Story */
-#story {
-    margin-top: -10vh; /* Tạo sự chồng lấn nhẹ giữa video và nội dung tiếp theo */
-    position: relative;
-    z-index: 20;
-    border-top-left-radius: 40px;
-    border-top-right-radius: 40px;
-    background: white; /* Hoặc var(--primary) */
-}
         :root {
             --primary: #fff5f7; /* Soft Pink Mist */
             --accent: #d4af37; /* Luxury Gold */
@@ -53,6 +31,7 @@ section video {
         }
 
         .serif { font-family: 'Cormorant Garamond', serif; }
+        .serif-display { font-family: 'Cormorant Garamond', serif; font-weight: 300; letter-spacing: -0.02em; }
 
         /* Custom Cursor */
         #cursor { width: 6px; height: 6px; background: var(--rose-deep); border-radius: 50%; position: fixed; pointer-events: none; z-index: 10000; }
@@ -64,13 +43,10 @@ section video {
         /* Smooth Reveal Classes */
         .reveal { opacity: 0; transform: translateY(40px); transition: all 1.2s cubic-bezier(0.19, 1, 0.22, 1); }
         .reveal.active { opacity: 1; transform: translateY(0); }
+        .delay-200 { transition-delay: 0.2s; }
 
         /* --- HEADER STYLES --- */
-        #main-nav {
-            border-bottom: 1px solid rgba(157, 92, 99, 0);
-            transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1);
-        }
-
+        #main-nav { transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1); }
         #main-nav.scrolled {
             background: rgba(255, 245, 247, 0.85);
             backdrop-filter: blur(20px);
@@ -79,145 +55,113 @@ section video {
             padding-bottom: 1rem;
         }
 
-        .logo-container:hover .logo-text {
-            letter-spacing: 0.05em;
-        }
-
-        .logo-container .logo-subtext {
-            transition: all 0.5s ease;
-        }
-
-        .logo-container:hover .logo-subtext {
-            opacity: 1;
-            letter-spacing: 1.5em;
-        }
+        .logo-text { font-family: 'Cormorant Garamond', serif; font-size: 50px; font-style: italic; font-weight: 500; color: var(--rose-deep); letter-spacing: -0.02em; transition: all 0.7s cubic-bezier(0.19, 1, 0.22, 1); }
+        .logo-container:hover .logo-text { letter-spacing: 0.05em; }
+        .logo-container .logo-subtext { transition: all 0.5s ease; }
+        .logo-container:hover .logo-subtext { opacity: 1; letter-spacing: 1.5em; }
 
         .nav-link { font-size: 10px; font-weight: 600; letter-spacing: 0.3em; text-transform: uppercase; position: relative; color: var(--text-dark); }
         .nav-link::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 1px; background: var(--rose-deep); transition: width 0.4s; }
         .nav-link:hover::after { width: 100%; }
 
         .btn-luxe {
-            padding: 1.2rem 3rem;
-            background: var(--text-dark);
-            color: #fff;
-            font-size: 9px;
-            font-weight: 700;
-            letter-spacing: 0.4em;
-            text-transform: uppercase;
-            position: relative;
-            display: inline-block;
-            transition: 0.5s;
-            border-radius: 2px;
-            overflow: hidden;
+            padding: 1.2rem 3rem; background: var(--text-dark); color: #fff; font-size: 9px; font-weight: 700; letter-spacing: 0.4em;
+            text-transform: uppercase; position: relative; display: inline-block; transition: 0.5s; border-radius: 2px; overflow: hidden; cursor: pointer;
         }
         .btn-luxe:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(157, 92, 99, 0.3); background: var(--rose-deep); }
-
-        /* --- LOGIN MODAL --- */
-        #login-modal { 
-            backdrop-filter: blur(25px); 
-            display: none; 
-            z-index: 200; 
-            background: rgba(45, 27, 30, 0.4);
-        }
-        .login-inner { 
-            background: #fff; 
-            max-width: 1100px; 
-            width: 95%; 
-            height: 700px;
-            display: flex; 
-            box-shadow: 0 100px 150px rgba(157, 92, 99, 0.2); 
-            opacity: 0;
-            transform: scale(0.95);
-            border: 1px solid rgba(157, 92, 99, 0.1);
-        }
-
-        .login-visual {
-            width: 50%;
-            height: 100%;
-            position: relative;
-            overflow: hidden;
-        }
-        .login-visual img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            filter: sepia(0.2) hue-rotate(-20deg) saturate(1.2);
-            transition: transform 10s ease-out;
-        }
-        .login-visual::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(to right, transparent, rgba(255, 245, 247, 0.2));
-        }
-
-        .login-form-container {
-            width: 50%;
-            padding: 5rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            background: #fff;
-        }
-
-        .input-group {
-            position: relative;
-            margin-bottom: 2.5rem;
-        }
-        .input-group label {
-            font-size: 9px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.2em;
-            color: var(--rose-deep);
-            display: block;
-            margin-bottom: 0.5rem;
-            opacity: 0.7;
-        }
-        .input-group input {
-            width: 100%;
-            border-bottom: 1px solid rgba(157, 92, 99, 0.2);
-            padding: 0.75rem 0;
-            outline: none;
-            background: transparent;
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 1.25rem;
-            transition: all 0.4s;
-        }
-        .input-group input:focus {
-            border-bottom-color: var(--rose-deep);
-        }
-        .input-underline {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 0;
-            height: 1px;
-            background: var(--rose-deep);
-            transition: width 0.6s cubic-bezier(0.19, 1, 0.22, 1);
-        }
-        .input-group input:focus + .input-underline { width: 100%; }
-
-        /* Story Parallax */
-        .story-section { min-height: 100vh; display: flex; align-items: center; overflow: hidden; position: relative; }
-        .parallax-img { transition: transform 0.1s linear; }
-
-        .logo-text { font-family: 'Cormorant Garamond', serif; font-size: 42px; font-style: italic; font-weight: 500; color: var(--rose-deep); letter-spacing: -0.02em; transition: all 0.7s cubic-bezier(0.19, 1, 0.22, 1); }
+        .btn-luxe:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
 
         /* Product Card */
-        .product-card { transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1); }
-        .product-card:hover { transform: translateY(-15px); }
+        .product-card { transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1); position: relative; }
+        .product-card:hover { transform: translateY(-10px); }
         .product-card img { transition: transform 1.5s cubic-bezier(0.19, 1, 0.22, 1); filter: sepia(0.1) saturate(1.1); }
-        .product-card:hover img { transform: scale(1.08); }
+        .product-card:hover img { transform: scale(1.05); }
 
-        /* AI Scanner bar - PINK */
+        .quick-cart-btn {
+            position: absolute; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(20px);
+            opacity: 0; transition: all 0.4s; z-index: 10;
+        }
+        .product-card:hover .quick-cart-btn { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        /* AI Scanner */
         .scanner-bar { height: 2px; background: #ff4081; position: absolute; width: 100%; top: 0; box-shadow: 0 0 20px #ff4081; animation: scan 4s infinite linear; z-index: 10; }
         @keyframes scan { 0% { top: 0; } 100% { top: 100%; } }
 
-        /* Custom Scrollbar */
+        /* Modal & Sidebars */
+        .modal-overlay { backdrop-filter: blur(25px); background: rgba(45, 27, 30, 0.4); z-index: 200; display: none; }
+        .login-inner { background: #fff; max-width: 1100px; width: 95%; height: 700px; display: flex; box-shadow: 0 100px 150px rgba(157, 92, 99, 0.2); border: 1px solid rgba(157, 92, 99, 0.1); }
+        
+        #cart-drawer { position: fixed; top: 0; right: -450px; width: 450px; height: 100vh; background: white; z-index: 300; box-shadow: -20px 0 50px rgba(0,0,0,0.1); transition: right 0.6s cubic-bezier(0.19, 1, 0.22, 1); }
+        #cart-drawer.open { right: 0; }
+
+        /* Card Type selection */
+        .card-type-btn { border: 1px solid #eee; transition: all 0.3s; filter: grayscale(1); opacity: 0.5; height: 50px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .card-type-btn svg { width: 35px; height: auto; }
+        .card-type-btn.active { border-color: var(--rose-deep); filter: grayscale(0); opacity: 1; background: var(--primary); }
+
+        /* Step Dots */
+        .step-dot { width: 8px; height: 8px; border-radius: 50%; background: #eee; transition: all 0.3s; }
+        .step-dot.active { background: var(--rose-deep); transform: scale(1.5); }
+
+        /* Scrollbar */
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: var(--primary); }
         ::-webkit-scrollbar-thumb { background: var(--rose-deep); }
+
+        /* Video Styles */
+        section video { transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1); will-change: transform; }
+        #story { position: relative; z-index: 20; border-top-left-radius: 40px; border-top-right-radius: 40px; background: white; }
+
+        /* Blog Refinements */
+        .blog-card { 
+            position: relative; 
+            transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1); 
+            background: white; 
+            border: 1px solid rgba(157, 92, 99, 0.1);
+            padding: 1.5rem;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .blog-card:hover { transform: translateY(-10px); box-shadow: 0 40px 80px rgba(157, 92, 99, 0.08); }
+        .blog-image-wrapper { 
+            position: relative; 
+            overflow: hidden; 
+            border-radius: 1px;
+            border: 1px solid rgba(157, 92, 99, 0.1); /* Khung ảnh */
+        }
+        .blog-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 60%, rgba(45, 27, 30, 0.4)); opacity: 0; transition: opacity 0.6s; }
+        .blog-card:hover .blog-overlay { opacity: 1; }
+        
+        /* Stats Styling Instagram Style Refined */
+        .insta-stats-row { display: flex; justify-content: flex-end; align-items: center; gap: 2rem; padding: 1.2rem 0; border-bottom: 1px solid rgba(157, 92, 99, 0.05); }
+        .insta-stat-item { display: flex; align-items: center; gap: 0.6rem; color: var(--rose-deep); cursor: pointer; transition: all 0.3s; }
+        .insta-stat-item span { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 500; font-size: 13px; letter-spacing: 0.05em; }
+        .insta-stat-icon { width: 18px; height: 18px; stroke: var(--rose-deep); stroke-width: 1.5; fill: none; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .insta-stat-item:hover .insta-stat-icon { transform: scale(1.2); stroke-width: 2; }
+        .insta-stat-item:hover { opacity: 0.7; }
+
+        #product-detail-modal { backdrop-filter: blur(30px); background: rgba(45, 27, 30, 0.5); display: none; z-index: 500; }
+        .detail-inner { background: white; max-width: 1200px; width: 90%; height: 80vh; display: flex; box-shadow: 0 100px 150px rgba(0,0,0,0.3); position: relative; overflow: hidden; }
+        .detail-image-side { width: 55%; position: relative; overflow: hidden; }
+        .detail-info-side { width: 45%; padding: 5rem; display: flex; flex-direction: column; justify-content: center; position: relative; }
+        .product-number-big { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 180px; line-height: 1; color: var(--rose-deep); opacity: 0.05; position: absolute; top: 0; left: 2rem; z-index: 0; pointer-events: none; }
+        .shop-btn-link { font-size: 10px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; display: inline-flex; align-items: center; gap: 15px; border-bottom: 1px solid var(--text-dark); padding-bottom: 8px; transition: all 0.4s; background: none; border-top: none; border-left: none; border-right: none; }
+        .shop-btn-link:hover { color: var(--rose-deep); border-color: var(--rose-deep); transform: translateX(10px); }
+
+        /* --- Sophisticated Welcome Toast Styles --- */
+        #welcome-toast {
+            position: fixed; top: 40px; left: 50%; transform: translateX(-50%) translateY(-150%);
+            background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(20px);
+            padding: 2.5rem 4rem; border: 1px solid var(--rose-deep);
+            z-index: 1000; display: none; box-shadow: 0 40px 100px rgba(157, 92, 99, 0.15);
+            text-align: center; max-width: 500px; width: 90%;
+        }
+        .scan-line-toast {
+            width: 100%; height: 1px; background: var(--rose-deep); position: absolute; left: 0; top: 0;
+            opacity: 0.3; animation: scanToast 3s infinite ease-in-out;
+        }
+        @keyframes scanToast { 0% { top: 0; } 50% { top: 100%; } 100% { top: 0; } }
     </style>
 </head>
 <body>
@@ -226,6 +170,7 @@ section video {
     <div id="cursor-follower"></div>
     <canvas id="bg-canvas"></canvas>
 
+    <!-- NAVIGATION -->
     <nav class="fixed top-0 w-full z-[100] px-8 lg:px-16 py-8 flex justify-between items-center transition-all duration-500" id="main-nav">
         <div class="hidden lg:flex gap-10 items-center flex-1 text-[--rose-deep]">
             <a href="#home" class="nav-link">Maison</a>
@@ -236,12 +181,15 @@ section video {
         <div class="flex-1 flex justify-center">
             <div class="logo-container flex flex-col items-center cursor-pointer group" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
                 <span class="logo-text">LumiSkin</span>
-                <div class="logo-subtext text-[7px] tracking-[1.2em] opacity-40 uppercase -mt-1 font-bold">Paris • Lab</div>
+                <div class="logo-subtext text-[20px] tracking-[1.2em] opacity-40 uppercase -mt-1 font-bold">Paris • Lab</div>
             </div>
         </div>
 
         <div class="flex gap-10 items-center justify-end flex-1 text-[--rose-deep]">
             <a href="#journal" class="nav-link hidden md:block">Journal</a>
+            <button onclick="toggleCart(true)" class="nav-link flex items-center gap-2">
+                Cart (<span id="cart-count" class="font-bold">0</span>)
+            </button>
             <button onclick="toggleLogin(true)" class="nav-link">Login</button>
             <button onclick="document.getElementById('ai-lab').scrollIntoView()" class="w-11 h-11 rounded-full border border-[--rose-deep]/20 flex items-center justify-center bg-white/50 hover:bg-[--rose-deep] hover:text-white transition-all duration-500 group">
                 <span class="text-[10px] group-hover:scale-110 transition">AI</span>
@@ -249,64 +197,180 @@ section video {
         </div>
     </nav>
 
-    <div id="login-modal" class="fixed inset-0 flex items-center justify-center">
-        <div class="login-inner rounded-[2px] overflow-hidden relative" id="login-inner">
-            <button onclick="toggleLogin(false)" class="absolute top-10 right-10 z-50 text-xl font-light opacity-30 hover:opacity-100 transition tracking-tighter uppercase flex items-center gap-2">
-                <span class="text-[10px] font-bold tracking-widest">Close</span>
-                <span class="text-3xl">&times;</span>
-            </button>
-            
-            <div class="login-visual hidden md:block">
-                <img src="https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?q=80&w=1200" alt="LumiSkin Essence">
-                <div class="absolute inset-0 p-16 flex flex-col justify-end text-white">
-                    <span class="serif italic text-4xl mb-4 reveal-login">"Light is the soul of your skin."</span>
-                    <div class="w-12 h-px bg-white/40 mb-4 reveal-login"></div>
-                    <p class="text-[8px] font-bold uppercase tracking-[0.4em] opacity-70 reveal-login">Maison LumiSkin Paris</p>
-                </div>
-            </div>
+    <!-- WELCOME TOAST -->
+    <div id="welcome-toast">
+        <div class="scan-line-toast"></div>
+        <span class="text-[--rose-deep] font-bold text-[8px] tracking-[0.5em] uppercase block mb-4">Biometrics Verified</span>
+        <h2 class="serif text-4xl italic mb-4">Welcome Home, <br><span class="text-[--rose-deep]">Cher Client.</span></h2>
+        <div class="w-8 h-px bg-[--rose-deep]/30 mx-auto mb-4"></div>
+        <p class="text-[9px] uppercase tracking-[0.2em] leading-relaxed opacity-60">
+            Maison LumiSkin Paris recognizes your cellular signature. <br> 
+            Your personalized radiance ritual has been synchronized.
+        </p>
+    </div>
 
-            <div class="login-form-container">
-                <div class="mb-12">
-                    <span class="text-[--rose-deep] font-bold text-[8px] tracking-[0.5em] uppercase block mb-4 reveal-login">Welcome Back</span>
-                    <h2 class="serif text-6xl italic leading-none reveal-login">Sign In.</h2>
-                </div>
-
-                <form class="space-y-2">
-                    <div class="input-group reveal-login">
-                        <label>Email ID</label>
-                        <input type="email" placeholder="client@lumiskin.fr">
-                        <div class="input-underline"></div>
+    <!-- PRODUCT DETAIL MODAL -->
+    <div id="product-detail-modal" class="fixed inset-0 flex items-center justify-center">
+        <div class="detail-inner">
+            <button onclick="closeProductDetail()" class="absolute top-10 right-10 z-[60] text-3xl font-light opacity-30 hover:opacity-100 transition">&times;</button>
+            <div class="detail-image-side"><img id="detail-img" src="" class="w-full h-full object-cover"></div>
+            <div class="detail-info-side">
+                <span id="detail-num" class="product-number-big">01</span>
+                <div class="relative z-10 space-y-8">
+                    <div>
+                        <span id="detail-cat" class="text-[--rose-deep] font-bold text-[11px] tracking-[1em] uppercase block mb-4">CATEGORY</span>
+                        <h3 id="detail-name" class="serif text-7xl italic leading-none mb-8">Product Name</h3>
+                        <p id="detail-desc" class="font-light leading-relaxed text-lg opacity-60 max-w-sm">Description</p>
                     </div>
-                    <div class="input-group reveal-login">
-                        <label>Password</label>
-                        <input type="password" placeholder="••••••••">
-                        <div class="input-underline"></div>
+                    <div class="flex items-center gap-12 pt-10">
+                        <span id="detail-price" class="serif text-4xl italic text-[--accent]">$0.00</span>
+                        <button id="detail-add-btn" class="shop-btn-link group/btn">Add to Selection <span class="text-xl transform group-hover/btn:translate-x-2 transition-transform duration-300">→</span></button>
                     </div>
-                    
-                    <div class="flex justify-between items-center mb-10 reveal-login">
-                        <div class="flex items-center gap-2">
-                            <input type="checkbox" id="rem" class="accent-[--rose-deep]">
-                            <label for="rem" class="text-[9px] uppercase tracking-widest opacity-50">Remember me</label>
-                        </div>
-                        <a href="#" class="text-[9px] uppercase tracking-widest border-b border-black/10 hover:border-black transition">Forgot?</a>
-                    </div>
-
-                    <div class="reveal-login">
-                        <button type="button" class="btn-luxe w-full !py-5">Enter The Lab</button>
-                    </div>
-                </form>
-
-                <div class="mt-16 text-center reveal-login">
-                    <p class="text-[9px] opacity-40 uppercase tracking-[0.3em] mb-4">First time at the maison?</p>
-                    <button class="serif italic text-2xl hover:text-[--rose-deep] transition">Create a profile</button>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- LOGIN MODAL -->
+    <div id="login-modal" class="modal-overlay fixed inset-0 flex items-center justify-center" style="display:none">
+        <div class="login-inner rounded-[2px] overflow-hidden relative" id="login-inner">
+            <button onclick="toggleLogin(false)" class="absolute top-10 right-10 z-50 text-xl font-light opacity-30 hover:opacity-100 transition tracking-tighter uppercase flex items-center gap-2">
+                <span class="text-[10px] font-bold tracking-widest">Close</span>
+                <span class="text-3xl">&times;</span>
+            </button>
+            <div class="login-visual hidden md:block w-1/2 relative overflow-hidden">
+                <img src="login.png" class="w-full h-full object-cover filter sepia-[0.2]" alt="LumiSkin Essence">
+                <div class="absolute inset-0 p-16 flex flex-col justify-end text-white">
+                    <span class="serif italic text-4xl mb-4">"Light is the soul of your skin."</span>
+                    <div class="w-12 h-px bg-white/40 mb-4"></div>
+                    <p class="text-[15px] font-bold uppercase tracking-[0.4em] opacity-70">Maison LumiSkin Paris</p>
+                </div>
+            </div>
+            <div class="login-form-container w-1/2 p-20 flex flex-col justify-center bg-white">
+                <div class="mb-12">
+                    <span class="text-[--rose-deep] font-bold text-[15px] tracking-[0.5em] uppercase block mb-4">Welcome Back</span>
+                    <h2 class="serif text-20xl italic leading-none">Sign In.</h2>
+                </div>
+                <div class="space-y-8">
+                    <div class="relative border-b border-black/10 pb-2">
+                        <label class="text-[15px] uppercase tracking-widest opacity-50 block mb-2">Email ID</label>
+                        <input type="email" placeholder="client@lumiskin.fr" class="w-full outline-none serif text-xl italic">
+                    </div>
+                    <div class="relative border-b border-black/10 pb-2">
+                        <label class="text-[15px] uppercase tracking-widest opacity-50 block mb-2">Password</label>
+                        <input type="password" placeholder="••••••••" class="w-full outline-none serif text-xl italic">
+                    </div>
+                    <button class="btn-luxe w-full mt-10" id="login-submit-btn" onclick="executeLuxeLogin()">Enter The Lab</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CART DRAWER -->
+    <div id="cart-drawer" class="flex flex-col">
+        <div class="p-10 flex justify-between items-center border-b border-gray-100">
+            <h3 class="serif text-3xl italic">Your Selection</h3>
+            <button onclick="toggleCart(false)" class="text-[10px] font-bold tracking-[0.3em] uppercase opacity-40 hover:opacity-100 transition">Close</button>
+        </div>
+        <div id="cart-items" class="flex-1 overflow-y-auto p-10 space-y-8">
+            <!-- Items injected here -->
+        </div>
+        <div class="p-10 border-t border-gray-100 bg-gray-50/50">
+            <div class="flex justify-between items-center mb-6">
+                <span class="text-[10px] font-bold uppercase tracking-widest opacity-40">Subtotal</span>
+                <span class="serif text-2xl italic" id="cart-total">$0.00</span>
+            </div>
+            <button onclick="openCheckout()" class="btn-luxe w-full">Proceed to Checkout</button>
+        </div>
+    </div>
+
+    <!-- CHECKOUT MODAL -->
+    <div id="checkout-modal" class="modal-overlay fixed inset-0 flex items-center justify-center" style="display:none">
+        <div class="bg-white max-w-3xl w-full relative rounded-sm shadow-2xl overflow-hidden flex flex-col md:flex-row h-[650px]" id="checkout-container">
+            <div class="w-full md:w-2/5 bg-[--primary] p-10 flex flex-col justify-between border-r border-black/5">
+                <div class="overflow-hidden flex flex-col h-full">
+                    <span class="logo-text text-3xl mb-8 block">LumiSkin</span>
+                    <div class="flex flex-col gap-6 mb-10">
+                        <div class="flex items-center gap-4">
+                            <div class="step-dot active" id="dot-1"></div>
+                            <span class="text-[9px] font-bold uppercase tracking-widest opacity-40" id="label-1">Shipping</span>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="step-dot" id="dot-2"></div>
+                            <span class="text-[9px] font-bold uppercase tracking-widest opacity-40" id="label-2">Payment</span>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="step-dot" id="dot-3"></div>
+                            <span class="text-[9px] font-bold uppercase tracking-widest opacity-40" id="label-3">Confirmation</span>
+                        </div>
+                    </div>
+                    <div class="flex-1 overflow-y-auto pr-4 space-y-4" id="checkout-summary-list"></div>
+                </div>
+                <div class="pt-6 border-t border-black/5 mt-4">
+                    <div class="flex justify-between items-center mb-1">
+                        <p class="text-[8px] font-bold uppercase tracking-[0.2em] opacity-40">Total Balance</p>
+                        <span id="checkout-item-count" class="text-[8px] font-bold uppercase tracking-[0.2em] opacity-40">0 items</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="serif italic text-xl text-[--rose-deep]">Amount Due</span>
+                        <span id="checkout-final-total" class="serif text-2xl">$0.00</span>
+                    </div>
+                </div>
+            </div>
+            <div class="w-full md:w-3/5 p-12 relative flex flex-col justify-center">
+                <button onclick="closeCheckout()" class="absolute top-6 right-6 opacity-30 hover:opacity-100">✕</button>
+                <div id="checkout-step-1" class="checkout-step space-y-6">
+                    <h2 class="serif text-4xl italic mb-8">Shipping Information.</h2>
+                    <input type="text" placeholder="Full Name" class="w-full p-4 border-b border-gray-100 outline-none focus:border-[--rose-deep] serif text-lg italic">
+                    <input type="text" placeholder="Street Address, Apartment, Suite" class="w-full p-4 border-b border-gray-100 outline-none focus:border-[--rose-deep] serif text-lg italic">
+                    <div class="grid grid-cols-2 gap-4">
+                        <input type="text" placeholder="Phone Number" class="p-4 border-b border-gray-100 outline-none serif text-lg italic">
+                        <input type="text" placeholder="Country" class="p-4 border-b border-gray-100 outline-none serif text-lg italic">
+                    </div>
+                    <button class="btn-luxe w-full !mt-10" onclick="nextStep(2)">Continue to Payment</button>
+                </div>
+                <div id="checkout-step-2" class="checkout-step space-y-6 hidden">
+                    <h2 class="serif text-4xl italic mb-4">Secure Payment.</h2>
+                    <div class="grid grid-cols-3 gap-3 mb-4">
+                        <button class="card-type-btn active rounded-sm" onclick="setCardType('visa')">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15.82 14.7l.63-3.9h-1.04c-.37 0-.69-.26-.74-.62l-.46-2.5c-.03-.18.1-.38.28-.38h4.55c.18 0 .33.15.33.33v.03l-.75 4.67c-.03.18-.18.33-.36.33l-3.44.04zm-7.6-4.82l-.48 2.33c-.03.18.1.33.28.33h1.36c.18 0 .33-.15.33-.33l.48-2.33c.03-.18-.1-.33-.28-.33H8.5c-.18 0-.33.15-.33.33zm-4.72.33c-.03-.18.1-.33.28-.33h1.83c.15 0 .28.1.33.23l1.85 4.3c.03.08.01.18-.06.23l-.8.55c-.08.06-.2.03-.23-.06l-.42-.98h-2.33l-.22.58c-.04.1-.14.16-.25.16h-.93c-.14 0-.24-.13-.2-.27l1.37-3.94zm1.5 1.14l-.45 1.2h.9l-.45-1.2zm11.77-1.47l-.46 2.3c-.03.18.1.33.28.33h1.23c.18 0 .33-.15.33-.33l.46-2.3c.03-.18-.1-.33-.28-.33h-1.23c-.18 0-.33.15-.33.33z" fill="#1A1F71"/></svg>
+                        </button>
+                        <button class="card-type-btn rounded-sm" onclick="setCardType('mastercard')">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="8.5" cy="12" r="6" fill="#EB001B" fill-opacity=".8"/><circle cx="15.5" cy="12" r="6" fill="#F79E1B" fill-opacity=".8"/></svg>
+                        </button>
+                        <button class="card-type-btn rounded-sm" onclick="setCardType('amex')">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><rect width="20" height="14" x="2" y="5" rx="2" fill="#016FD0"/><path d="M7 10h1v4H7v-4zm3 0h1l1 2 1-2h1v4h-1v-2.5l-1 2h-.5l-1-2V14h-1v-4z" fill="#fff"/></svg>
+                        </button>
+                    </div>
+                    <div class="space-y-4">
+                        <input type="text" placeholder="Cardholder Name" class="w-full p-3 border-b border-gray-100 outline-none focus:border-[--rose-deep] serif text-lg italic">
+                        <input type="text" placeholder="Card Number" class="w-full p-3 border-b border-gray-100 outline-none focus:border-[--rose-deep] serif text-lg italic">
+                        <div class="grid grid-cols-2 gap-4">
+                            <input type="text" placeholder="Expiry (MM/YY)" class="p-3 border-b border-gray-100 outline-none serif text-lg italic">
+                            <input type="text" placeholder="CVV" class="p-3 border-b border-gray-100 outline-none serif text-lg italic">
+                        </div>
+                    </div>
+                    <div class="flex gap-4 pt-4">
+                        <button class="flex-1 text-[8px] font-bold uppercase tracking-widest border border-black/10 py-4 hover:bg-gray-50" onclick="nextStep(1)">Back</button>
+                        <button class="flex-[2] btn-luxe" onclick="processPayment()">Complete Order</button>
+                    </div>
+                </div>
+                <div id="checkout-step-3" class="checkout-step text-center space-y-6 hidden">
+                    <div class="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <span class="text-green-500 text-3xl">✓</span>
+                    </div>
+                    <h2 class="serif text-4xl italic">Thank You.</h2>
+                    <p class="text-xs italic opacity-60 px-10">Your order is being processed by our Paris Laboratory. A ritual of radiance is on its way to you.</p>
+                    <button class="btn-luxe w-full mt-10" onclick="location.reload()">Return to Maison</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HERO SECTION -->
     <section id="home" class="h-screen flex items-center px-12 lg:px-24">
         <div class="grid grid-cols-1 lg:grid-cols-12 w-full gap-20 items-center">
-            <div class="lg:col-span-7 reveal">
+            <div class="lg:col-span-7 reveal active">
                 <span class="text-[9px] font-bold text-[--rose-deep] tracking-[1.5em] uppercase mb-10 block">The Quantum of Skin Care</span>
                 <h1 class="serif italic text-[10vw] leading-[0.8] mb-12">Beyond <br> <span class="pl-[12vw] text-[--rose-deep]">Essence.</span></h1>
                 <p class="text-xl font-light leading-relaxed opacity-70 max-w-lg mb-12">
@@ -321,42 +385,48 @@ section video {
                         <span class="text-[10px] font-bold uppercase tracking-widest border-b border-black">The Short Film</span>
                     </div>
                 </div>
-         
-        
-    </section>
-    <section class="relative w-full h-[120vh] overflow-hidden bg-[#2d1b1e]">
-    <div class="absolute inset-0 w-full h-full sticky top-0">
-        <video autoplay muted loop playsinline class="w-full h-full object-cover">
-            <source src="LUMISKIN.mp4" type="video/mp4">
-        </video>
-        <div class="absolute inset-0 bg-gradient-to-b from-[#fff5f7]/30 via-transparent to-[#2d1b1e]"></div>
-    </div>
-
-    <div class="relative z-10 h-full flex flex-col justify-center items-center text-center px-6">
-        <div class="reveal">
-            <span class="text-white text-[10px] font-bold tracking-[1.5em] uppercase mb-8 block">Cinematic Experience</span>
-            <h2 class="serif italic text-[7vw] text-white leading-none mb-6">
-                The Science of <br> Glow.
-            </h2>
-            <div class="w-px h-32 bg-white/40 mx-auto mt-12"></div>
+            </div>
+            <div class="lg:col-span-5 reveal active delay-200 hidden lg:block">
+                <div class="relative aspect-[4/5] w-full overflow-hidden rounded-sm shadow-2xl border border-[--rose-deep]/5">
+                    <img src="LumiSkin blog.png" alt="LumiSkin Luxury Visual" class="w-full h-full object-cover grayscale-[0.2] sepia-[0.1] hover:scale-110 transition-transform duration-[3s]">
+                    <div class="absolute inset-0 bg-[--rose-deep]/5 mix-blend-multiply"></div>
+                </div>
+            </div>
         </div>
-    </div>
-</section>
+    </section>
 
+    <!-- VIDEO SECTION -->
+    <section class="relative w-full h-[120vh] overflow-hidden bg-[#2d1b1e]">
+        <div class="absolute inset-0 w-full h-full sticky top-0">
+            <video autoplay muted loop playsinline class="w-full h-full object-cover">
+                <source src="LUMISKIN.mp4" type="video/mp4">
+            </video>
+            <div class="absolute inset-0 bg-gradient-to-b from-[#fff5f7]/30 via-transparent to-[#2d1b1e]"></div>
+        </div>
+        <div class="relative z-10 h-full flex flex-col justify-center items-center text-center px-6">
+            <div class="reveal">
+                <span class="text-white text-[10px] font-bold tracking-[1.5em] uppercase mb-8 block">Cinematic Experience</span>
+                <h2 class="serif italic text-[7vw] text-white leading-none mb-6">The Science of <br> Glow.</h2>
+                <div class="w-px h-32 bg-white/40 mx-auto mt-12"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- STORY SECTIONS -->
     <section id="story" class="bg-white/30 backdrop-blur-sm">
-        <div class="story-section px-12 lg:px-24">
-            <div class="grid grid-cols-1 md:grid-cols-2 w-full items-center gap-24">
+        <div class="story-section px-12 lg:px-24 flex items-center min-h-screen">
+            <div class="grid grid-cols-1 md:grid-cols-2 w-full items-center gap-24 py-20">
                 <div class="reveal">
-                    <span class="serif text-2xl italic opacity-40 block mb-6 text-[--rose-deep]">Chapter I</span>
+                    <span class="serif text-10xl italic opacity-40 block mb-6 text-[--rose-deep]">Chapter I</span>
                     <h2 class="serif text-7xl italic leading-tight mb-8">The Red Rose <br> of Grasse.</h2>
                     <p class="font-light leading-relaxed text-lg opacity-70 mb-10">
                         Our journey begins in the hallowed gardens of Grasse. Each centifolia rose is nurtured for 3 years before its first bloom. Hand-picked at 5:00 AM, at the exact moment when its atomic energy reaches its peak.
                     </p>
                     <button class="text-[9px] font-bold uppercase tracking-widest border-b border-[--rose-deep] pb-2 text-[--rose-deep]">The Philosophy of Harvesting</button>
                 </div>
-                <div class="reveal delay-200">
+                <div class="reveal">
                     <div class="aspect-[4/5] overflow-hidden relative shadow-2xl rounded-sm">
-                        <img src="rose.png" class="w-full h-full object-cover parallax-img filter saturate-[1.1]" alt="Grasse Rose">
+                        <img src="rose.png" class="w-full h-full object-cover parallax-img" alt="Grasse Rose" onerror="this.src='https://images.unsplash.com/photo-1559563458-527698bf5295?q=80&w=800'">
                     </div>
                 </div>
             </div>
@@ -383,7 +453,7 @@ section video {
                 <span class="serif text-2xl italic opacity-40 block mb-10 text-[--rose-deep]">Chapter III</span>
                 <h2 class="serif text-[8vw] italic leading-none mb-12">"Art is the Skin <br> of Science."</h2>
                 <div class="aspect-[21/9] overflow-hidden mb-12 rounded-sm shadow-xl border border-[--rose-deep]/10">
-                    <img src="https://images.unsplash.com/photo-1512496015851-a90fb38ba796?q=80&w=1600" class="w-full h-full object-cover filter saturate-[1.1] brightness-[1.05]" alt="Art of Beauty">
+                    <img src="SKIN.png" class="w-full h-full object-cover filter saturate-[1.1] brightness-[1.05]" alt="Art of Beauty">
                 </div>
                 <p class="text-xl font-light opacity-70 italic mb-12 max-w-2xl mx-auto">
                     LumiSkin is not just a product; it is a ritual of self-love. A dialogue between cellular heritage and your future radiance.
@@ -393,17 +463,19 @@ section video {
         </div>
     </section>
 
+    <!-- BOUTIQUE SECTION -->
     <section id="boutique" class="py-40 px-12 lg:px-24 bg-white/50">
         <div class="flex flex-col md:flex-row justify-between items-end mb-32 reveal">
             <div>
                 <span class="text-[--rose-deep] font-bold text-[9px] tracking-[1.5em] uppercase block mb-6">The Masterpieces</span>
-                <h2 class="serif text-8xl italic">The Collection.</h2>
+                <h2 class="serif text-10xl italic">The Collection.</h2>
             </div>
             <p class="max-w-xs text-[10px] font-bold uppercase tracking-widest opacity-50 text-right text-[--rose-deep]">Handcrafted in Paris. Powered by AI. Perfected by Nature.</p>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-12 gap-y-24" id="product-grid"></div>
     </section>
 
+    <!-- AI LAB SECTION -->
     <section id="ai-lab" class="py-40 px-12 lg:px-24 bg-[#fff0f3] overflow-hidden">
         <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-32 items-center">
             <div class="reveal">
@@ -420,214 +492,407 @@ section video {
                     </div>
                 </div>
             </div>
-            <div class="relative group reveal delay-200">
-                <div class="aspect-square bg-white shadow-2xl rounded-sm overflow-hidden relative border border-[--rose-deep]/10">
+            <div class="relative reveal">
+                <div class="aspect-square bg-white shadow-2xl rounded-sm overflow-hidden relative border border border-[--rose-deep]/10">
                     <input type="file" class="absolute inset-0 opacity-0 cursor-pointer z-50" onchange="startLumiScan(event)">
                     <div id="ai-placeholder" class="absolute inset-0 flex flex-col items-center justify-center p-12 text-center opacity-40">
-                        <div class="w-24 h-24 rounded-full border border-[--rose-deep]/10 flex items-center justify-center mb-6 text-[--rose-deep]"><span class="text-4xl">📸</span></div>
+                        <div class="w-24 h-24 rounded-full border border border-[--rose-deep]/10 flex items-center justify-center mb-6 text-[--rose-deep]"><span class="text-4xl">📸</span></div>
                         <span class="text-[10px] font-bold uppercase tracking-[0.5em] text-[--rose-deep]">Initiate Scan</span>
                     </div>
-                    <img id="ai-preview" class="w-full h-full object-cover hidden" alt="Scan Portrait">
+                    <img id="ai-preview" class="w-full h-full object-cover hidden">
                     <div id="scanner-line" class="scanner-bar hidden"></div>
-                    <div id="ai-result-panel" class="absolute inset-x-0 bottom-0 bg-white/95 p-10 transform translate-y-full transition-transform duration-700 border-t border-[--rose-deep]/10">
+                    <div id="ai-result-panel" class="absolute inset-x-0 bottom-0 bg-white/95 p-10 transform translate-y-full transition-transform duration-700">
                         <h4 class="serif text-4xl italic mb-4 text-[--rose-deep]">Laboratory Report</h4>
                         <p id="ai-text" class="text-xs italic opacity-70 leading-relaxed mb-8"></p>
-                        <button onclick="location.reload()" class="text-[8px] font-bold uppercase tracking-widest border-b border-[--rose-deep] text-[--rose-deep]">New Analysis</button>
+                        <button onclick="location.reload()" class="text-[8px] font-bold uppercase tracking-widest border-b border-[--rose-deep]">New Analysis</button>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
+    <!-- BLOG SECTION -->
     <section id="journal" class="py-40 px-12 lg:px-24 bg-[--primary]">
-        <div class="text-center mb-32 reveal">
-            <span class="text-[--rose-deep] font-bold text-[9px] tracking-[1.5em] uppercase block mb-8">The Journal</span>
-            <h2 class="serif text-8xl italic">LumiSkin Chronicles.</h2>
+        <div class="flex flex-col md:flex-row justify-between items-center mb-24 reveal">
+            <div class="text-left">
+                <span class="text-[--rose-deep] font-bold text-[9px] tracking-[1.5em] uppercase block mb-8">The Journal</span>
+                <h2 class="serif text-8xl italic">LumiSkin <br> Chronicles.</h2>
+            </div>
+            <div class="mt-10 md:mt-0 flex flex-col items-end gap-4">
+                <div class="flex items-baseline gap-2">
+                    <span class="serif text-6xl italic text-[--rose-deep]">128K</span>
+                    <span class="text-[8px] font-bold uppercase tracking-[0.3em] opacity-40">Followers</span>
+                </div>
+                <button class="text-[9px] font-bold uppercase tracking-[0.3em] border border-[--rose-deep] text-[--rose-deep] px-10 py-4 hover:bg-[--rose-deep] hover:text-white transition-all duration-500 rounded-sm">Subscribe to Maison</button>
+            </div>
         </div>
-        <div class="grid grid-cols-12 gap-12" id="blog-grid"></div>
+        <div class="grid grid-cols-12 gap-10" id="blog-grid"></div>
     </section>
 
-    <footer class="py-40 bg-white border-t border-[--rose-deep]/10 px-12 lg:px-24">
-        <div class="text-center mb-24 reveal">
-            <h2 class="serif italic text-[15vw] leading-none opacity-5 text-[--rose-deep]">LumiSkin</h2>
+    <!-- FOOTER -->
+    <footer class="py-40 bg-white border-t border-[--rose-deep]/10 px-24 lg:px-30 text-[--rose-deep] reveal">
+        
+        <!-- Typography Nền (Branding lớn phía sau) -->
+        <div class="text-center mb-24">
+            <h2 class="serif italic text-[15vw] leading-none opacity-5 select-none pointer-events-none">
+                LumiSkin
+            </h2>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-20 text-[9px] font-bold uppercase tracking-[0.4em]">
-            <div class="space-y-6 text-[--rose-deep]">
-                <a href="#" class="block hover:opacity-50">Instagram</a>
-                <a href="#" class="block hover:opacity-50">Pinterest</a>
-                <a href="#" class="block hover:opacity-50">Archives</a>
+
+        <!-- Grid 3 cột bám sát layout ảnh mẫu -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-20 text-[20px] font-bold uppercase tracking-extreme sans">
+            
+            <!-- Cột 1: Navigation chính -->
+            <div class="space-y-6">
+                <a href="#" class="block hover:opacity-50 transition-opacity">Maison</a>
+                <a href="#" class="block hover:opacity-50 transition-opacity">Heritage</a>
+                <a href="#" class="block hover:opacity-50 transition-opacity">Shop</a>
+                <a href="#" class="block hover:opacity-50 transition-opacity">Journal</a>
+                <a href="#" class="block hover:opacity-50 transition-opacity">Archives</a>
             </div>
-            <div class="opacity-40 space-y-4 text-[--rose-deep]">
-                <p>© 2026 LUMISKIN BIO-LUXURY LAB.</p>
-                <p>PARIS • GRASSE • TOKYO</p>
+
+            <!-- Cột 2: Thông tin Lab & AI -->
+            <div class="space-y-8">
+                <div class="opacity-40 space-y-4">
+                    <p>© 2026 LUMISKIN BIO-LUXURY LAB.</p>
+                    <p>PARIS • GRASSE • TOKYO</p>
+                </div>
+                
+                <!-- AI Skin Lab Section -->
+                <div class="pt-2 flex items-center">
+                    <span class="opacity-100">AI SKIN ANALYSIS</span>
+                    <span class="ml-2 w-1 h-1 bg-[--rose-deep] rounded-full animate-pulse"></span>
+                </div>
+
+                <!-- Socials với Icon SVG -->
+                <div class="pt-6 space-y-5">
+                    <a href="#" class="flex items-center hover:opacity-50 transition-opacity">
+                        <svg class="w-3 h-3 mr-3" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                        Instagram
+                    </a>
+                    <a href="#" class="flex items-center hover:opacity-50 transition-opacity">
+                        <svg class="w-3 h-3 mr-3" viewBox="0 0 24 24"><path d="M12 0c-6.627 0-12 5.372-12 12 0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738.098.119.112.224.083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.261 7.929-7.261 4.162 0 7.398 2.967 7.398 6.93 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146 1.124.347 2.317.535 3.554.535 6.627 0 12-5.373 12-12 0-6.628-5.373-12-12-12z"/></svg>
+                        Pinterest
+                    </a>
+                    <a href="#" class="flex items-center hover:opacity-50 transition-opacity">
+                        <svg class="w-3 h-3 mr-3" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                        X (Twitter)
+                    </a>
+                </div>
             </div>
-            <div class="text-right space-y-4 text-[--rose-deep]">
-                <p>CONTACT@LUMISKIN.FR</p>
-                <p>PLACE VENDÔME, PARIS</p>
+
+            <!-- Cột 3: Liên hệ & Tài khoản -->
+            <div class="text-left md:text-right space-y-6">
+                <div class="space-y-1">
+                    <p class="hover:opacity-50 cursor-pointer">CONTACT@LUMISKIN.FR</p>
+                    <p class="opacity-40">+33 (0) 1 42 61 50 00</p>
+                    <p class="opacity-40">+33 (0) 1 58 18 10 10</p>
+                </div>
+                
+                <p class="opacity-40">PLACE VENDÔME, PARIS</p>
+                
+                <div class="pt-12 flex flex-col md:items-end space-y-6">
+                    <a href="#" class="block hover:opacity-50">Cart</a>
+                    <a href="#" class="block hover:opacity-50">Login</a>
+                </div>
             </div>
+
+        </div>
+
+        <!-- Detail nhỏ ở cuối -->
+        <div class="mt-40 pt-8 border-t border-[--rose-deep]/5 flex justify-between items-center opacity-20 text-[7px] tracking-[0.8em]">
+            <span>EST. 2024</span>
+            <span class="hidden md:block">BIO-TECHNOLOGY MEETS HAUTE COSMÉTIQUE</span>
+            <span>FRANCE</span>
         </div>
     </footer>
 
+
     <script>
+        window.onload = function () {
+            window.scrollTo(0, 0);
+            window.location.hash = "#home";
+            renderUI(); initThree(); animate(); updateCart();
+            
+            window.addEventListener('mousemove', e => {
+                gsap.to('#cursor', { duration: 0.1, x: e.clientX, y: e.clientY });
+                gsap.to('#cursor-follower', { duration: 0.4, x: e.clientX - 20, y: e.clientY - 20 });
+            });
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('active'); });
+            }, { threshold: 0.1 });
+            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+            window.addEventListener('scroll', () => {
+                const scroll = window.pageYOffset;
+                const nav = document.getElementById('main-nav');
+                if(scroll > 50) nav.classList.add('scrolled'); else nav.classList.remove('scrolled');
+                document.querySelectorAll('.parallax-img').forEach(img => { img.style.transform = `translateY(${scroll * 0.05}px)`; });
+            });
+
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        };
+
         const products = [
-            { name: "Rose Elixir", price: "$145", cat: "Luxury", img: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=600", desc: "Concentrated essence from 10,000 rose petals." },
-            { name: "Pearl Glow", price: "$180", cat: "Brightening", img: "https://images.unsplash.com/photo-1590156221120-75d328df97dc?q=80&w=600", desc: "Pearl and silk protein complex." },
-            { name: "Diamond Serum", price: "$350", cat: "Ultimate", img: "https://images.unsplash.com/photo-1515377905703-c4788e51af15?q=80&w=600", desc: "Cellular renewal with nano-diamond technology." },
-            { name: "Silk Cleanser", price: "$75", cat: "Essence", img: "https://images.unsplash.com/photo-1612817288484-6f916006741a?q=80&w=600", desc: "Gentle molecular cleansing emulsion." },
-            { name: "Alpine Dew", price: "$65", cat: "Hydrating", img: "https://images.unsplash.com/photo-1556228720-195a672e8a03?q=80&w=600", desc: "Glacial water providing 72h hydration lock." },
-            { name: "Night Sakura", price: "$120", cat: "Repairing", img: "https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?q=80&w=600", desc: "Overnight repair with cherry blossom essence." },
-            { name: "Quartz Eye", price: "$110", cat: "Lifting", img: "https://images.unsplash.com/photo-1535585209827-a15fcdbc4c2d?q=80&w=600", desc: "Rose quartz crystal eye lifting gel." },
-            { name: "Detox Clay", price: "$85", cat: "Mask", img: "https://images.unsplash.com/photo-1594125350485-3bb28ad9998a?q=80&w=600", desc: "Pure French pink clay detox mask." },
-            { name: "Peony Toner", price: "$55", cat: "Toning", img: "https://images.unsplash.com/photo-1601049541289-9b1b7bbbfe19?q=80&w=600", desc: "Peony extract skin balancing toner." },
-            { name: "Gold Essence", price: "$220", cat: "Elite", img: "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?q=80&w=600", desc: "24K Gold flakes for ultimate brilliance." },
-            { name: "Bio Vitamin C", price: "$135", cat: "Radiance", img: "https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?q=80&w=600", desc: "High-potency biological Vitamin C serum." },
-            { name: "Stem Cell Cream", price: "$290", cat: "Anti-Aging", img: "https://images.unsplash.com/photo-1598440499115-ff5680c44a81?q=80&w=600", desc: "Regenerative rare orchid stem cell cream." }
+            { id: 1, name: "Rose Elixir", price: 145, cat: "Luxury", img: "Rose Elixir.jpg", desc: "Concentrated essence from 10,000 rose petals harvested at the peak of dawn for maximum molecular vitality." },
+            { id: 2, name: "Pearl Glow", price: 180, cat: "Brightening", img: "Pearl.png", desc: "A sophisticated blend of silk protein and crushed sea pearls to illuminate the complexion from within." },
+            { id: 3, name: "Diamond Serum", price: 350, cat: "Ultimate", img: "Diamond Serum.png", desc: "Our crown jewel. Uses nano-diamond particles to deliver cellular repair agents directly to the dermis." },
+            { id: 4, name: "Silk Cleanser", price: 75, cat: "Essence", img: "Silk Cleaner.png", desc: "A transformation ritual. This balm-to-milk cleanser removes impurities while preserving the delicate acid mantle." },
+            { id: 5, name: "Alpine Dew", price: 65, cat: "Hydrating", img: "Alpine Dew.png", desc: "Formulated with glacial mineral water from the French Alps for a continuous 72-hour moisture reservoir." },
+            { id: 6, name: "Night Sakura", price: 120, cat: "Repairing", img: "Night Sakura.png", desc: "Overnight recovery serum that mimics the skin's circadian rhythms using rare cherry blossom extracts." },
+            { id: 7, name: "Quartz Eye", price: 110, cat: "Lifting", img: "Quartz Eye.png", desc: "Infused with energy-cleansed rose quartz to depuff and lift the sensitive orbital area instantly." },
+            { id: 8, name: "Detox Clay", price: 85, cat: "Mask", img: "Detox Clay.png", desc: "Pure pink clay from the Auvergne region, designed to draw out urban pollutants and tighten pores." },
+            { id: 9, name: "Peony Toner", price: 55, cat: "Toning", img: "Peony Toner.png", desc: "A gentle aqueous infusion of peony petals to balance skin pH and prepare for molecular absorption." },
+            { id: 10, name: "Gold Essence", price: 220, cat: "Elite", img: "Gold Essence.png", desc: "Suspended 24K gold flakes act as high-conductivity agents to boost the efficiency of subsequent skincare." },
+            { id: 11, name: "Bio Vitamin C", price: 135, cat: "Radiance", img: "Bio Vitamin C.png", desc: "Stabilized biological L-ascorbic acid that targets hyperpigmentation without irritating sensitive cells." },
+            { id: 12, name: "Stem Cell Cream", price: 290, cat: "Anti-Aging", img: "Sun cream.png", desc: "Regenerative cream utilizing the longevity secrets of rare high-altitude orchids and bio-stem cells." }
         ];
 
         const blogs = [
-            { title: "The Soul of the French Rose", cat: "Philosophy", size: "col-span-12 lg:col-span-8", img: "https://images.unsplash.com/photo-1496062031456-07b8f162a322?q=80&w=1200", views: "45K" },
-            { title: "LumiAI™ Digital Innovation", cat: "Science", size: "col-span-12 lg:col-span-4", img: "https://images.unsplash.com/photo-1576086213369-97a306d36557?q=80&w=800", views: "28K" },
-            { title: "2026 Skin Recovery Rituals", cat: "Skincare", size: "col-span-12 lg:col-span-4", img: "https://images.unsplash.com/photo-1570172619380-4101bdcc4ef9?q=80&w=800", views: "41K" },
-            { title: "The Fine Art of Precision", cat: "Artistry", size: "col-span-12 lg:col-span-4", img: "https://images.unsplash.com/photo-1547887538-e3a2f32cb1cc?q=80&w=800", views: "15K" },
-            { title: "Sustainability in Bio-Luxe", cat: "Ethics", size: "col-span-12 lg:col-span-4", img: "https://images.unsplash.com/photo-1552046122-03184de85e08?q=80&w=800", views: "33K" }
+            { id: 1, title: "The Soul of the French Rose", cat: "Philosophy", size: "col-span-12 lg:col-span-8", img: "french rose.png", likes: "1.2K", shares: "450", views: "12K" },
+            { id: 2, title: "Digital Innovation in Beauty", cat: "Science", size: "col-span-12 lg:col-span-4", img: "https://images.unsplash.com/photo-1576086213369-97a306d36557?q=80&w=800", likes: "890", shares: "210", views: "5.4K" },
+            { id: 3, title: "Skin Recovery Rituals", cat: "Skincare", size: "col-span-12 lg:col-span-4", img: "SKIN BLOG.png", likes: "2.4K", shares: "1.1K", views: "18K" },
+            { id: 4, title: "The Art of Lab Precision", cat: "Artistry", size: "col-span-12 lg:col-span-4", img: "tech.png", likes: "560", shares: "98", views: "2.1K" },
+            { id: 5, title: "Sustainability in Bio-Luxe", cat: "Ethics", size: "col-span-12 lg:col-span-4", img: "https://images.unsplash.com/photo-1552046122-03184de85e08?q=80&w=800", likes: "1.5K", shares: "620", views: "9.2K" }
         ];
 
+        let cart = [];
+
         function renderUI() {
-            document.getElementById('product-grid').innerHTML = products.map(p => `
-                <div class="product-card group cursor-pointer reveal">
-                    <div class="aspect-[3/4] overflow-hidden bg-white mb-8 border border-[--rose-deep]/5">
+            document.getElementById('product-grid').innerHTML = products.map((p, idx) => `
+                <div class="product-card group reveal">
+                    <div class="aspect-[3/4] overflow-hidden bg-white mb-8 border border-[--rose-deep]/5 relative cursor-pointer" onclick="openProductDetail(${p.id})">
                         <img src="${p.img}" alt="${p.name}" class="w-full h-full object-cover">
+                        <button onclick="event.stopPropagation(); addToCart(${p.id})" class="quick-cart-btn px-6 py-3 bg-white/90 backdrop-blur text-[8px] font-bold uppercase tracking-widest text-[--rose-deep] border border-[--rose-deep]/10 hover:bg-[--rose-deep] hover:text-white transition shadow-xl">
+                            + Add to selection
+                        </button>
                     </div>
                     <div class="space-y-2">
-                        <div class="flex justify-between items-baseline">
+                        <div class="flex justify-between items-baseline cursor-pointer" onclick="openProductDetail(${p.id})">
                             <h4 class="serif text-2xl italic text-[--rose-deep]">${p.name}</h4>
-                            <span class="text-[10px] font-bold text-[--accent]">${p.price}</span>
+                            <span class="text-[10px] font-bold text-[--accent]">$${p.price.toFixed(2)}</span>
                         </div>
                         <p class="text-[7px] font-bold uppercase tracking-widest opacity-40">${p.cat}</p>
-                        <p class="serif italic text-[11px] opacity-60 leading-relaxed">${p.desc}</p>
                     </div>
                 </div>
             `).join('');
 
             document.getElementById('blog-grid').innerHTML = blogs.map(b => `
-                <div class="${b.size} group cursor-pointer reveal">
-                    <div class="relative overflow-hidden aspect-[16/9] mb-8 shadow-sm">
-                        <img src="${b.img}" alt="${b.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000 filter brightness-[0.95]">
-                        <div class="absolute top-6 left-6 px-4 py-2 bg-white/90 rounded-full text-[7px] font-bold uppercase tracking-widest text-[--rose-deep]">${b.cat}</div>
+                <div class="${b.size} reveal">
+                    <div class="blog-card group">
+                        <div class="blog-image-wrapper aspect-[16/9] mb-4">
+                            <img src="${b.img}" alt="${b.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-[1500ms]">
+                            <div class="blog-overlay"></div>
+                            <div class="absolute top-4 left-4 px-4 py-2 bg-white/95 text-[8px] font-bold uppercase tracking-[0.3em] text-[--rose-deep] shadow-sm">
+                                ${b.cat}
+                            </div>
+                        </div>
+                        
+                        <div class="insta-stats-row">
+                            <div class="insta-stat-item">
+                                <svg class="insta-stat-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12.62 20.81C12.28 20.93 11.72 20.93 11.38 20.81C8.48 19.82 2 15.69 2 8.68998C2 5.59998 4.49 3.09998 7.56 3.09998C9.38 3.09998 10.99 3.97998 12 5.33998C13.01 3.97998 14.63 3.09998 16.44 3.09998C19.51 3.09998 22 5.59998 22 8.68998C22 15.69 15.52 19.82 12.62 20.81Z" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                <span>${b.likes}</span>
+                            </div>
+                            <div class="insta-stat-item">
+                                <svg class="insta-stat-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M7.39999 6.32001L15.89 3.49001C19.7 2.22001 21.77 4.30001 20.51 8.11001L17.68 16.6C15.78 22.31 12.66 22.31 10.76 16.6L9.91999 14.08L7.39999 13.24C1.68999 11.34 1.68999 8.23001 7.39999 6.32001Z" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M10.11 13.65L13.69 10.06" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                <span>${b.shares}</span>
+                            </div>
+                            <div class="insta-stat-item">
+                                <svg class="insta-stat-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M15.58 12C15.58 13.98 13.98 15.58 12 15.58C10.02 15.58 8.42004 13.98 8.42004 12C8.42004 10.02 10.02 8.42004 12 8.42004C13.98 8.42004 15.58 10.02 15.58 12Z" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M12 20.29C15.53 20.29 18.82 18.21 21.11 14.59C22.01 13.18 22.01 10.81 21.11 9.4C18.82 5.78 15.53 3.7 12 3.7C8.46997 3.7 5.17997 5.78 2.88997 9.4C1.98997 10.81 1.98997 13.18 2.88997 14.59C5.17997 18.21 8.46997 20.29 12 20.29Z" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                <span>${b.views}</span>
+                            </div>
+                        </div>
+
+                        <div class="flex-1 mt-4">
+                            <div class="flex items-center gap-3 opacity-30 text-[8px] font-bold uppercase tracking-widest mb-3">
+                                <span>LumiSkin Journal</span> • <span>2026</span>
+                            </div>
+                            <h4 class="serif text-4xl lg:text-5xl italic leading-[1.15] group-hover:text-[--rose-deep] transition-colors duration-500">
+                                ${b.title}
+                            </h4>
+                        </div>
                     </div>
-                    <div class="flex items-center gap-4 mb-4 opacity-50 text-[8px] font-bold uppercase tracking-widest text-[--rose-deep]">
-                        <span>LumiSkin Lab</span> • <span>👁 ${b.views}</span>
-                    </div>
-                    <h4 class="serif text-4xl italic leading-tight group-hover:text-[--rose-deep] transition">${b.title}</h4>
                 </div>
             `).join('');
+        }
+
+        function openProductDetail(id) {
+            const p = products.find(item => item.id === id);
+            const idx = products.indexOf(p) + 1;
+            const numStr = idx < 10 ? `0${idx}` : idx;
+            document.getElementById('detail-num').innerText = numStr;
+            document.getElementById('detail-cat').innerText = p.cat;
+            document.getElementById('detail-name').innerText = p.name;
+            document.getElementById('detail-desc').innerText = p.desc;
+            document.getElementById('detail-price').innerText = `$${p.price.toFixed(2)}`;
+            document.getElementById('detail-img').src = p.img;
+            document.getElementById('detail-add-btn').onclick = () => { addToCart(p.id); closeProductDetail(); };
+            const modal = document.getElementById('product-detail-modal');
+            modal.style.display = 'flex';
+            gsap.fromTo(".detail-inner", { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 1, ease: "expo.out" });
+        }
+
+        function closeProductDetail() {
+            gsap.to(".detail-inner", { opacity: 0, y: 50, duration: 0.6, ease: "expo.in", onComplete: () => {
+                document.getElementById('product-detail-modal').style.display = 'none';
+            }});
+        }
+
+        function executeLuxeLogin() {
+            const loginBtn = document.getElementById('login-submit-btn');
+            const toast = document.getElementById('welcome-toast');
+            loginBtn.innerText = "AUTHENTICATING...";
+            loginBtn.disabled = true;
+            setTimeout(() => {
+                loginBtn.innerText = "BIOMETRICS PASSED";
+                setTimeout(() => {
+                    toggleLogin(false);
+                    toast.style.display = 'block';
+                    gsap.to(toast, {
+                        duration: 1.5,
+                        y: 0,
+                        opacity: 1,
+                        ease: "expo.out",
+                        onComplete: () => {
+                            setTimeout(() => {
+                                gsap.to(toast, {
+                                    duration: 1,
+                                    y: -200,
+                                    opacity: 0,
+                                    ease: "expo.in",
+                                    onComplete: () => {
+                                        toast.style.display = 'none';
+                                        loginBtn.innerText = "Enter The Lab";
+                                        loginBtn.disabled = false;
+                                    }
+                                });
+                            }, 6000);
+                        }
+                    });
+                }, 800);
+            }, 1500);
+        }
+
+        function toggleCart(show) {
+            const drawer = document.getElementById('cart-drawer');
+            if(show) { updateCart(); drawer.classList.add('open'); }
+            else drawer.classList.remove('open');
+        }
+
+        function addToCart(id) {
+            const prod = products.find(p => p.id === id);
+            cart.push({...prod, cartId: Date.now()});
+            updateCart(); toggleCart(true);
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1); updateCart();
+        }
+
+        function updateCart() {
+            const container = document.getElementById('cart-items');
+            const totalEl = document.getElementById('cart-total');
+            const countEl = document.getElementById('cart-count');
+            countEl.innerText = cart.length;
+            const total = cart.reduce((acc, curr) => acc + curr.price, 0);
+            totalEl.innerText = `$${total.toFixed(2)}`;
+            if(cart.length === 0) { container.innerHTML = '<p class="text-[10px] uppercase opacity-30 text-center py-20">Your selection is empty</p>'; return; }
+            container.innerHTML = cart.map((item, idx) => `
+                <div class="flex gap-6 items-center border-b border-gray-50 pb-6 group">
+                    <img src="${item.img}" class="w-16 h-20 object-cover rounded-sm">
+                    <div class="flex-1">
+                        <h5 class="serif text-xl italic leading-none">${item.name}</h5>
+                        <p class="text-[10px] font-bold text-[--accent] mt-1">$${item.price.toFixed(2)}</p>
+                    </div>
+                    <button onclick="removeFromCart(${idx})" class="opacity-20 hover:opacity-100 transition text-xs">✕</button>
+                </div>
+            `).join('');
+        }
+
+        function openCheckout() {
+            if(cart.length === 0) return; toggleCart(false);
+            const summaryList = document.getElementById('checkout-summary-list');
+            summaryList.innerHTML = cart.map(item => `
+                <div class="flex gap-4 items-center bg-white/40 p-3 rounded-sm border border-black/5">
+                    <img src="${item.img}" class="w-12 h-16 object-cover rounded-sm">
+                    <div class="flex-1">
+                        <p class="serif italic text-sm text-[--rose-deep] leading-tight">${item.name}</p>
+                        <p class="text-[8px] font-bold uppercase opacity-40 mt-1">$${item.price.toFixed(2)}</p>
+                    </div>
+                </div>
+            `).join('');
+            document.getElementById('checkout-final-total').innerText = `$${cart.reduce((acc, curr) => acc + curr.price, 0).toFixed(2)}`;
+            document.getElementById('checkout-item-count').innerText = `${cart.length} items`;
+            nextStep(1); document.getElementById('checkout-modal').style.display = 'flex';
+        }
+
+        function closeCheckout() { document.getElementById('checkout-modal').style.display = 'none'; }
+
+        function nextStep(step) {
+            document.querySelectorAll('.checkout-step').forEach(s => s.classList.add('hidden'));
+            document.getElementById(`checkout-step-${step}`).classList.remove('hidden');
+            for(let i=1; i<=3; i++) {
+                const dot = document.getElementById(`dot-${i}`);
+                const label = document.getElementById(`label-${i}`);
+                if(i <= step) { dot.classList.add('active'); if(label) label.classList.add('!opacity-100'); }
+                else { dot.classList.remove('active'); if(label) label.classList.remove('!opacity-100'); }
+            }
+        }
+
+        function processPayment() {
+            const btn = event.target; btn.disabled = true; btn.innerText = "Processing...";
+            setTimeout(() => { nextStep(3); btn.disabled = false; btn.innerText = "Complete Order"; cart = []; updateCart(); }, 3000);
         }
 
         function toggleLogin(show) {
             const modal = document.getElementById('login-modal');
             const inner = document.getElementById('login-inner');
-            const items = document.querySelectorAll('.reveal-login');
-            
-            if (show) {
-                modal.style.display = 'flex';
-                gsap.to(inner, { duration: 1.2, opacity: 1, scale: 1, ease: "expo.out" });
-                gsap.fromTo(items, 
-                    { y: 30, opacity: 0 }, 
-                    { y: 0, opacity: 1, duration: 1, stagger: 0.1, ease: "power4.out", delay: 0.3 }
-                );
-            } else {
-                gsap.to(inner, { 
-                    duration: 0.8, 
-                    opacity: 0, 
-                    scale: 0.95, 
-                    ease: "expo.in", 
-                    onComplete: () => modal.style.display = 'none' 
-                });
-            }
+            if (show) { modal.style.display = 'flex'; gsap.to(inner, { duration: 1, opacity: 1, scale: 1, ease: "expo.out" }); }
+            else { gsap.to(inner, { duration: 0.6, opacity: 0, scale: 0.9, ease: "expo.in", onComplete: () => modal.style.display = 'none' }); }
         }
 
         let scene, camera, renderer, particles;
         function initThree() {
-            scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1500);
+            scene = new THREE.Scene(); camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1500);
             renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('bg-canvas'), alpha: true, antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
-            const geometry = new THREE.BufferGeometry();
-            const pos = [];
+            const geometry = new THREE.BufferGeometry(); const pos = [];
             for(let i=0; i<4000; i++) pos.push(THREE.MathUtils.randFloatSpread(1500), THREE.MathUtils.randFloatSpread(1500), THREE.MathUtils.randFloatSpread(1500));
             geometry.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
             particles = new THREE.Points(geometry, new THREE.PointsMaterial({ color: 0xffb6c1, size: 1.2, transparent: true, opacity: 0.2 }));
-            scene.add(particles);
-            camera.position.z = 1000;
+            scene.add(particles); camera.position.z = 1000;
         }
 
-        function animate() {
-            requestAnimationFrame(animate);
-            if(particles) particles.rotation.y += 0.0003;
-            renderer.render(scene, camera);
-        }
+        function animate() { requestAnimationFrame(animate); if(particles) particles.rotation.y += 0.0003; renderer.render(scene, camera); }
 
         function startLumiScan(e) {
-            const preview = document.getElementById('ai-preview');
-            const placeholder = document.getElementById('ai-placeholder');
-            const scanner = document.getElementById('scanner-line');
-            const panel = document.getElementById('ai-result-panel');
+            const preview = document.getElementById('ai-preview'); const placeholder = document.getElementById('ai-placeholder');
+            const scanner = document.getElementById('scanner-line'); const panel = document.getElementById('ai-result-panel');
             const file = e.target.files[0];
-
             if (file) {
                 const reader = new FileReader();
                 reader.onload = ev => {
-                    preview.src = ev.target.result;
-                    preview.classList.remove('hidden');
-                    placeholder.classList.add('hidden');
-                    scanner.classList.remove('hidden');
-                    
+                    preview.src = ev.target.result; preview.classList.remove('hidden'); placeholder.classList.add('hidden'); scanner.classList.remove('hidden');
                     setTimeout(() => {
-                        scanner.classList.add('hidden');
-                        panel.style.transform = "translateY(0)";
-                        document.getElementById('ai-text').innerText = "Analysis Complete: Cellular biorhythms detected for optimal absorption. Epidermal hydration locked. Recommendation: Diamond Serum + Pearl Glow Ritual.";
-                        document.getElementById('stat-h').innerText = "89%";
-                        document.getElementById('stat-e').innerText = "94%";
+                        scanner.classList.add('hidden'); panel.style.transform = "translateY(0)";
+                        document.getElementById('ai-text').innerText = "Analysis Complete: Cellular biorhythms detected for optimal absorption. Epidermal hydration locked.";
+                        document.getElementById('stat-h').innerText = "89%"; document.getElementById('stat-e').innerText = "94%";
                     }, 3500);
                 };
                 reader.readAsDataURL(file);
             }
         }
-
-        window.onload = () => {
-            renderUI(); initThree(); animate();
-            window.addEventListener('mousemove', e => {
-                gsap.to('#cursor', { duration: 0.1, x: e.clientX, y: e.clientY });
-                gsap.to('#cursor-follower', { duration: 0.4, x: e.clientX - 20, y: e.clientY - 20 });
-            });
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) entry.target.classList.add('active');
-                });
-            }, { threshold: 0.1 });
-            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-            
-            window.addEventListener('scroll', () => {
-                const scroll = window.pageYOffset;
-                const nav = document.getElementById('main-nav');
-                
-                document.querySelectorAll('.parallax-img').forEach(img => {
-                    img.style.transform = `translateY(${scroll * 0.1}px)`;
-                });
-
-                if(scroll > 50) {
-                    nav.classList.add('scrolled');
-                } else {
-                    nav.classList.remove('scrolled');
-                }
-            });
-
-            window.addEventListener('resize', () => {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
-            });
-        };
     </script>
 </body>
 </html>
