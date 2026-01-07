@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LumiSkin | Molecular Maison Admin</title>
+    
+    <!-- Fonts: High-end Typography (Optimized for readability) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Scripts -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        roseLight: '#fffafa',
+                        roseSoft: '#fdf2f4',
+                        roseMaison: '#fce4ec',
+                        roseDeep: '#701c26',
+                        roseVelvet: '#4a0e16',
+                        goldLuxe: '#d4af37',
+                        goldMaison: '#c5a059',
+                        maisonDark: '#0f0a0b',
+                    },
+                    fontFamily: {
+                        serif: ['"Cormorant Garamond"', 'serif'],
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'premium': '0 25px 80px rgba(112, 28, 38, 0.08)',
+                        'gold-glow': '0 0 20px rgba(197, 160, 89, 0.2)',
+                        'pink-glow': '0 0 25px rgba(112, 28, 38, 0.25)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #fffafa;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: #0f0a0b;
+            overflow-x: hidden;
+            background-image: radial-gradient(circle at top right, rgba(252, 228, 236, 0.5), transparent 40%);
+            letter-spacing: -0.01em; /* Tighter look for body text */
+        }
+        .glass-premium {
+            background: rgba(255, 250, 250, 0.85);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(197, 160, 89, 0.2);
+        }
+        .sidebar-transition {
+            transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        .btn-gold-gradient {
+            background: linear-gradient(135deg, #c5a059, #d4af37, #e2c08d);
+            background-size: 200% auto;
+            transition: all 0.5s ease;
+            border-radius: 3rem;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        .btn-gold-gradient:hover {
+            background-position: right center;
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(197, 160, 89, 0.4);
+        }
+        .card-hover {
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        .card-hover:hover {
+            transform: translateY(-12px) scale(1.01);
+            box-shadow: 0 40px 90px rgba(112, 28, 38, 0.12);
+            border-color: rgba(197, 160, 89, 0.4);
+        }
+        .custom-scroll::-webkit-scrollbar { width: 4px; }
+        .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #c5a059; border-radius: 10px; }
+        
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+            100% { transform: translateY(0px); }
+        }
+        .animate-float { animation: floating 3s ease-in-out infinite; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade { animation: fadeIn 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards; }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #c5a059 !important;
+            box-shadow: 0 0 0 4px rgba(197, 160, 89, 0.1);
+        }
+
+        /* Typography Fixes */
+        .tracking-maison { letter-spacing: 0.1em; }
+        .tracking-header { letter-spacing: -0.02em; }
+
+        svg.lucide { display: inline-block; vertical-align: middle; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef, useMemo } = React;
+
+        // --- FULL MOCK DATA ---
+        const INITIAL_DATA = {
+            products: [
+                {"id":1,"name":"Rose Elixir","category":"Luxury","price":145,"stock":24,"status":"Peak Vitality","sku":"LS-RE-01","image":"Rose Elixir.jpg","purity":"99.8%","desc":"Essence from 10,000 Grasse roses harvested at dawn."},
+                {"id":2,"name":"Pearl Glow","category":"Brightening","price":180,"stock":15,"status":"Active","sku":"LS-PG-02","image":"Pearl Glow.jpg","purity":"100%","desc":"Combination of silk protein and finely crushed pearls."},
+                {"id":3,"name":"Diamond Serum","category":"Ultimate","price":350,"stock":8,"status":"Limited","sku":"LS-DS-03","image":"Diamond Serum.png","purity":"99.9%","desc":"Uses diamond nanoparticles to repair dermal cells."},
+                {"id":4,"name":"Silk Cleanser","category":"Essence","price":75,"stock":42,"status":"In Stock","sku":"LS-SC-04","image":"Silk Cleaner.png","purity":"98.5%","desc":"Waxy cleanser that transforms into milk to preserve the acid mantle."},
+                {"id":5,"name":"Alpine Dew","category":"Hydrating","price":65,"stock":50,"status":"In Stock","sku":"LS-AD-05","image":"Alpine Dew.png","purity":"99.2%","desc":"Minerals from the French Alps provide 72-hour continuous hydration."},
+                {"id":6,"name":"Night Sakura","category":"Repairing","price":120,"stock":30,"status":"Active","sku":"LS-NS-06","image":"Night Sakura.png","purity":"98.8%","desc":"Nightly recovery simulating the skin's circadian rhythm."},
+                {"id":7,"name":"Quartz Eye","category":"Lifting","price":110,"stock":22,"status":"In Stock","sku":"LS-QE-07","image":"Quartz Eye.png","purity":"99.4%","desc":"Rose quartz extract helps reduce puffiness and lift eye muscles."},
+                {"id":8,"name":"Detox Clay","category":"Mask","price":85,"stock":12,"status":"Stable","sku":"LS-DC-08","image":"Detox Clay.png","purity":"100%","desc":"Pink clay from Auvergne removes urban toxins."},
+                {"id":9,"name":"Peony Toner","category":"Toning","price":55,"stock":60,"status":"In Stock","sku":"LS-PT-09","image":"Peony Toner.png","purity":"99.7%","desc":"Balances pH and prepares skin for molecular absorption."},
+                {"id":10,"name":"Gold Essence","category":"Elite","price":220,"stock":5,"status":"Urgent","sku":"LS-GE-10","image":"Gold Essence.png","purity":"100%","desc":"24K gold suspension acts as a high-performance conductor."},
+                {"id":11,"name":"Bio Vitamin C","category":"Radiance","price":135,"stock":20,"status":"Active","sku":"LS-VC-11","image":"Bio Vitamin C.png","purity":"99.1%","desc":"Stable bio-L-ascorbic targets pigmentation."},
+                {"id":12,"name":"Stem Cell Cream","category":"Anti-Aging","price":290,"stock":3,"status":"Limited","sku":"LS-SC-12","image":"Sun cream.png","purity":"99.9%","desc":"Stem cells from rare wild orchids for superior skin regeneration."}
+            ],
+            ambassadors: [
+                {"id":"AMB-01","name":"Bella V. Hadid","level":"Global Icon","reach":"94.2M","spend":"€850k","roi":"410%","status":"Live","country":"FR","avatar":"https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400","dna":"Elite"},
+                {"id":"AMB-02","name":"Xiao Zhan","level":"Asian Amb.","reach":"68.5M","spend":"€420k","roi":"380%","status":"Live","country":"CN","avatar":"https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=400","dna":"Viral"},
+                {"id":"AMB-03","name":"Rosie H. Whiteley","level":"Maison Muse","reach":"18.1M","spend":"€310k","roi":"290%","status":"Idle","country":"UK","avatar":"https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=400","dna":"Luxury"},
+                {"id":"AMB-04","name":"Amira Al-Fais","level":"Royal Circle","reach":"2.4M","spend":"€2.4M","roi":"120%","status":"Live","country":"UAE","avatar":"https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?q=80&w=400","dna":"Bespoke"},
+                {"id":"AMB-05","name":"Lalisa Manobal","level":"Regional Star","reach":"102M","spend":"€600k","roi":"520%","status":"Live","country":"TH","avatar":"https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=400","dna":"Peak"}
+            ],
+            materials: [
+                {"id":"MAT-01","name":"Grasse Rose Petals","source":"France","purity":"99.9%","stock":"450kg","status":"Optimal","cost":"€1.2k/kg"},
+                {"id":"MAT-02","name":"Hydrolyzed Silk","source":"Japan","purity":"98.5%","stock":"120kg","status":"Monitoring","cost":"€850/kg"},
+                {"id":"MAT-03","name":"Nano Diamond Dust","source":"Switzerland","purity":"100%","stock":"5.5kg","status":"Restricted","cost":"€12k/kg"},
+                {"id":"MAT-04","name":"Alpine Glacier Water","source":"France","purity":"99.9%","stock":"2,500L","status":"Optimal","cost":"€45/L"},
+                {"id":"MAT-05","name":"24K Colloidal Gold","source":"Germany","purity":"99.9%","stock":"15kg","status":"Critical","cost":"€5.4k/kg"}
+            ],
+            announcements: [
+                { id: 1, title: "Rose Elixir Launch at Paris Fashion Week", time: "2h ago", tag: "Event" },
+                { id: 2, title: "Purity Upgrade: 99.99% for Elite Line", time: "5h ago", tag: "Lab" },
+                { id: 3, title: "Moonlight Campaign hits 150M reach", time: "1d ago", tag: "Marketing" }
+            ],
+            activities: [
+                { id: 1, user: "Elena", action: "updated inventory for Rose Elixir", time: "5m ago", icon: "Package" },
+                { id: 2, user: "Marcus", action: "approved new Global Ambassador", time: "12m ago", icon: "UserCheck" },
+                { id: 3, user: "System", action: "generated Q4 Performance Report", time: "1h ago", icon: "FileText" }
+            ]
+        };
+
+        // --- COMPONENTS ---
+
+        const Icon = ({ name, size = 20, className = "" }) => {
+            const iconData = lucide.icons[name] || lucide.icons['HelpCircle'];
+            if (!iconData) return null;
+            const children = iconData[2] || [];
+            const cleanAttrs = {};
+            Object.entries(iconData[1] || {}).forEach(([key, value]) => {
+                if (!isNaN(key)) return;
+                const reactKey = key.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
+                cleanAttrs[reactKey] = value;
+            });
+            return (
+                <svg {...cleanAttrs} width={size} height={size} className={`lucide lucide-${name.toLowerCase()} ${className}`}
+                    dangerouslySetInnerHTML={{
+                        __html: children.map((child) => {
+                            const tag = child[0];
+                            const childAttrs = child[1] || {};
+                            const attrString = Object.entries(childAttrs).map(([k, v]) => `${k}="${v}"`).join(' ');
+                            return `<${tag} ${attrString}></${tag}>`;
+                        }).join('')
+                    }}
+                />
+            );
+        };
+
+        const Badge = ({ children, variant = "default" }) => {
+            const styles = {
+                default: "bg-roseSoft text-roseDeep border border-roseDeep/10",
+                success: "bg-green-50 text-green-700 border border-green-100",
+                warning: "bg-amber-50 text-amber-700 border border-amber-100",
+                danger: "bg-red-50 text-red-700 border border-red-100",
+                gold: "bg-goldMaison/10 text-goldMaison border border-goldMaison/20 shadow-gold-glow",
+            };
+            return (
+                <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-maison ${styles[variant]}`}>
+                    {children}
+                </span>
+            );
+        };
+
+        const PageHeader = ({ title, subtitle, breadcrumbs, kpis, onAdd }) => {
+            return (
+                <div className="mb-14 animate-fade">
+                    <div className="flex items-center gap-2 text-[10px] uppercase tracking-maison text-maisonDark/30 mb-8 font-bold">
+                        {breadcrumbs.map((b, i) => (
+                            <React.Fragment key={i}>
+                                <span>{b}</span>
+                                {i < breadcrumbs.length - 1 && <Icon name="ChevronRight" size={10} />}
+                            </React.Fragment>
+                        ))}
+                    </div>
+                    
+                    <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end gap-10 mb-14">
+                        <div className="space-y-4 max-w-4xl">
+                            <h1 className="text-6xl font-serif italic text-maisonDark leading-tight tracking-header drop-shadow-sm">
+                                {title}
+                            </h1>
+                            <p className="text-roseDeep/60 font-medium text-xl leading-relaxed italic">
+                                {subtitle}
+                            </p>
+                            <div className="flex gap-5 mt-8">
+                                <button className="px-10 py-4 rounded-full glass-premium text-maisonDark font-bold text-xs uppercase tracking-maison shadow-premium hover:scale-105 transition-all">
+                                    Analytics Lab
+                                </button>
+                                {onAdd && (
+                                    <button onClick={onAdd} className="px-10 py-4 btn-gold-gradient font-bold text-xs uppercase tracking-maison shadow-lg flex items-center gap-2">
+                                        <Icon name="Plus" size={14} /> New Entry
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full xl:w-[650px] glass-premium p-8 rounded-[3rem] shadow-premium border-roseMaison/50">
+                            <div className="space-y-5">
+                                <div className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-maison text-goldMaison">
+                                    <div className="w-6 h-[1px] bg-goldMaison"></div> Announcements
+                                </div>
+                                <div className="space-y-3 h-24 overflow-y-auto pr-3 custom-scroll">
+                                    {INITIAL_DATA.announcements.map(a => (
+                                        <div key={a.id} className="text-[11px] flex flex-col gap-1 border-b border-roseMaison pb-2">
+                                            <span className="text-maisonDark italic font-medium leading-normal"> {a.title}</span>
+                                            <span className="text-maisonDark/40 text-[9px] font-bold uppercase">{a.time}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="space-y-5">
+                                <div className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-maison text-roseDeep">
+                                    <div className="w-6 h-[1px] bg-roseDeep"></div> Activity Feed
+                                </div>
+                                <div className="space-y-3 h-24 overflow-y-auto pr-3 custom-scroll">
+                                    {INITIAL_DATA.activities.map(act => (
+                                        <div key={act.id} className="text-[11px] flex flex-col gap-1 border-b border-roseMaison pb-2">
+                                            <span className="text-maisonDark font-medium"><strong>{act.user}</strong> {act.action}</span>
+                                            <span className="text-maisonDark/30 italic text-[9px]">{act.time}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                        {kpis.map((kpi, i) => (
+                            <div key={i} className="glass-premium p-10 rounded-[3rem] card-hover flex flex-col gap-4 border-l-4 border-l-goldMaison/30">
+                                <span className="text-[11px] font-bold uppercase tracking-maison text-maisonDark/30">{kpi.label}</span>
+                                <div className="flex items-end justify-between">
+                                    <span className="text-5xl font-serif italic text-maisonDark tracking-header">{kpi.value}</span>
+                                    <div className={`flex items-center gap-1.5 px-2 py-1 rounded-lg bg-white/50 text-[10px] font-black ${kpi.trend > 0 ? 'text-green-600' : 'text-roseDeep'}`}>
+                                        <Icon name={kpi.trend > 0 ? "ArrowUpRight" : "ArrowDownRight"} size={12} />
+                                        {Math.abs(kpi.trend)}%
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        };
+
+        const ConfirmModal = ({ title, message, onConfirm, onCancel }) => (
+            <div className="fixed inset-0 z-[2000] flex items-center justify-center p-6 bg-maisonDark/60 backdrop-blur-md">
+                <div className="glass-premium p-12 rounded-[4rem] max-w-md w-full shadow-2xl animate-fade border-2 border-roseDeep/10 text-center">
+                    <h3 className="text-3xl font-serif italic mb-4 text-roseDeep">{title}</h3>
+                    <p className="text-maisonDark/60 mb-10 text-lg leading-snug">{message}</p>
+                    <div className="flex gap-4">
+                        <button onClick={onCancel} className="flex-1 py-4 rounded-full border-2 border-roseMaison font-bold text-xs uppercase tracking-maison hover:bg-roseMaison transition-all">Cancel</button>
+                        <button onClick={onConfirm} className="flex-1 py-4 btn-gold-gradient font-bold text-xs uppercase tracking-maison">Confirm</button>
+                    </div>
+                </div>
+            </div>
+        );
+
+        // --- PAGE MODULES ---
+
+        const Dashboard = () => {
+            const lineRef = useRef(null);
+            const donutRef = useRef(null);
+
+            useEffect(() => {
+                const lineCtx = lineRef.current.getContext('2d');
+                const lineChart = new Chart(lineCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
+                        datasets: [{
+                            label: 'Revenue',
+                            data: [18, 25, 22, 35, 48, 62],
+                            borderColor: '#c5a059',
+                            borderWidth: 4,
+                            backgroundColor: 'rgba(197, 160, 89, 0.05)',
+                            fill: true,
+                            tension: 0.45,
+                            pointRadius: 6,
+                            pointBackgroundColor: '#fff',
+                        }]
+                    },
+                    options: { 
+                        responsive: true, maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: { 
+                            x: { grid: { display: false }, ticks: { font: { family: 'Plus Jakarta Sans', weight: '600' } } }, 
+                            y: { grid: { color: 'rgba(0,0,0,0.03)' }, border: { display: false } } 
+                        }
+                    }
+                });
+
+                const donutCtx = donutRef.current.getContext('2d');
+                const donutChart = new Chart(donutCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Elite', 'Luxury', 'Hydrating', 'Anti-Aging'],
+                        datasets: [{
+                            data: [45, 25, 20, 10],
+                            backgroundColor: ['#0f0a0b', '#701c26', '#c5a059', '#fce4ec'],
+                            borderWidth: 8,
+                            borderColor: '#fffafa',
+                        }]
+                    },
+                    options: { 
+                        responsive: true, maintainAspectRatio: false, cutout: '80%', 
+                        plugins: { 
+                            legend: { position: 'bottom', labels: { font: { family: 'Plus Jakarta Sans', weight: '600' } } } 
+                        } 
+                    }
+                });
+
+                return () => { lineChart.destroy(); donutChart.destroy(); };
+            }, []);
+
+            return (
+                <div className="space-y-16">
+                    <PageHeader 
+                        title="Maison Intelligence"
+                        subtitle="Strategic monitoring of LumiSkin's global molecular assets."
+                        breadcrumbs={['Maison', 'Core', 'Intelligence']}
+                        kpis={[
+                            { label: 'Annual Revenue', value: '€62.8M', trend: 18.2 },
+                            { label: 'Lab Yield', value: '99.9%', trend: 0.5 },
+                            { label: 'Global Reach', value: '315M', trend: 22.1 },
+                            { label: 'Net ROI', value: '410%', trend: 8.4 },
+                        ]}
+                    />
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                        <div className="lg:col-span-2 glass-premium p-12 rounded-[4rem] h-[550px]">
+                            <h3 className="text-3xl font-serif italic mb-12">Market Growth Projection</h3>
+                            <div className="h-[350px]"><canvas ref={lineRef}></canvas></div>
+                        </div>
+                        <div className="glass-premium p-12 rounded-[4rem] h-[550px] flex flex-col">
+                            <h3 className="text-3xl font-serif italic mb-12">Asset Allocation</h3>
+                            <div className="h-[320px] w-full"><canvas ref={donutRef}></canvas></div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const Products = ({ products, onEdit, onDelete, onAdd }) => {
+            const [search, setSearch] = useState("");
+            const filtered = products.filter(p => p.name.toLowerCase().includes(search.toLowerCase()) || p.sku.toLowerCase().includes(search.toLowerCase()));
+
+            return (
+                <div className="animate-fade">
+                    <PageHeader 
+                        title="Molecular Catalog"
+                        subtitle="LumiSkin formulations tracked at the molecular level."
+                        breadcrumbs={['Maison', 'Lab', 'Inventory']}
+                        kpis={[
+                            { label: 'Total SKUs', value: products.length, trend: 0 },
+                            { label: 'Limited Supply', value: products.filter(p => p.stock < 10).length, trend: 12 },
+                            { label: 'Purity Average', value: '99.6%', trend: 0.1 },
+                            { label: 'Avg Unit Price', value: '€165', trend: 4.2 },
+                        ]}
+                        onAdd={onAdd}
+                    />
+                    <div className="mb-10 relative max-w-xl">
+                        <Icon name="Search" className="absolute left-6 top-1/2 -translate-y-1/2 text-maisonDark/30" size={20} />
+                        <input 
+                            type="text" 
+                            placeholder="Search molecule or SKU..." 
+                            className="w-full pl-16 pr-8 py-5 rounded-full glass-premium border-2 border-roseMaison shadow-sm text-lg font-serif italic placeholder:opacity-50"
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                        />
+                    </div>
+                    <div className="glass-premium rounded-[4rem] overflow-hidden shadow-premium border-roseMaison/50">
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left">
+                                <thead className="bg-maisonDark text-white text-[11px] uppercase tracking-maison font-bold">
+                                    <tr>
+                                        <th className="px-10 py-8">Molecule</th>
+                                        <th className="px-10 py-8 text-center">Unit Price</th>
+                                        <th className="px-10 py-8 text-center">Reserve</th>
+                                        <th className="px-10 py-8">Vitality</th>
+                                        <th className="px-10 py-8 text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-roseMaison">
+                                    {filtered.map(p => (
+                                        <tr key={p.id} className="hover:bg-roseMaison/20 transition-all group">
+                                            <td className="px-10 py-8">
+                                                <div className="flex items-center gap-6">
+                                                    <img src={p.image} className="w-20 h-20 rounded-[1.5rem] object-cover shadow-premium group-hover:scale-105 duration-700" />
+                                                    <div>
+                                                        <div className="font-serif text-3xl italic text-maisonDark leading-tight">{p.name}</div>
+                                                        <div className="text-[10px] font-extrabold tracking-maison uppercase text-maisonDark/30 mt-1">{p.sku} | {p.purity}</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="px-10 py-8 text-center font-extrabold text-maisonDark text-lg italic">€{p.price}</td>
+                                            <td className="px-10 py-8 text-center font-bold">{p.stock}</td>
+                                            <td className="px-10 py-8"><Badge variant={p.status.includes('Peak') ? 'success' : 'warning'}>{p.status}</Badge></td>
+                                            <td className="px-10 py-8 text-right">
+                                                <div className="flex justify-end gap-4 opacity-40 group-hover:opacity-100 transition-all">
+                                                    <button onClick={() => onEdit(p)} className="p-4 rounded-2xl hover:bg-goldMaison/10 text-goldMaison transition-all hover:scale-110"><Icon name="Edit2" size={20} /></button>
+                                                    <button onClick={() => onDelete(p.id)} className="p-4 rounded-2xl hover:bg-roseDeep/10 text-roseDeep transition-all hover:scale-110"><Icon name="Trash2" size={20} /></button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const Materials = ({ materials, onEdit, onDelete, onAdd }) => {
+            const [search, setSearch] = useState("");
+            const filtered = materials.filter(m => m.name.toLowerCase().includes(search.toLowerCase()) || m.source.toLowerCase().includes(search.toLowerCase()));
+
+            return (
+                <div className="animate-fade">
+                    <PageHeader 
+                        title="Raw Materials"
+                        subtitle="Molecular tracking of biological and mineral inputs for LumiSkin formulations."
+                        breadcrumbs={['Maison', 'Lab', 'Materials']}
+                        kpis={[
+                            { label: 'Active Items', value: materials.length, trend: 0 },
+                            { label: 'Critical Supply', value: materials.filter(m => m.status === 'Critical').length, trend: 15.0 },
+                            { label: 'Avg Purity', value: '99.4%', trend: -0.2 },
+                            { label: 'Total Valuation', value: '€1.4M', trend: 5.5 },
+                        ]}
+                        onAdd={onAdd}
+                    />
+                    <div className="mb-14 relative max-w-xl">
+                        <Icon name="Search" className="absolute left-6 top-1/2 -translate-y-1/2 text-maisonDark/30" size={20} />
+                        <input 
+                            type="text" 
+                            placeholder="Search material or source..." 
+                            className="w-full pl-16 pr-8 py-5 rounded-full glass-premium border-2 border-roseMaison shadow-sm text-lg font-serif italic placeholder:opacity-50"
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                        />
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                        {filtered.map(mat => (
+                            <div key={mat.id} className="glass-premium p-12 rounded-[4rem] card-hover flex flex-col justify-between h-[450px] relative group overflow-hidden">
+                                <div className="absolute top-0 right-0 p-10 opacity-10 group-hover:opacity-100 transition-all">
+                                    <div className="flex gap-2">
+                                        <button onClick={() => onEdit(mat)} className="p-3 bg-white rounded-full text-goldMaison shadow-md hover:scale-110"><Icon name="Edit3" size={16}/></button>
+                                        <button onClick={() => onDelete(mat.id)} className="p-3 bg-white rounded-full text-roseDeep shadow-md hover:scale-110"><Icon name="X" size={16}/></button>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div className="flex justify-between items-start mb-10">
+                                        <Badge variant={mat.status === 'Optimal' ? 'success' : mat.status === 'Critical' ? 'danger' : 'warning'}>
+                                            {mat.status}
+                                        </Badge>
+                                        <span className="text-[10px] font-extrabold text-maisonDark/20 uppercase tracking-maison">{mat.id}</span>
+                                    </div>
+                                    <h3 className="text-4xl font-serif italic mb-3 text-maisonDark leading-tight">{mat.name}</h3>
+                                    <p className="text-[11px] text-roseDeep font-bold tracking-maison uppercase">Lab Origin: <span className="text-maisonDark/60">{mat.source}</span></p>
+                                </div>
+                                <div className="space-y-6 relative z-10">
+                                    <div className="flex justify-between items-end border-b-2 border-roseMaison pb-4">
+                                        <span className="text-[11px] uppercase font-extrabold text-maisonDark/30 tracking-maison">Reserve Volume</span>
+                                        <span className="text-3xl font-serif italic text-maisonDark">{mat.stock}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                        <div className="flex flex-col">
+                                            <span className="text-[9px] uppercase font-extrabold text-goldMaison mb-1 tracking-maison">Purity Level</span>
+                                            <span className="text-sm font-bold tracking-tight">{mat.purity}</span>
+                                        </div>
+                                        <div className="flex flex-col text-right">
+                                            <span className="text-[9px] uppercase font-extrabold text-maisonDark/30 mb-1 tracking-maison">Cost Impact</span>
+                                            <span className="text-sm font-bold">{mat.cost}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        };
+
+        const Ambassadors = ({ ambassadors, onEdit, onDelete, onAdd }) => {
+            const [search, setSearch] = useState("");
+            const filtered = ambassadors.filter(a => a.name.toLowerCase().includes(search.toLowerCase()));
+
+            return (
+                <div className="animate-fade">
+                    <PageHeader 
+                        title="Maison Muses"
+                        subtitle="Icons representing the LumiSkin molecular ethos."
+                        breadcrumbs={['Maison', 'Community', 'Muses']}
+                        kpis={[
+                            { label: 'Active Icons', value: ambassadors.length, trend: 20 },
+                            { label: 'Total Reach', value: '285.3M', trend: 15.5 },
+                            { label: 'Avg ROI', value: '344%', trend: 4.2 },
+                            { label: 'Media Impact', value: '€8.2M', trend: 12.0 },
+                        ]}
+                        onAdd={onAdd}
+                    />
+                    <div className="mb-14 relative max-w-xl">
+                        <Icon name="Search" className="absolute left-6 top-1/2 -translate-y-1/2 text-maisonDark/30" size={20} />
+                        <input 
+                            type="text" 
+                            placeholder="Search Muse name..." 
+                            className="w-full pl-16 pr-8 py-5 rounded-full glass-premium border-2 border-roseMaison shadow-sm text-lg font-serif italic placeholder:opacity-50"
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                        />
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+                        {filtered.map(amb => (
+                            <div key={amb.id} className="glass-premium p-12 rounded-[5rem] card-hover text-center relative group">
+                                <div className="absolute top-8 right-12 flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                                    <button onClick={() => onEdit(amb)} className="p-3 bg-white rounded-full text-goldMaison shadow-md hover:scale-110"><Icon name="Edit3" size={16}/></button>
+                                    <button onClick={() => onDelete(amb.id)} className="p-3 bg-white rounded-full text-roseDeep shadow-md hover:scale-110"><Icon name="X" size={16}/></button>
+                                </div>
+                                <div className="relative inline-block mb-10">
+                                    <img src={amb.avatar} className="w-40 h-40 rounded-full mx-auto object-cover border-[6px] border-white shadow-premium transition-transform group-hover:scale-105 duration-700" />
+                                    <div className="absolute inset-0 bg-goldMaison/10 rounded-full blur-3xl scale-150 animate-pulse"></div>
+                                </div>
+                                <h3 className="text-4xl font-serif italic mb-3 text-maisonDark leading-tight">{amb.name}</h3>
+                                <div className="flex justify-center gap-3 mb-10">
+                                    <Badge variant="gold">{amb.level}</Badge>
+                                    <Badge variant="success">{amb.dna}</Badge>
+                                </div>
+                                <div className="grid grid-cols-2 gap-6 pt-10 border-t-2 border-roseMaison">
+                                    <div className="text-left">
+                                        <span className="text-[11px] block font-extrabold text-maisonDark/30 uppercase tracking-maison mb-2">Reach</span>
+                                        <span className="text-2xl font-extrabold tracking-tight italic">{amb.reach}</span>
+                                    </div>
+                                    <div className="text-right">
+                                        <span className="text-[11px] block font-extrabold text-maisonDark/30 uppercase tracking-maison mb-2">ROI Impact</span>
+                                        <span className="text-2xl font-extrabold tracking-tight text-green-600">{amb.roi}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        };
+
+        const FormModal = ({ title, type, item, onSave, onCancel }) => {
+            const [formData, setFormData] = useState(item || {});
+            
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                onSave(formData);
+            };
+
+            return (
+                <div className="fixed inset-0 z-[2000] flex items-center justify-center p-6 bg-maisonDark/80 backdrop-blur-xl">
+                    <div className="glass-premium p-14 rounded-[4rem] max-w-2xl w-full shadow-2xl animate-fade overflow-y-auto max-h-[90vh] custom-scroll border-2 border-goldMaison/30">
+                        <h3 className="text-5xl font-serif italic mb-10 text-maisonDark tracking-header">{title}</h3>
+                        <form onSubmit={handleSubmit} className="space-y-8">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-extrabold uppercase tracking-maison text-maisonDark/40 ml-4">Identifier / Name</label>
+                                    <input required className="w-full px-8 py-5 rounded-[2rem] bg-white/50 border-2 border-roseMaison font-semibold italic text-maisonDark"
+                                           value={formData.name || ''} onChange={e => setFormData({...formData, name: e.target.value})} placeholder="Molecule / Muse name..."/>
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-extrabold uppercase tracking-maison text-maisonDark/40 ml-4">{type === 'muse' ? 'Country' : 'Reference Code / SKU'}</label>
+                                    <input required className="w-full px-8 py-5 rounded-[2rem] bg-white/50 border-2 border-roseMaison font-mono text-maisonDark"
+                                           value={type === 'muse' ? (formData.country || '') : (formData.sku || formData.id || '')} 
+                                           onChange={e => type === 'muse' ? setFormData({...formData, country: e.target.value}) : setFormData({...formData, sku: e.target.value})} 
+                                           placeholder={type === 'muse' ? 'FR, CN, UAE...' : 'LS-XX-00'}/>
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-extrabold uppercase tracking-maison text-maisonDark/40 ml-4">{type === 'muse' ? 'Reach' : 'Unit Value (€)'}</label>
+                                    <input required className="w-full px-8 py-5 rounded-[2rem] bg-white/50 border-2 border-roseMaison font-bold text-maisonDark"
+                                           value={type === 'muse' ? (formData.reach || '') : (formData.price || '')} 
+                                           onChange={e => type === 'muse' ? setFormData({...formData, reach: e.target.value}) : setFormData({...formData, price: e.target.value})} 
+                                           placeholder={type === 'muse' ? '100M' : '0.00'}/>
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-extrabold uppercase tracking-maison text-maisonDark/40 ml-4">{type === 'muse' ? 'ROI' : 'Inventory Reserve'}</label>
+                                    <input required className="w-full px-8 py-5 rounded-[2rem] bg-white/50 border-2 border-roseMaison font-bold text-maisonDark"
+                                           value={type === 'muse' ? (formData.roi || '') : (formData.stock || '')} 
+                                           onChange={e => type === 'muse' ? setFormData({...formData, roi: e.target.value}) : setFormData({...formData, stock: e.target.value})} 
+                                           placeholder={type === 'muse' ? '300%' : '0'}/>
+                                </div>
+                                {type === 'material' && (
+                                    <>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-extrabold uppercase tracking-maison text-maisonDark/40 ml-4">Source Origin</label>
+                                            <input required className="w-full px-8 py-5 rounded-[2rem] bg-white/50 border-2 border-roseMaison font-semibold text-maisonDark"
+                                                   value={formData.source || ''} onChange={e => setFormData({...formData, source: e.target.value})} placeholder="France, Japan..."/>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-extrabold uppercase tracking-maison text-maisonDark/40 ml-4">Purity Spectrum</label>
+                                            <input required className="w-full px-8 py-5 rounded-[2rem] bg-white/50 border-2 border-roseMaison font-bold text-maisonDark"
+                                                   value={formData.purity || ''} onChange={e => setFormData({...formData, purity: e.target.value})} placeholder="99.9%"/>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-extrabold uppercase tracking-maison text-maisonDark/40 ml-4">Visual Identity (Image URL)</label>
+                                <input className="w-full px-8 py-5 rounded-[2rem] bg-white/50 border-2 border-roseMaison text-xs font-mono text-maisonDark"
+                                       value={formData.image || formData.avatar || ''} onChange={e => setFormData({...formData, image: e.target.value, avatar: e.target.value})} placeholder="https://unsplash..."/>
+                            </div>
+                            <div className="flex gap-6 pt-10">
+                                <button type="button" onClick={onCancel} className="flex-1 py-5 rounded-full border-2 border-roseDeep/20 font-bold text-xs uppercase tracking-maison hover:bg-roseDeep/5 transition-all">Abort</button>
+                                <button type="submit" className="flex-1 py-5 btn-gold-gradient font-bold text-xs uppercase tracking-maison shadow-xl">Archive Entry</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            );
+        };
+
+        const Toast = ({ message, onClose }) => {
+            useEffect(() => {
+                const timer = setTimeout(onClose, 3000);
+                return () => clearTimeout(timer);
+            }, [onClose]);
+            return (
+                <div className="fixed top-8 right-8 z-[3000] glass-premium px-10 py-5 rounded-[2rem] shadow-2xl border-l-8 border-goldMaison animate-fade flex items-center gap-4">
+                    <div className="p-2 bg-goldMaison/10 rounded-full text-goldMaison"><Icon name="Check" size={20}/></div>
+                    <span className="font-serif italic text-xl tracking-tight">{message}</span>
+                </div>
+            );
+        };
+
+        const AuthScreen = ({ onUnlock }) => {
+            const [status, setStatus] = useState("IDLE");
+            const handleScan = () => {
+                setStatus("SCANNING");
+                setTimeout(() => { setStatus("SUCCESS"); setTimeout(onUnlock, 1200); }, 2500);
+            };
+            return (
+                <div className="fixed inset-0 z-[1000] bg-roseLight flex flex-col items-center justify-center p-12 text-center overflow-hidden">
+                    <div className="absolute top-[-30%] right-[-20%] w-[1000px] h-[1000px] rounded-full bg-roseMaison/20 blur-[150px] animate-pulse"></div>
+                    <div className="absolute bottom-[-20%] left-[-10%] w-[800px] h-[800px] rounded-full bg-roseDeep/10 blur-[130px] animate-pulse" style={{animationDelay: '1s'}}></div>
+                    <div className="w-full max-w-lg space-y-20 relative z-10 animate-fade">
+                        <div className="space-y-8">
+                            <h1 className="text-9xl font-serif italic text-maisonDark tracking-header leading-none select-none">LumiSkin</h1>
+                            <div className="flex items-center justify-center gap-4">
+                                <div className="h-[1px] w-12 bg-roseDeep"></div>
+                                <p className="text-roseDeep tracking-maison uppercase text-[12px] font-extrabold">Maison of Excellence</p>
+                                <div className="h-[1px] w-12 bg-roseDeep"></div>
+                            </div>
+                        </div>
+                        <div className="relative group cursor-pointer" onClick={handleScan}>
+                            <div className={`w-80 h-80 mx-auto rounded-full border-2 border-roseDeep/20 flex items-center justify-center transition-all duration-1000 ${status === 'SCANNING' ? 'scale-110' : 'hover:scale-105'}`}>
+                                <div className="w-72 h-72 rounded-full glass-premium shadow-2xl flex items-center justify-center relative overflow-hidden border-4 border-white/80">
+                                    {status === 'IDLE' && <Icon name="Fingerprint" size={120} className="text-roseDeep opacity-40 group-hover:opacity-100 transition-all duration-700 animate-float" />}
+                                    {status === 'SCANNING' && (
+                                        <div className="absolute inset-0 flex items-center justify-center">
+                                            <div className="w-full h-1 bg-roseDeep absolute top-0 shadow-[0_0_20px_#701c26] animate-[scan_2.5s_infinite]"></div>
+                                            <Icon name="ScanFace" size={120} className="text-roseDeep animate-pulse" />
+                                        </div>
+                                    )}
+                                    {status === 'SUCCESS' && <Icon name="CheckCircle" size={120} className="text-green-500 scale-125 transition-transform" />}
+                                </div>
+                            </div>
+                        </div>
+                        <div className="space-y-4">
+                            <h2 className="text-4xl font-serif italic text-maisonDark tracking-header">
+                                {status === 'IDLE' ? 'Identity Verification' : status === 'SCANNING' ? 'Analyzing DNA Biometrics...' : 'Welcome, Maison Elena'}
+                            </h2>
+                            <p className="text-maisonDark/40 text-[11px] uppercase font-extrabold tracking-maison italic">Secure Terminal Site-A Paris HQ</p>
+                        </div>
+                    </div>
+                    <style>{`@keyframes scan { 0% { top: 0%; opacity: 0; } 20% { opacity: 1; } 80% { opacity: 1; } 100% { top: 100%; opacity: 0; } }`}</style>
+                </div>
+            );
+        };
+
+        const App = () => {
+            const [isUnlocked, setIsUnlocked] = useState(false);
+            const [currentPage, setCurrentPage] = useState('dashboard');
+            const [sidebarOpen, setSidebarOpen] = useState(true);
+            const [data, setData] = useState(INITIAL_DATA);
+            
+            const [modal, setModal] = useState({ show: false, type: '', item: null });
+            const [confirm, setConfirm] = useState({ show: false, id: null });
+            const [toast, setToast] = useState(null);
+
+            if (!isUnlocked) return <AuthScreen onUnlock={() => setIsUnlocked(true)} />;
+
+            const handleDelete = (id) => {
+                const keyMap = { products: 'products', ambassadors: 'ambassadors', materials: 'materials' };
+                const key = keyMap[currentPage] || 'products';
+                setData({ ...data, [key]: data[key].filter(i => (i.id || i.sku) !== id) });
+                setConfirm({ show: false, id: null });
+                setToast("Data removed from Maison registry");
+            };
+
+            const handleSave = (formData) => {
+                const keyMap = { products: 'products', ambassadors: 'ambassadors', materials: 'materials' };
+                const key = keyMap[currentPage] || 'products';
+                let newList;
+                if (modal.item) {
+                    newList = data[key].map(i => (i.id === formData.id) ? formData : i);
+                } else {
+                    newList = [...data[key], { ...formData, id: `NEW-${Date.now()}`, status: 'Optimal' }];
+                }
+                setData({ ...data, [key]: newList });
+                setModal({ show: false, type: '', item: null });
+                setToast("Maison registry updated successfully");
+            };
+
+            const renderContent = () => {
+                switch(currentPage) {
+                    case 'dashboard': return <Dashboard />;
+                    case 'products': return <Products 
+                        products={data.products} 
+                        onEdit={(p) => setModal({show: true, type: 'product', item: p})} 
+                        onDelete={(id) => setConfirm({show: true, id})}
+                        onAdd={() => setModal({show: true, type: 'product', item: null})}
+                    />;
+                    case 'ambassadors': return <Ambassadors 
+                        ambassadors={data.ambassadors} 
+                        onEdit={(a) => setModal({show: true, type: 'muse', item: a})} 
+                        onDelete={(id) => setConfirm({show: true, id})}
+                        onAdd={() => setModal({show: true, type: 'muse', item: null})}
+                    />;
+                    case 'materials': return <Materials 
+                        materials={data.materials} 
+                        onEdit={(m) => setModal({show: true, type: 'material', item: m})} 
+                        onDelete={(id) => setConfirm({show: true, id})}
+                        onAdd={() => setModal({show: true, type: 'material', item: null})}
+                    />;
+                    default: return <Dashboard />;
+                }
+            };
+
+            return (
+                <div className="flex min-h-screen">
+                    <aside className={`sidebar-transition fixed h-screen z-[500] bg-maisonDark text-white ${sidebarOpen ? 'w-80' : 'w-32'} overflow-hidden flex flex-col shadow-2xl`}>
+                        <div className="p-12 flex items-center gap-6 mb-20">
+                            <div className="w-16 h-16 rounded-[1.5rem] bg-gradient-to-br from-roseDeep via-[#ff85a2] to-roseMaison flex-shrink-0 flex items-center justify-center font-serif text-5xl font-bold shadow-pink-glow animate-pulse leading-none">L</div>
+                            {sidebarOpen && <span className="font-serif text-5xl tracking-header italic">LumiSkin</span>}
+                        </div>
+                        <nav className="flex-1 px-8 space-y-8">
+                            {[
+                                { id: 'dashboard', label: 'Intelligence', icon: 'BarChart3' },
+                                { id: 'products', label: 'Catalog', icon: 'Box' },
+                                { id: 'materials', label: 'Materials', icon: 'FlaskConical' },
+                                { id: 'ambassadors', label: 'Muses', icon: 'Users' }
+                            ].map(item => (
+                                <button key={item.id} onClick={() => setCurrentPage(item.id)}
+                                    className={`w-full flex items-center gap-8 p-6 rounded-[2.5rem] transition-all duration-500 group ${currentPage === item.id ? 'bg-gradient-to-r from-roseDeep/80 to-roseDeep/40 shadow-lg text-white' : 'hover:bg-white/5 text-white/40'}`}>
+                                    <Icon name={item.icon} size={28} className={currentPage === item.id ? 'text-white' : 'text-roseMaison/40 group-hover:text-goldMaison'} />
+                                    {sidebarOpen && <span className="font-extrabold text-xs uppercase tracking-maison">{item.label}</span>}
+                                </button>
+                            ))}
+                        </nav>
+                        <div className="p-10 border-t border-white/5">
+                            <button onClick={() => setSidebarOpen(!sidebarOpen)} className="w-full flex items-center gap-8 p-6 hover:bg-white/5 rounded-3xl text-white/30 transition-all">
+                                <Icon name={sidebarOpen ? "ChevronLeft" : "ChevronRight"} />
+                                {sidebarOpen && <span className="text-[11px] uppercase font-extrabold tracking-maison">Collapse</span>}
+                            </button>
+                        </div>
+                    </aside>
+
+                    <main className={`sidebar-transition flex-1 ${sidebarOpen ? 'ml-80' : 'ml-32'} min-h-screen flex flex-col`}>
+                        <header className="sticky top-0 z-50 h-28 glass-premium px-16 flex items-center justify-between border-b border-roseMaison shadow-sm">
+                            <div className="flex items-center gap-10">
+                                <span className="text-[11px] font-extrabold uppercase tracking-maison text-maisonDark/30">Maison Site-A Terminal</span>
+                                <div className="h-6 w-[2px] bg-roseMaison"></div>
+                                <Badge variant="gold">Bio-Security Level 5</Badge>
+                            </div>
+                            <div className="flex items-center gap-6">
+                                <div className="flex items-center gap-6 group cursor-pointer">
+                                    <div className="text-right">
+                                        <p className="text-base font-extrabold text-maisonDark leading-none mb-1">Elena Lumi</p>
+                                        <p className="text-[11px] uppercase font-bold text-goldMaison tracking-maison italic">Maison Principal</p>
+                                    </div>
+                                    <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200" className="w-16 h-16 rounded-[1.5rem] object-cover border-2 border-goldMaison/20 shadow-sm" />
+                                </div>
+                            </div>
+                        </header>
+                        <div className="p-20 max-w-[2000px] mx-auto w-full flex-1">
+                            {renderContent()}
+                        </div>
+                        <footer className="p-14 border-t border-roseMaison text-center">
+                            <p className="text-[11px] uppercase tracking-maison font-extrabold text-maisonDark/15 select-none">
+                                &copy; 2026 LumiSkin Molecular Cosmetics Maison &bull; Paris &bull; Dubai &bull; Seoul &bull; Tokyo &bull; Milan
+                            </p>
+                        </footer>
+                    </main>
+
+                    {/* MODALS */}
+                    {modal.show && (
+                        <FormModal 
+                            title={modal.item ? 'Modify Registry' : 'New Archive Entry'} 
+                            type={modal.type} 
+                            item={modal.item} 
+                            onSave={handleSave} 
+                            onCancel={() => setModal({show: false})}
+                        />
+                    )}
+                    {confirm.show && (
+                        <ConfirmModal 
+                            title="Archive Expulsion" 
+                            message="Are you certain you wish to expel this entry from the molecular registry?" 
+                            onConfirm={() => handleDelete(confirm.id)} 
+                            onCancel={() => setConfirm({show: false, id: null})}
+                        />
+                    )}
+                    {toast && <Toast message={toast} onClose={() => setToast(null)}/>}
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
