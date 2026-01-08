@@ -370,14 +370,19 @@
             </div>
             <div class="w-full md:w-3/5 p-12 relative flex flex-col justify-center">
                 <button onclick="closeCheckout()" class="absolute top-6 right-6 opacity-30 hover:opacity-100">✕</button>
-                <div id="checkout-step-1" class="checkout-step space-y-6">
-                    <h2 class="serif text-4xl italic mb-8">Shipping Information.</h2>
-                    <input type="text" placeholder="Full Name" class="w-full p-4 border-b border-gray-100 outline-none focus:border-[--rose-deep] serif text-lg italic">
-                    <input type="text" placeholder="Street Address, Apartment, Suite" class="w-full p-4 border-b border-gray-100 outline-none focus:border-[--rose-deep] serif text-lg italic">
-                    <div class="grid grid-cols-2 gap-4">
-                        <input type="text" placeholder="Phone Number" class="p-4 border-b border-gray-100 outline-none serif text-lg italic">
-                        <input type="text" placeholder="Country" class="p-4 border-b border-gray-100 outline-none serif text-lg italic">
-                    </div>
+               <div id="checkout-step-1" class="checkout-step space-y-6">
+    <h2 class="serif text-4xl italic mb-8">Shipping Information.</h2>
+    
+    <input type="text" id="name" placeholder="Full Name" class="w-full p-4 border-b border-gray-100 outline-none focus:border-[--rose-deep] serif text-lg italic">
+    
+    <input type="text" id="address" placeholder="Street Address, Apartment, Suite" class="w-full p-4 border-b border-gray-100 outline-none focus:border-[--rose-deep] serif text-lg italic">
+    
+    <div class="grid grid-cols-2 gap-4">
+        <input type="text" placeholder="Phone Number" class="p-4 border-b border-gray-100 outline-none serif text-lg italic">
+        <input type="text" placeholder="Country" class="p-4 border-b border-gray-100 outline-none serif text-lg italic">
+    </div>
+    <button class="btn-luxe w-full !mt-10" onclick="nextStep(2)">Continue to Payment</button>
+</div>
                     <button class="btn-luxe w-full !mt-10" onclick="nextStep(2)">Continue to Payment</button>
                 </div>
                 <div id="checkout-step-2" class="checkout-step space-y-6 hidden">
@@ -901,59 +906,41 @@
             }
         }
 
-      function processPayment() {
+     function processPayment() {
     const btn = event.target; 
     btn.disabled = true; 
     btn.innerText = "PROCESSING PROTOCOL...";
 
-    try {
-        // 1. Tự động tìm ô nhập liệu qua placeholder (vì bạn chưa đặt ID)
-        const nameInput = document.querySelector('input[placeholder="Full Name"]');
-        const addressInput = document.querySelector('input[placeholder="Street Address, Apartment, Suite"]');
-        
-        const customerName = nameInput ? nameInput.value : "Anonymous Client";
-        const customerAddress = addressInput ? addressInput.value : "Digital Order";
-        
-        // 2. Kiểm tra giỏ hàng
-        if (!cart || cart.length === 0) {
-            alert("Your selection is empty.");
-            btn.disabled = false;
-            btn.innerText = "Complete Order";
-            return;
-        }
+    // 1. Lấy giá trị từ các ô input đã đặt ID ở trên
+    const customerName = document.getElementById('name').value;
+    const customerAddress = document.getElementById('address').value;
+    
+    // 2. Gom danh sách tên sản phẩm
+    const productNames = cart.map(item => item.name).join(", ");
+    const totalAmount = cart.reduce((acc, curr) => acc + curr.price, 0);
 
-        // 3. Gom dữ liệu đơn hàng
-        const productNames = cart.map(item => item.name).join(", ");
-        const totalAmount = cart.reduce((acc, curr) => acc + curr.price, 0);
-
-        // 4. Gửi lên Firebase (Lệnh quan trọng nhất)
-        database.ref('orders/').push({
-    client: customerName,
-    items: productNames,
-    total: totalAmount, // <--- Tên này phải khớp với chữ 'total' ở Admin
-    status: "Secured",
-    time: new Date().toLocaleTimeString()
-});
-        .then(() => {
-            // 5. Chuyển sang màn hình Cảm ơn khi thành công
-            nextStep(3); 
-            btn.disabled = false;
-            btn.innerText = "COMPLETE ORDER";
-            cart = []; // Xóa giỏ hàng
-            updateCart();
-        })
-        .catch((error) => {
-            console.error("Firebase Error:", error);
-            alert("Connection error. Please check your Firebase Rules.");
-            btn.disabled = false;
-            btn.innerText = "COMPLETE ORDER";
-        });
-
-    } catch (err) {
-        console.error("Logic Error:", err);
+    // 3. Đẩy lên Firebase
+    database.ref('orders/').push({
+        client: customerName || "Guest",
+        items: productNames,
+        total: totalAmount,
+        destination: customerAddress || "Paris Lab",
+        status: "Secured",
+        time: new Date().toLocaleTimeString(),
+        timestamp: Date.now()
+    })
+    .then(() => {
+        // Chuyển sang bước thành công
+        nextStep(3); 
+        btn.disabled = false;
+        cart = []; 
+        updateCart();
+    })
+    .catch((error) => {
+        alert("Transmission Failed: " + error.message);
         btn.disabled = false;
         btn.innerText = "COMPLETE ORDER";
-    }
+    });
 }
 
 // Thêm hàm này để các nút chọn thẻ Visa/Mastercard không bị lỗi
