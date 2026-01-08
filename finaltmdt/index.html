@@ -162,9 +162,60 @@
             opacity: 0.3; animation: scanToast 3s infinite ease-in-out;
         }
         @keyframes scanToast { 0% { top: 0; } 50% { top: 100%; } 100% { top: 0; } }
+        
     </style>
 </head>
+<script>
+  // 1. Firebase Configuration (Copy from your Firebase Console)
+  const firebaseConfig = {
+    apiKey: "AIzaSyA2U5802T4Ws5NiD1hKZI5tcNO0dQ5wtFU",
+    authDomain: "lumiskin-2f169.firebaseapp.com",
+    databaseURL: "https://lumiskin-2f169-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "lumiskin-2f169",
+    storageBucket: "lumiskin-2f169.firebasestorage.app",
+    messagingSenderId: "891987437240",
+    appId: "1:891987437240:web:75b778779418381191764d"
+  };
+
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  const database = firebase.database();
+
+  /**
+   * Function to send order data to the Admin Dashboard
+   * Trigger this function on your "Checkout" or "Place Order" button
+   */
+  function placeMaisonOrder() {
+    // Collect customer details from your form inputs
+    const customerName = document.getElementById('name')?.value || "Anonymous Guest";
+    const customerAddress = document.getElementById('address')?.value || "No address provided";
+    
+    // Prepare the order object to match your Admin Dashboard structure
+    const orderPayload = {
+      client: customerName,
+      items: "Rose Elixir x1, Pearl Glow x2", // Replace with your dynamic cart items
+      destination: customerAddress,
+      lab: "Paris Site-A",
+      temp: "18.2°C",
+      security: "Level 4",
+      status: "Verified",
+      timestamp: Date.now()
+    };
+
+    // Push data to the 'orders' node in Firebase
+    database.ref('orders/').push(orderPayload)
+      .then(() => {
+        alert("Success! Your ritual order has been transmitted to the LumiSkin Maison.");
+        // Optional: Clear cart or redirect user
+      })
+      .catch((error) => {
+        console.error("Transmission error:", error);
+        alert("Protocol failed. Please check your connection.");
+      });
+  }
+</script>
 <body>
+    
 
     <div id="cursor"></div>
     <div id="cursor-follower"></div>
@@ -851,9 +902,50 @@
         }
 
         function processPayment() {
-            const btn = event.target; btn.disabled = true; btn.innerText = "Processing...";
-            setTimeout(() => { nextStep(3); btn.disabled = false; btn.innerText = "Complete Order"; cart = []; updateCart(); }, 3000);
-        }
+    const btn = event.target; 
+    btn.disabled = true; 
+    btn.innerText = "Processing Protocol...";
+
+    // 1. Thu thập dữ liệu từ các ô Input của bạn
+    // Đảm bảo các ô input ở bước 1 (Shipping) có đặt ID hoặc lấy theo thứ tự
+    const inputs = document.querySelectorAll('#checkout-step-1 input');
+    const customerName = inputs[0].value || "Anonymous Guest";
+    const customerAddress = inputs[1].value || "Digital Order";
+    
+    // 2. Lấy danh sách tên sản phẩm thực tế từ giỏ hàng (cart)
+    const productNames = cart.map(item => item.name).join(", ");
+
+    // 3. Chuẩn bị dữ liệu gửi lên Firebase
+    const orderPayload = {
+        client: customerName,
+        items: productNames,
+        destination: customerAddress,
+        lab: "Paris Site-A",
+        temp: "18.2°C",
+        security: "Level 4",
+        status: "Verified",
+        timestamp: Date.now()
+    };
+
+    // 4. Gửi lên Firebase Realtime Database
+    database.ref('orders/').push(orderPayload)
+        .then(() => {
+            // Sau khi gửi thành công thì mới hiện bước hoàn tất
+            setTimeout(() => { 
+                nextStep(3); 
+                btn.disabled = false; 
+                btn.innerText = "Complete Order"; 
+                cart = []; // Xóa giỏ hàng sau khi đặt xong
+                updateCart(); 
+            }, 2000);
+        })
+        .catch((error) => {
+            console.error("Firebase Error:", error);
+            alert("Connection lost. Biometrics failed.");
+            btn.disabled = false;
+            btn.innerText = "Complete Order";
+        });
+}
 
         function toggleLogin(show) {
             const modal = document.getElementById('login-modal');

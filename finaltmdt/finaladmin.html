@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LumiSkin | Molecular Maison Admin</title>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     
     <!-- Fonts: High-end Typography (Optimized for readability) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -118,6 +120,21 @@
     <div id="root"></div>
 
     <script type="text/babel">
+        // --- FIREBASE CONFIGURATION ---
+const firebaseConfig = {
+    apiKey: "AIzaSyA2U5802T4Ws5NiD1hKZI5tcNO0dQ5wtFU",
+    authDomain: "lumiskin-2f169.firebaseapp.com",
+    databaseURL: "https://lumiskin-2f169-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "lumiskin-2f169",
+    storageBucket: "lumiskin-2f169.firebasestorage.app",
+    messagingSenderId: "891987437240",
+    appId: "1:891987437240:web:75b778779418381191764d"
+};
+
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+const database = firebase.database();
         const { useState, useEffect, useRef, useMemo } = React;
 
         // --- FULL MOCK DATA ---
@@ -711,11 +728,28 @@
         };
 
         const App = () => {
+
             const [isUnlocked, setIsUnlocked] = useState(false);
             const [currentPage, setCurrentPage] = useState('dashboard');
             const [sidebarOpen, setSidebarOpen] = useState(true);
             const [data, setData] = useState(INITIAL_DATA);
-            
+            const [realOrders, setRealOrders] = useState([]); // Dòng mới
+
+    useEffect(() => {
+        if (isUnlocked) {
+            const ordersRef = database.ref('orders');
+            ordersRef.on('value', (snapshot) => {
+                const firebaseData = snapshot.val();
+                if (firebaseData) {
+                    const list = Object.keys(firebaseData).map(key => ({
+                        id: key.substring(1, 8).toUpperCase(),
+                        ...firebaseData[key]
+                    }));
+                    setRealOrders(list.reverse());
+                }
+            });
+        }
+    }, [isUnlocked]);
             const [modal, setModal] = useState({ show: false, type: '', item: null });
             const [confirm, setConfirm] = useState({ show: false, id: null });
             const [toast, setToast] = useState(null);
@@ -746,7 +780,7 @@
 
             const renderContent = () => {
                 switch(currentPage) {
-                    case 'dashboard': return <Dashboard />;
+                    case 'dashboard': return <Dashboard realOrders={realOrders} />;
                     case 'products': return <Products 
                         products={data.products} 
                         onEdit={(p) => setModal({show: true, type: 'product', item: p})} 
@@ -765,6 +799,17 @@
                         onDelete={(id) => setConfirm({show: true, id})}
                         onAdd={() => setModal({show: true, type: 'material', item: null})}
                     />;
+                    <div className="glass-premium p-12 rounded-[4rem] mt-10">
+    <h3 className="text-3xl font-serif italic mb-8">Live Orders</h3>
+    <div className="space-y-4">
+        {realOrders.map((order, i) => (
+            <div key={i} className="flex justify-between p-4 border-b border-roseMaison">
+                <span>{order.client}</span>
+                <span className="font-bold text-goldMaison">{order.items}</span>
+            </div>
+        ))}
+    </div>
+</div>
                     default: return <Dashboard />;
                 }
             };
