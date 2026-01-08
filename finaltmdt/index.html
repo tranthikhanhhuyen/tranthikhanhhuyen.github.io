@@ -381,11 +381,7 @@
         <input type="text" placeholder="Phone Number" class="p-4 border-b border-gray-100 outline-none serif text-lg italic">
         <input type="text" placeholder="Country" class="p-4 border-b border-gray-100 outline-none serif text-lg italic">
     </div>
-    <button class="btn-luxe w-full !mt-10" onclick="nextStep(2)">Continue to Payment</button>
-</div>
-                    <button class="btn-luxe w-full !mt-10" onclick="nextStep(2)">Continue to Payment</button>
-                </div>
-                <div id="checkout-step-2" class="checkout-step space-y-6 hidden">
+
                     <h2 class="serif text-4xl italic mb-4">Secure Payment.</h2>
                     <div class="grid grid-cols-3 gap-3 mb-4">
                         <button class="card-type-btn active rounded-sm" onclick="setCardType('visa')">
@@ -906,12 +902,12 @@
             }
         }
 
-     function processPayment() {
+    function processPayment() {
     const btn = event.target; 
     btn.disabled = true; 
     btn.innerText = "PROCESSING PROTOCOL...";
 
-    // 1. Lấy giá trị từ các ô input đã đặt ID ở trên
+    // 1. Lấy giá trị từ các ô input đã đặt ID
     const customerName = document.getElementById('name').value;
     const customerAddress = document.getElementById('address').value;
     
@@ -930,7 +926,6 @@
         timestamp: Date.now()
     })
     .then(() => {
-        // Chuyển sang bước thành công
         nextStep(3); 
         btn.disabled = false;
         cart = []; 
@@ -943,12 +938,11 @@
     });
 }
 
-// Thêm hàm này để các nút chọn thẻ Visa/Mastercard không bị lỗi
+// Hàm setCardType bổ sung
 function setCardType(type) {
     document.querySelectorAll('.card-type-btn').forEach(b => b.classList.remove('active'));
     event.currentTarget.classList.add('active');
 }
-
 
 
         function toggleLogin(show) {
