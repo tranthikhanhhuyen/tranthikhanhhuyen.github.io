@@ -479,83 +479,87 @@
 
         // --- NEW COMPONENT: ACQUISITIONS (NGƯỜI MUA HÀNG) ---
         const Orders = ({ realOrders }) => {
-            const [search, setSearch] = useState("");
-            const filtered = realOrders.filter(o => 
-                (o.client || "").toLowerCase().includes(search.toLowerCase()) || 
-                (o.items || "").toLowerCase().includes(search.toLowerCase())
-            );
+    const [search, setSearch] = useState("");
+    // Lọc đơn hàng theo tên khách hoặc tên sản phẩm
+    const filtered = realOrders.filter(o => 
+        (o.client || "").toLowerCase().includes(search.toLowerCase()) || 
+        (o.items || "").toLowerCase().includes(search.toLowerCase())
+    );
 
-            return (
-                <div className="animate-fade">
-                    <PageHeader 
-                        title="Acquisitions Log"
-                        subtitle="Detailed overview of client purchases and molecular selections."
-                        breadcrumbs={['Maison', 'Core', 'Acquisitions']}
-                        kpis={[
-                            { label: 'Active Orders', value: realOrders.length, trend: 15.2 },
-                            { label: 'Avg Basket', value: '€412', trend: 5.5 },
-                            { label: 'Member Retention', value: '92%', trend: 1.2 },
-                            { label: 'Revenue Flow', value: '€812K', trend: 12.0 },
-                        ]}
-                    />
+    return (
+        <div className="animate-fade">
+            <PageHeader 
+                title="Acquisitions Log"
+                subtitle="Detailed overview of client purchases and molecular selections."
+                breadcrumbs={['Maison', 'Core', 'Acquisitions']}
+                kpis={[
+                    { label: 'Active Orders', value: realOrders.length, trend: 15.2 },
+                    { label: 'Avg Basket', value: '€412', trend: 5.5 },
+                    { label: 'Member Retention', value: '92%', trend: 1.2 },
+                    { label: 'Revenue Flow', value: '€812K', trend: 12.0 },
+                ]}
+            />
 
-                    <div className="mb-10 relative max-w-xl">
-                        <Icon name="Search" className="absolute left-6 top-1/2 -translate-y-1/2 text-maisonDark/30" size={20} />
-                        <input 
-                            type="text" 
-                            placeholder="Tìm kiếm khách hàng..." 
-                            className="w-full pl-16 pr-8 py-5 rounded-full glass-premium border-2 border-roseMaison shadow-sm text-lg font-serif italic placeholder:opacity-50"
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                        />
-                    </div>
+            <div className="mb-10 relative max-w-xl">
+                <Icon name="Search" className="absolute left-6 top-1/2 -translate-y-1/2 text-maisonDark/30" size={20} />
+                <input 
+                    type="text" 
+                    placeholder="Search acquisitions..." 
+                    className="w-full pl-16 pr-8 py-5 rounded-full glass-premium border-2 border-roseMaison shadow-sm text-lg font-serif italic placeholder:opacity-50"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                />
+            </div>
 
-                    <div className="glass-premium rounded-[4rem] overflow-hidden shadow-premium border-roseMaison/50">
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-left">
-                                <thead className="bg-maisonDark text-white text-[11px] uppercase tracking-maison font-bold">
-                                    <tr>
-                                        <th className="px-10 py-8">Order ID</th>
-                                        <th className="px-10 py-8">Elite Client</th>
-                                        <th className="px-10 py-8">Selections</th>
-                                        <th className="px-10 py-8 text-center">Value</th>
-                                        <th className="px-10 py-8 text-right">Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-roseMaison">
-                                    {filtered.map((order, i) => (
-                                        <tr key={i} className="hover:bg-roseMaison/20 transition-all group">
-                                            <td className="px-10 py-8 font-mono text-xs text-roseDeep font-bold">#{order.id}</td>
-                                            <td className="px-10 py-8">
-                                                <div className="flex items-center gap-4">
-                                                    <div className="w-12 h-12 rounded-full bg-roseMaison flex items-center justify-center font-serif text-xl font-bold text-roseDeep">
-                                                        {(order.client || "C")[0]}
-                                                    </div>
-                                                    <div>
-                                                        <div className="font-bold text-maisonDark text-lg">{order.client}</div>
-                                                        <div className="text-[9px] uppercase tracking-wider text-maisonDark/40">Verified Member</div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td className="px-10 py-8">
-                                                <div className="text-sm font-serif italic text-maisonDark truncate max-w-xs">{order.items}</div>
-                                                <div className="text-[9px] uppercase font-bold text-maisonDark/20 mt-1">{order.time}</div>
-                                            </td>
-                                            <td className="px-10 py-8 text-center font-bold text-goldMaison text-xl">€{order.total}</td>
-                                            <td className="px-10 py-8 text-right">
-                                                <Badge variant={order.status === 'Delivered' ? 'success' : order.status === 'Secured' ? 'gold' : 'warning'}>
-                                                    {order.status}
-                                                </Badge>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+            <div className="glass-premium rounded-[4rem] overflow-hidden shadow-premium border-roseMaison/50">
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left">
+                        <thead className="bg-maisonDark text-white text-[11px] uppercase tracking-maison font-bold">
+                            <tr>
+                                <th className="px-10 py-8">Order ID</th>
+                                <th className="px-10 py-8">Elite Client</th>
+                                <th className="px-10 py-8">Selections</th>
+                                <th className="px-10 py-8 text-center">Value</th>
+                                <th className="px-10 py-8 text-right">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-roseMaison">
+                            {filtered.map((order, i) => (
+                                <tr key={i} className="hover:bg-roseMaison/20 transition-all group">
+                                    <td className="px-10 py-8 font-mono text-xs text-roseDeep font-bold">#{order.id}</td>
+                                    <td className="px-10 py-8">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-12 h-12 rounded-full bg-roseMaison flex items-center justify-center font-serif text-xl font-bold text-roseDeep">
+                                                {(order.client || "C")[0]}
+                                            </div>
+                                            <div className="font-bold text-maisonDark text-lg">{order.client}</div>
+                                        </div>
+                                    </td>
+                                    <td className="px-10 py-8">
+                                        <div className="text-sm font-serif italic text-maisonDark truncate max-w-xs">{order.items}</div>
+                                        <div className="text-[9px] uppercase font-bold text-maisonDark/20 mt-1">{order.time}</div>
+                                    </td>
+                                    {/* Hiển thị giá trị đơn hàng (Value) */}
+                                    <td className="px-10 py-8 text-center font-bold text-goldMaison text-xl">€{order.total}</td>
+                                    <td className="px-10 py-8 text-right">
+                                        <Badge variant={order.status === 'Delivered' ? 'success' : order.status === 'Secured' ? 'gold' : 'warning'}>
+                                            {order.status}
+                                        </Badge>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                    {filtered.length === 0 && <div className="p-20 text-center opacity-30 italic">No acquisitions found in the registry.</div>}
                 </div>
-            );
-        };
+            </div>
+        </div>
+    );
+};
+
+                    
+                               
+              
 
         const Materials = ({ materials }) => {
             const [search, setSearch] = useState("");
@@ -736,22 +740,31 @@
             const [confirm, setConfirm] = useState({ show: false, id: null });
             const [toast, setToast] = useState(null);
 
-            useEffect(() => {
-                if (isUnlocked) {
-                    const ordersRef = database.ref('orders');
-                    ordersRef.on('value', (snapshot) => {
-                        const firebaseData = snapshot.val();
-                        if (firebaseData) {
-                            const list = Object.keys(firebaseData).map(key => ({
-                                id: key.substring(1, 8).toUpperCase(),
-                                ...firebaseData[key]
-                            }));
-                            // Combine Firebase data with Simulation data
-                            setRealOrders([...list.reverse(), ...MOCK_ORDERS]);
-                        }
-                    });
-                }
-            }, [isUnlocked]);
+        
+                useEffect(() => {
+    if (isUnlocked) {
+        const ordersRef = database.ref('orders');
+        // Lắng nghe dữ liệu thay đổi trên Firebase
+        ordersRef.on('value', (snapshot) => {
+            const firebaseData = snapshot.val();
+            let list = [];
+            if (firebaseData) {
+                list = Object.keys(firebaseData).map(key => ({
+                    // Lấy ID từ mã push của Firebase để làm Order ID chuyên nghiệp
+                    id: key.substring(1, 8).toUpperCase(), 
+                    ...firebaseData[key],
+                    // Nếu dữ liệu Firebase thiếu các trường này, hãy để mặc định để bảng không bị trống
+                    total: firebaseData[key].total || 350,
+                    time: firebaseData[key].time || "Just now"
+                }));
+            }
+            // Đưa đơn hàng mới từ Firebase lên đầu, sau đó mới đến các đơn giả (Mock)
+            setRealOrders([...list.reverse(), ...MOCK_ORDERS]);
+        });
+    }
+    // Hủy lắng nghe khi Component bị đóng để tránh tốn tài nguyên
+    return () => database.ref('orders').off();
+}, [isUnlocked]);
 
             if (!isUnlocked) return <AuthScreen onUnlock={() => setIsUnlocked(true)} />;
 

@@ -901,41 +901,67 @@
             }
         }
 
-       function processPayment() {
+      function processPayment() {
     const btn = event.target; 
     btn.disabled = true; 
     btn.innerText = "PROCESSING PROTOCOL...";
 
-    const customerName = document.getElementById('name').value;
-    // 2. Lấy danh sách sản phẩm từ biến cart của bạn
-    const productNames = cart.map(item => item.name).join(", ");
-    const totalAmount = cart.reduce((acc, curr) => acc + curr.price, 0);
+    try {
+        // 1. Tự động tìm ô nhập liệu qua placeholder (vì bạn chưa đặt ID)
+        const nameInput = document.querySelector('input[placeholder="Full Name"]');
+        const addressInput = document.querySelector('input[placeholder="Street Address, Apartment, Suite"]');
+        
+        const customerName = nameInput ? nameInput.value : "Anonymous Client";
+        const customerAddress = addressInput ? addressInput.value : "Digital Order";
+        
+        // 2. Kiểm tra giỏ hàng
+        if (!cart || cart.length === 0) {
+            alert("Your selection is empty.");
+            btn.disabled = false;
+            btn.innerText = "Complete Order";
+            return;
+        }
 
-    // 3. Gửi lên Firebase
-    database.ref('orders/').push({
-        client: customerName,
-        items: productNames,
-        total: totalAmount,
-        destination: customerAddress,
-        status: "Secured", // Để khớp với giao diện Admin của bạn
-        time: "Just now",
-        timestamp: Date.now()
-    })
-    .then(() => {
-        // KHI THÀNH CÔNG THÌ MỚI CHUYỂN BƯỚC
-        nextStep(3); 
+        // 3. Gom dữ liệu đơn hàng
+        const productNames = cart.map(item => item.name).join(", ");
+        const totalAmount = cart.reduce((acc, curr) => acc + curr.price, 0);
+
+        // 4. Gửi lên Firebase (Lệnh quan trọng nhất)
+        database.ref('orders/').push({
+    client: customerName,
+    items: productNames,
+    total: totalAmount, // <--- Tên này phải khớp với chữ 'total' ở Admin
+    status: "Secured",
+    time: new Date().toLocaleTimeString()
+});
+        .then(() => {
+            // 5. Chuyển sang màn hình Cảm ơn khi thành công
+            nextStep(3); 
+            btn.disabled = false;
+            btn.innerText = "COMPLETE ORDER";
+            cart = []; // Xóa giỏ hàng
+            updateCart();
+        })
+        .catch((error) => {
+            console.error("Firebase Error:", error);
+            alert("Connection error. Please check your Firebase Rules.");
+            btn.disabled = false;
+            btn.innerText = "COMPLETE ORDER";
+        });
+
+    } catch (err) {
+        console.error("Logic Error:", err);
         btn.disabled = false;
         btn.innerText = "COMPLETE ORDER";
-        cart = []; // Xóa giỏ hàng
-        updateCart();
-    })
-    .catch((error) => {
-        console.error("Lỗi Firebase:", error);
-        alert("Lỗi kết nối Database! Kiểm tra tab Rules trên Firebase.");
-        btn.disabled = false;
-        btn.innerText = "COMPLETE ORDER";
-    });
+    }
 }
+
+// Thêm hàm này để các nút chọn thẻ Visa/Mastercard không bị lỗi
+function setCardType(type) {
+    document.querySelectorAll('.card-type-btn').forEach(b => b.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+}
+
 
 
         function toggleLogin(show) {
@@ -974,8 +1000,9 @@
                     }, 3500);
                 };
                 reader.readAsDataURL(file);
-            }
+            }  
         }
+        
     </script>
 </body>
 </html>
