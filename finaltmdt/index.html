@@ -901,51 +901,42 @@
             }
         }
 
-        function processPayment() {
+       function processPayment() {
     const btn = event.target; 
     btn.disabled = true; 
-    btn.innerText = "Processing Protocol...";
+    btn.innerText = "PROCESSING PROTOCOL...";
 
-    // 1. Thu thập dữ liệu từ các ô Input của bạn
-    // Đảm bảo các ô input ở bước 1 (Shipping) có đặt ID hoặc lấy theo thứ tự
-    const inputs = document.querySelectorAll('#checkout-step-1 input');
-    const customerName = inputs[0].value || "Anonymous Guest";
-    const customerAddress = inputs[1].value || "Digital Order";
-    
-    // 2. Lấy danh sách tên sản phẩm thực tế từ giỏ hàng (cart)
+    const customerName = document.getElementById('name').value;
+    // 2. Lấy danh sách sản phẩm từ biến cart của bạn
     const productNames = cart.map(item => item.name).join(", ");
+    const totalAmount = cart.reduce((acc, curr) => acc + curr.price, 0);
 
-    // 3. Chuẩn bị dữ liệu gửi lên Firebase
-    const orderPayload = {
+    // 3. Gửi lên Firebase
+    database.ref('orders/').push({
         client: customerName,
         items: productNames,
+        total: totalAmount,
         destination: customerAddress,
-        lab: "Paris Site-A",
-        temp: "18.2°C",
-        security: "Level 4",
-        status: "Verified",
+        status: "Secured", // Để khớp với giao diện Admin của bạn
+        time: "Just now",
         timestamp: Date.now()
-    };
-
-    // 4. Gửi lên Firebase Realtime Database
-    database.ref('orders/').push(orderPayload)
-        .then(() => {
-            // Sau khi gửi thành công thì mới hiện bước hoàn tất
-            setTimeout(() => { 
-                nextStep(3); 
-                btn.disabled = false; 
-                btn.innerText = "Complete Order"; 
-                cart = []; // Xóa giỏ hàng sau khi đặt xong
-                updateCart(); 
-            }, 2000);
-        })
-        .catch((error) => {
-            console.error("Firebase Error:", error);
-            alert("Connection lost. Biometrics failed.");
-            btn.disabled = false;
-            btn.innerText = "Complete Order";
-        });
+    })
+    .then(() => {
+        // KHI THÀNH CÔNG THÌ MỚI CHUYỂN BƯỚC
+        nextStep(3); 
+        btn.disabled = false;
+        btn.innerText = "COMPLETE ORDER";
+        cart = []; // Xóa giỏ hàng
+        updateCart();
+    })
+    .catch((error) => {
+        console.error("Lỗi Firebase:", error);
+        alert("Lỗi kết nối Database! Kiểm tra tab Rules trên Firebase.");
+        btn.disabled = false;
+        btn.innerText = "COMPLETE ORDER";
+    });
 }
+
 
         function toggleLogin(show) {
             const modal = document.getElementById('login-modal');
