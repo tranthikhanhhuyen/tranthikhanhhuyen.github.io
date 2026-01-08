@@ -165,7 +165,10 @@
         
     </style>
 </head>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 <script>
+    
   // 1. Firebase Configuration (Copy from your Firebase Console)
   const firebaseConfig = {
     apiKey: "AIzaSyA2U5802T4Ws5NiD1hKZI5tcNO0dQ5wtFU",
@@ -368,56 +371,53 @@
                     </div>
                 </div>
             </div>
-            <div class="w-full md:w-3/5 p-12 relative flex flex-col justify-center">
-                <button onclick="closeCheckout()" class="absolute top-6 right-6 opacity-30 hover:opacity-100">✕</button>
-               <div id="checkout-step-1" class="checkout-step space-y-6">
-    <h2 class="serif text-4xl italic mb-8">Shipping Information.</h2>
-    
-    <input type="text" id="name" placeholder="Full Name" class="w-full p-4 border-b border-gray-100 outline-none focus:border-[--rose-deep] serif text-lg italic">
-    
-    <input type="text" id="address" placeholder="Street Address, Apartment, Suite" class="w-full p-4 border-b border-gray-100 outline-none focus:border-[--rose-deep] serif text-lg italic">
-    
-    <div class="grid grid-cols-2 gap-4">
-        <input type="text" placeholder="Phone Number" class="p-4 border-b border-gray-100 outline-none serif text-lg italic">
-        <input type="text" placeholder="Country" class="p-4 border-b border-gray-100 outline-none serif text-lg italic">
+               <div class="w-full md:w-3/5 p-12 relative flex flex-col justify-center">
+    <button onclick="closeCheckout()" class="absolute top-6 right-6 opacity-30 hover:opacity-100">✕</button>
+
+    <div id="checkout-step-1" class="checkout-step space-y-6">
+        <h2 class="serif text-4xl italic mb-8">Shipping Information.</h2>
+        <input type="text" id="name" placeholder="Full Name" class="w-full p-4 border-b border-gray-100 outline-none focus:border-[--rose-deep] serif text-lg italic">
+        <input type="text" id="address" placeholder="Street Address, Apartment, Suite" class="w-full p-4 border-b border-gray-100 outline-none focus:border-[--rose-deep] serif text-lg italic">
+        <div class="grid grid-cols-2 gap-4">
+            <input type="text" id="phone" placeholder="Phone Number" class="p-4 border-b border-gray-100 outline-none serif text-lg italic">
+            <input type="text" id="country" placeholder="Country" class="p-4 border-b border-gray-100 outline-none serif text-lg italic">
+        </div>
+        <button class="btn-luxe w-full mt-6" onclick="nextStep(2)">Continue to Payment</button>
     </div>
 
-                    <h2 class="serif text-4xl italic mb-4">Secure Payment.</h2>
-                    <div class="grid grid-cols-3 gap-3 mb-4">
-                        <button class="card-type-btn active rounded-sm" onclick="setCardType('visa')">
-                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15.82 14.7l.63-3.9h-1.04c-.37 0-.69-.26-.74-.62l-.46-2.5c-.03-.18.1-.38.28-.38h4.55c.18 0 .33.15.33.33v.03l-.75 4.67c-.03.18-.18.33-.36.33l-3.44.04zm-7.6-4.82l-.48 2.33c-.03.18.1.33.28.33h1.36c.18 0 .33-.15.33-.33l.48-2.33c.03-.18-.1-.33-.28-.33H8.5c-.18 0-.33.15-.33.33zm-4.72.33c-.03-.18.1-.33.28-.33h1.83c.15 0 .28.1.33.23l1.85 4.3c.03.08.01.18-.06.23l-.8.55c-.08.06-.2.03-.23-.06l-.42-.98h-2.33l-.22.58c-.04.1-.14.16-.25.16h-.93c-.14 0-.24-.13-.2-.27l1.37-3.94zm1.5 1.14l-.45 1.2h.9l-.45-1.2zm11.77-1.47l-.46 2.3c-.03.18.1.33.28.33h1.23c.18 0 .33-.15.33-.33l.46-2.3c.03-.18-.1-.33-.28-.33h-1.23c-.18 0-.33.15-.33.33z" fill="#1A1F71"/></svg>
-                        </button>
-                        <button class="card-type-btn rounded-sm" onclick="setCardType('mastercard')">
-                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="8.5" cy="12" r="6" fill="#EB001B" fill-opacity=".8"/><circle cx="15.5" cy="12" r="6" fill="#F79E1B" fill-opacity=".8"/></svg>
-                        </button>
-                        <button class="card-type-btn rounded-sm" onclick="setCardType('amex')">
-                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><rect width="20" height="14" x="2" y="5" rx="2" fill="#016FD0"/><path d="M7 10h1v4H7v-4zm3 0h1l1 2 1-2h1v4h-1v-2.5l-1 2h-.5l-1-2V14h-1v-4z" fill="#fff"/></svg>
-                        </button>
-                    </div>
-                    <div class="space-y-4">
-                        <input type="text" placeholder="Cardholder Name" class="w-full p-3 border-b border-gray-100 outline-none focus:border-[--rose-deep] serif text-lg italic">
-                        <input type="text" placeholder="Card Number" class="w-full p-3 border-b border-gray-100 outline-none focus:border-[--rose-deep] serif text-lg italic">
-                        <div class="grid grid-cols-2 gap-4">
-                            <input type="text" placeholder="Expiry (MM/YY)" class="p-3 border-b border-gray-100 outline-none serif text-lg italic">
-                            <input type="text" placeholder="CVV" class="p-3 border-b border-gray-100 outline-none serif text-lg italic">
-                        </div>
-                    </div>
-                    <div class="flex gap-4 pt-4">
-                        <button class="flex-1 text-[8px] font-bold uppercase tracking-widest border border-black/10 py-4 hover:bg-gray-50" onclick="nextStep(1)">Back</button>
-                        <button class="flex-[2] btn-luxe" onclick="processPayment()">Complete Order</button>
-                    </div>
-                </div>
-                <div id="checkout-step-3" class="checkout-step text-center space-y-6 hidden">
-                    <div class="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <span class="text-green-500 text-3xl">✓</span>
-                    </div>
-                    <h2 class="serif text-4xl italic">Thank You.</h2>
-                    <p class="text-xs italic opacity-60 px-10">Your order is being processed by our Paris Laboratory. A ritual of radiance is on its way to you.</p>
-                    <button class="btn-luxe w-full mt-10" onclick="location.reload()">Return to Maison</button>
-                </div>
-            </div>
+    <div id="checkout-step-2" class="checkout-step space-y-6 hidden">
+        <h2 class="serif text-4xl italic mb-4">Secure Payment.</h2>
+        <div class="grid grid-cols-3 gap-3 mb-4">
+            <button class="card-type-btn active rounded-sm" onclick="setCardType('visa')">
+                <svg viewBox="0 0 24 24" class="w-8"><path d="M15.82 14.7l.63-3.9h-1.04c-.37 0-.69-.26-.74-.62l-.46-2.5c-.03-.18.1-.38.28-.38h4.55c.18 0 .33.15.33.33v.03l-.75 4.67c-.03.18-.18.33-.36.33l-3.44.04z" fill="#1A1F71"/></svg>
+            </button>
+            <button class="card-type-btn rounded-sm" onclick="setCardType('mastercard')">
+                <svg viewBox="0 0 24 24" class="w-8"><circle cx="8.5" cy="12" r="6" fill="#EB001B" fill-opacity=".8"/><circle cx="15.5" cy="12" r="6" fill="#F79E1B" fill-opacity=".8"/></svg>
+            </button>
+            <button class="card-type-btn rounded-sm" onclick="setCardType('amex')">
+                <rect width="20" height="14" x="2" y="5" rx="2" fill="#016FD0"/>
+            </button>
+        </div>
+        <div class="space-y-4">
+            <input type="text" placeholder="Cardholder Name" class="w-full p-3 border-b border-gray-100 outline-none focus:border-[--rose-deep] serif text-lg italic">
+            <input type="text" placeholder="Card Number" class="w-full p-3 border-b border-gray-100 outline-none focus:border-[--rose-deep] serif text-lg italic">
+        </div>
+        <div class="flex gap-4 pt-4">
+            <button class="flex-1 text-[8px] font-bold uppercase tracking-widest border border-black/10 py-4" onclick="nextStep(1)">Back</button>
+            <button class="flex-[2] btn-luxe" onclick="processPayment()">Complete Order</button>
         </div>
     </div>
+
+    <div id="checkout-step-3" class="checkout-step text-center space-y-6 hidden">
+        <div class="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6">
+            <span class="text-green-500 text-3xl">✓</span>
+        </div>
+        <h2 class="serif text-4xl italic">Thank You.</h2>
+        <p class="text-xs italic opacity-60">Your ritual of radiance is on its way.</p>
+        <button class="btn-luxe w-full mt-10" onclick="location.reload()">Return to Maison</button>
+    </div>
+</div>
+                   
 
     <!-- HERO SECTION -->
     <section id="home" class="h-screen flex items-center px-12 lg:px-24">
@@ -902,49 +902,6 @@
             }
         }
 
-    function processPayment() {
-    const btn = event.target; 
-    btn.disabled = true; 
-    btn.innerText = "PROCESSING PROTOCOL...";
-
-    // 1. Lấy giá trị từ các ô input đã đặt ID
-    const customerName = document.getElementById('name').value;
-    const customerAddress = document.getElementById('address').value;
-    
-    // 2. Gom danh sách tên sản phẩm
-    const productNames = cart.map(item => item.name).join(", ");
-    const totalAmount = cart.reduce((acc, curr) => acc + curr.price, 0);
-
-    // 3. Đẩy lên Firebase
-    database.ref('orders/').push({
-        client: customerName || "Guest",
-        items: productNames,
-        total: totalAmount,
-        destination: customerAddress || "Paris Lab",
-        status: "Secured",
-        time: new Date().toLocaleTimeString(),
-        timestamp: Date.now()
-    })
-    .then(() => {
-        nextStep(3); 
-        btn.disabled = false;
-        cart = []; 
-        updateCart();
-    })
-    .catch((error) => {
-        alert("Transmission Failed: " + error.message);
-        btn.disabled = false;
-        btn.innerText = "COMPLETE ORDER";
-    });
-}
-
-// Hàm setCardType bổ sung
-function setCardType(type) {
-    document.querySelectorAll('.card-type-btn').forEach(b => b.classList.remove('active'));
-    event.currentTarget.classList.add('active');
-}
-
-
         function toggleLogin(show) {
             const modal = document.getElementById('login-modal');
             const inner = document.getElementById('login-inner');
@@ -982,8 +939,50 @@ function setCardType(type) {
                 };
                 reader.readAsDataURL(file);
             }  
+            
         }
-        
+        function processPayment(e) {
+    const btn = e.target; 
+    btn.disabled = true; 
+    btn.innerText = "PROCESSING PROTOCOL...";
+
+    // 1. Lấy giá trị từ các ô input đã đặt ID
+    const customerName = document.getElementById('name').value;
+    const customerAddress = document.getElementById('address').value;
+    
+    // 2. Gom danh sách tên sản phẩm
+    const productNames = cart.map(item => item.name).join(", ");
+    const totalAmount = cart.reduce((acc, curr) => acc + curr.price, 0);
+
+    // 3. Đẩy lên Firebase
+    database.ref('orders/').push({
+        client: customerName || "Guest",
+        items: productNames,
+        total: totalAmount,
+        destination: customerAddress || "Paris Lab",
+        status: "Secured",
+        time: new Date().toLocaleTimeString(),
+        timestamp: Date.now()
+    })
+    .then(() => {
+        nextStep(3); 
+        btn.disabled = false;
+        cart = []; 
+        updateCart();
+    })
+    .catch((error) => {
+        alert("Transmission Failed: " + error.message);
+        btn.disabled = false;
+        btn.innerText = "COMPLETE ORDER";
+    });
+}
+
+// Hàm setCardType bổ sung
+function setCardType(type, e) {
+    document.querySelectorAll('.card-type-btn').forEach(b => b.classList.remove('active'));
+    e.currentTarget.classList.add('active'); // Dùng e thay vì event
+}
+
     </script>
 </body>
 </html>
