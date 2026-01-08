@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LumiSkin | Molecular Maison Admin</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     
     <!-- Fonts: High-end Typography (Optimized for readability) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -121,27 +121,36 @@
 
     <script type="text/babel">
         // --- FIREBASE CONFIGURATION ---
-const firebaseConfig = {
-    apiKey: "AIzaSyA2U5802T4Ws5NiD1hKZI5tcNO0dQ5wtFU",
-    authDomain: "lumiskin-2f169.firebaseapp.com",
-    databaseURL: "https://lumiskin-2f169-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "lumiskin-2f169",
-    storageBucket: "lumiskin-2f169.firebasestorage.app",
-    messagingSenderId: "891987437240",
-    appId: "1:891987437240:web:75b778779418381191764d"
-};
+        const firebaseConfig = {
+            apiKey: "AIzaSyA2U5802T4Ws5NiD1hKZI5tcNO0dQ5wtFU",
+            authDomain: "lumiskin-2f169.firebaseapp.com",
+            databaseURL: "https://lumiskin-2f169-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "lumiskin-2f169",
+            storageBucket: "lumiskin-2f169.firebasestorage.app",
+            messagingSenderId: "891987437240",
+            appId: "1:891987437240:web:75b778779418381191764d"
+        };
 
-if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-}
-const database = firebase.database();
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const database = firebase.database();
         const { useState, useEffect, useRef, useMemo } = React;
+
+        // --- SIMULATION DATA FOR ORDERS ---
+        const MOCK_ORDERS = [
+            { id: "LMS-771", client: "Countess Isabella", items: "Diamond Serum x2, Rose Elixir x1", total: 845, status: "Verified", time: "2m ago" },
+            { id: "LMS-772", client: "Sultan of Oman", items: "Gold Essence x10, Pearl Glow x5", total: 3100, status: "Secured", time: "15m ago" },
+            { id: "LMS-773", client: "Yuki Matsuyama", items: "Night Sakura x1, Alpine Dew x3", total: 315, status: "Molecular Prep", time: "1h ago" },
+            { id: "LMS-774", client: "Julianne Moore", items: "Stem Cell Cream x2, Quartz Eye x1", total: 690, status: "In Transit", time: "3h ago" },
+            { id: "LMS-775", client: "Elena V. Russo", items: "Silk Cleanser x12 (Salon Pack)", total: 900, status: "Delivered", time: "5h ago" }
+        ];
 
         // --- FULL MOCK DATA ---
         const INITIAL_DATA = {
             products: [
                 {"id":1,"name":"Rose Elixir","category":"Luxury","price":145,"stock":24,"status":"Peak Vitality","sku":"LS-RE-01","image":"Rose Elixir.jpg","purity":"99.8%","desc":"Essence from 10,000 Grasse roses harvested at dawn."},
-                {"id":2,"name":"Pearl Glow","category":"Brightening","price":180,"stock":15,"status":"Active","sku":"LS-PG-02","image":"Pearl Glow.jpg","purity":"100%","desc":"Combination of silk protein and finely crushed pearls."},
+                {"id":2,"name":"Pearl Glow","category":"Brightening","price":180,"stock":15,"status":"Active","sku":"LS-PG-02","image":"Pearl.png","purity":"100%","desc":"Combination of silk protein and finely crushed pearls."},
                 {"id":3,"name":"Diamond Serum","category":"Ultimate","price":350,"stock":8,"status":"Limited","sku":"LS-DS-03","image":"Diamond Serum.png","purity":"99.9%","desc":"Uses diamond nanoparticles to repair dermal cells."},
                 {"id":4,"name":"Silk Cleanser","category":"Essence","price":75,"stock":42,"status":"In Stock","sku":"LS-SC-04","image":"Silk Cleaner.png","purity":"98.5%","desc":"Waxy cleanser that transforms into milk to preserve the acid mantle."},
                 {"id":5,"name":"Alpine Dew","category":"Hydrating","price":65,"stock":50,"status":"In Stock","sku":"LS-AD-05","image":"Alpine Dew.png","purity":"99.2%","desc":"Minerals from the French Alps provide 72-hour continuous hydration."},
@@ -315,7 +324,7 @@ const database = firebase.database();
 
         // --- PAGE MODULES ---
 
-        const Dashboard = () => {
+        const Dashboard = ({ realOrders }) => {
             const lineRef = useRef(null);
             const donutRef = useRef(null);
 
@@ -380,7 +389,7 @@ const database = firebase.database();
                             { label: 'Annual Revenue', value: '€62.8M', trend: 18.2 },
                             { label: 'Lab Yield', value: '99.9%', trend: 0.5 },
                             { label: 'Global Reach', value: '315M', trend: 22.1 },
-                            { label: 'Net ROI', value: '410%', trend: 8.4 },
+                            { label: 'Total Orders', value: realOrders.length, trend: 8.4 },
                         ]}
                     />
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
@@ -468,7 +477,87 @@ const database = firebase.database();
             );
         };
 
-        const Materials = ({ materials, onEdit, onDelete, onAdd }) => {
+        // --- NEW COMPONENT: ACQUISITIONS (NGƯỜI MUA HÀNG) ---
+        const Orders = ({ realOrders }) => {
+            const [search, setSearch] = useState("");
+            const filtered = realOrders.filter(o => 
+                (o.client || "").toLowerCase().includes(search.toLowerCase()) || 
+                (o.items || "").toLowerCase().includes(search.toLowerCase())
+            );
+
+            return (
+                <div className="animate-fade">
+                    <PageHeader 
+                        title="Acquisitions Log"
+                        subtitle="Detailed overview of client purchases and molecular selections."
+                        breadcrumbs={['Maison', 'Core', 'Acquisitions']}
+                        kpis={[
+                            { label: 'Active Orders', value: realOrders.length, trend: 15.2 },
+                            { label: 'Avg Basket', value: '€412', trend: 5.5 },
+                            { label: 'Member Retention', value: '92%', trend: 1.2 },
+                            { label: 'Revenue Flow', value: '€812K', trend: 12.0 },
+                        ]}
+                    />
+
+                    <div className="mb-10 relative max-w-xl">
+                        <Icon name="Search" className="absolute left-6 top-1/2 -translate-y-1/2 text-maisonDark/30" size={20} />
+                        <input 
+                            type="text" 
+                            placeholder="Tìm kiếm khách hàng..." 
+                            className="w-full pl-16 pr-8 py-5 rounded-full glass-premium border-2 border-roseMaison shadow-sm text-lg font-serif italic placeholder:opacity-50"
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                        />
+                    </div>
+
+                    <div className="glass-premium rounded-[4rem] overflow-hidden shadow-premium border-roseMaison/50">
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left">
+                                <thead className="bg-maisonDark text-white text-[11px] uppercase tracking-maison font-bold">
+                                    <tr>
+                                        <th className="px-10 py-8">Order ID</th>
+                                        <th className="px-10 py-8">Elite Client</th>
+                                        <th className="px-10 py-8">Selections</th>
+                                        <th className="px-10 py-8 text-center">Value</th>
+                                        <th className="px-10 py-8 text-right">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-roseMaison">
+                                    {filtered.map((order, i) => (
+                                        <tr key={i} className="hover:bg-roseMaison/20 transition-all group">
+                                            <td className="px-10 py-8 font-mono text-xs text-roseDeep font-bold">#{order.id}</td>
+                                            <td className="px-10 py-8">
+                                                <div className="flex items-center gap-4">
+                                                    <div className="w-12 h-12 rounded-full bg-roseMaison flex items-center justify-center font-serif text-xl font-bold text-roseDeep">
+                                                        {(order.client || "C")[0]}
+                                                    </div>
+                                                    <div>
+                                                        <div className="font-bold text-maisonDark text-lg">{order.client}</div>
+                                                        <div className="text-[9px] uppercase tracking-wider text-maisonDark/40">Verified Member</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="px-10 py-8">
+                                                <div className="text-sm font-serif italic text-maisonDark truncate max-w-xs">{order.items}</div>
+                                                <div className="text-[9px] uppercase font-bold text-maisonDark/20 mt-1">{order.time}</div>
+                                            </td>
+                                            <td className="px-10 py-8 text-center font-bold text-goldMaison text-xl">€{order.total}</td>
+                                            <td className="px-10 py-8 text-right">
+                                                <Badge variant={order.status === 'Delivered' ? 'success' : order.status === 'Secured' ? 'gold' : 'warning'}>
+                                                    {order.status}
+                                                </Badge>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const Materials = ({ materials }) => {
             const [search, setSearch] = useState("");
             const filtered = materials.filter(m => m.name.toLowerCase().includes(search.toLowerCase()) || m.source.toLowerCase().includes(search.toLowerCase()));
 
@@ -484,27 +573,10 @@ const database = firebase.database();
                             { label: 'Avg Purity', value: '99.4%', trend: -0.2 },
                             { label: 'Total Valuation', value: '€1.4M', trend: 5.5 },
                         ]}
-                        onAdd={onAdd}
                     />
-                    <div className="mb-14 relative max-w-xl">
-                        <Icon name="Search" className="absolute left-6 top-1/2 -translate-y-1/2 text-maisonDark/30" size={20} />
-                        <input 
-                            type="text" 
-                            placeholder="Search material or source..." 
-                            className="w-full pl-16 pr-8 py-5 rounded-full glass-premium border-2 border-roseMaison shadow-sm text-lg font-serif italic placeholder:opacity-50"
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                        />
-                    </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
                         {filtered.map(mat => (
                             <div key={mat.id} className="glass-premium p-12 rounded-[4rem] card-hover flex flex-col justify-between h-[450px] relative group overflow-hidden">
-                                <div className="absolute top-0 right-0 p-10 opacity-10 group-hover:opacity-100 transition-all">
-                                    <div className="flex gap-2">
-                                        <button onClick={() => onEdit(mat)} className="p-3 bg-white rounded-full text-goldMaison shadow-md hover:scale-110"><Icon name="Edit3" size={16}/></button>
-                                        <button onClick={() => onDelete(mat.id)} className="p-3 bg-white rounded-full text-roseDeep shadow-md hover:scale-110"><Icon name="X" size={16}/></button>
-                                    </div>
-                                </div>
                                 <div>
                                     <div className="flex justify-between items-start mb-10">
                                         <Badge variant={mat.status === 'Optimal' ? 'success' : mat.status === 'Critical' ? 'danger' : 'warning'}>
@@ -538,7 +610,7 @@ const database = firebase.database();
             );
         };
 
-        const Ambassadors = ({ ambassadors, onEdit, onDelete, onAdd }) => {
+        const Ambassadors = ({ ambassadors }) => {
             const [search, setSearch] = useState("");
             const filtered = ambassadors.filter(a => a.name.toLowerCase().includes(search.toLowerCase()));
 
@@ -554,25 +626,10 @@ const database = firebase.database();
                             { label: 'Avg ROI', value: '344%', trend: 4.2 },
                             { label: 'Media Impact', value: '€8.2M', trend: 12.0 },
                         ]}
-                        onAdd={onAdd}
                     />
-                    <div className="mb-14 relative max-w-xl">
-                        <Icon name="Search" className="absolute left-6 top-1/2 -translate-y-1/2 text-maisonDark/30" size={20} />
-                        <input 
-                            type="text" 
-                            placeholder="Search Muse name..." 
-                            className="w-full pl-16 pr-8 py-5 rounded-full glass-premium border-2 border-roseMaison shadow-sm text-lg font-serif italic placeholder:opacity-50"
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                        />
-                    </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
                         {filtered.map(amb => (
                             <div key={amb.id} className="glass-premium p-12 rounded-[5rem] card-hover text-center relative group">
-                                <div className="absolute top-8 right-12 flex gap-2 opacity-0 group-hover:opacity-100 transition-all">
-                                    <button onClick={() => onEdit(amb)} className="p-3 bg-white rounded-full text-goldMaison shadow-md hover:scale-110"><Icon name="Edit3" size={16}/></button>
-                                    <button onClick={() => onDelete(amb.id)} className="p-3 bg-white rounded-full text-roseDeep shadow-md hover:scale-110"><Icon name="X" size={16}/></button>
-                                </div>
                                 <div className="relative inline-block mb-10">
                                     <img src={amb.avatar} className="w-40 h-40 rounded-full mx-auto object-cover border-[6px] border-white shadow-premium transition-transform group-hover:scale-105 duration-700" />
                                     <div className="absolute inset-0 bg-goldMaison/10 rounded-full blur-3xl scale-150 animate-pulse"></div>
@@ -582,8 +639,8 @@ const database = firebase.database();
                                     <Badge variant="gold">{amb.level}</Badge>
                                     <Badge variant="success">{amb.dna}</Badge>
                                 </div>
-                                <div className="grid grid-cols-2 gap-6 pt-10 border-t-2 border-roseMaison">
-                                    <div className="text-left">
+                                <div className="grid grid-cols-2 gap-6 pt-10 border-t-2 border-roseMaison text-left">
+                                    <div>
                                         <span className="text-[11px] block font-extrabold text-maisonDark/30 uppercase tracking-maison mb-2">Reach</span>
                                         <span className="text-2xl font-extrabold tracking-tight italic">{amb.reach}</span>
                                     </div>
@@ -601,11 +658,7 @@ const database = firebase.database();
 
         const FormModal = ({ title, type, item, onSave, onCancel }) => {
             const [formData, setFormData] = useState(item || {});
-            
-            const handleSubmit = (e) => {
-                e.preventDefault();
-                onSave(formData);
-            };
+            const handleSubmit = (e) => { e.preventDefault(); onSave(formData); };
 
             return (
                 <div className="fixed inset-0 z-[2000] flex items-center justify-center p-6 bg-maisonDark/80 backdrop-blur-xl">
@@ -619,45 +672,10 @@ const database = firebase.database();
                                            value={formData.name || ''} onChange={e => setFormData({...formData, name: e.target.value})} placeholder="Molecule / Muse name..."/>
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-extrabold uppercase tracking-maison text-maisonDark/40 ml-4">{type === 'muse' ? 'Country' : 'Reference Code / SKU'}</label>
+                                    <label className="text-[10px] font-extrabold uppercase tracking-maison text-maisonDark/40 ml-4">Reference Code / SKU</label>
                                     <input required className="w-full px-8 py-5 rounded-[2rem] bg-white/50 border-2 border-roseMaison font-mono text-maisonDark"
-                                           value={type === 'muse' ? (formData.country || '') : (formData.sku || formData.id || '')} 
-                                           onChange={e => type === 'muse' ? setFormData({...formData, country: e.target.value}) : setFormData({...formData, sku: e.target.value})} 
-                                           placeholder={type === 'muse' ? 'FR, CN, UAE...' : 'LS-XX-00'}/>
+                                           value={formData.sku || formData.id || ''} onChange={e => setFormData({...formData, sku: e.target.value})} placeholder="LS-XX-00"/>
                                 </div>
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-extrabold uppercase tracking-maison text-maisonDark/40 ml-4">{type === 'muse' ? 'Reach' : 'Unit Value (€)'}</label>
-                                    <input required className="w-full px-8 py-5 rounded-[2rem] bg-white/50 border-2 border-roseMaison font-bold text-maisonDark"
-                                           value={type === 'muse' ? (formData.reach || '') : (formData.price || '')} 
-                                           onChange={e => type === 'muse' ? setFormData({...formData, reach: e.target.value}) : setFormData({...formData, price: e.target.value})} 
-                                           placeholder={type === 'muse' ? '100M' : '0.00'}/>
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-extrabold uppercase tracking-maison text-maisonDark/40 ml-4">{type === 'muse' ? 'ROI' : 'Inventory Reserve'}</label>
-                                    <input required className="w-full px-8 py-5 rounded-[2rem] bg-white/50 border-2 border-roseMaison font-bold text-maisonDark"
-                                           value={type === 'muse' ? (formData.roi || '') : (formData.stock || '')} 
-                                           onChange={e => type === 'muse' ? setFormData({...formData, roi: e.target.value}) : setFormData({...formData, stock: e.target.value})} 
-                                           placeholder={type === 'muse' ? '300%' : '0'}/>
-                                </div>
-                                {type === 'material' && (
-                                    <>
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] font-extrabold uppercase tracking-maison text-maisonDark/40 ml-4">Source Origin</label>
-                                            <input required className="w-full px-8 py-5 rounded-[2rem] bg-white/50 border-2 border-roseMaison font-semibold text-maisonDark"
-                                                   value={formData.source || ''} onChange={e => setFormData({...formData, source: e.target.value})} placeholder="France, Japan..."/>
-                                        </div>
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] font-extrabold uppercase tracking-maison text-maisonDark/40 ml-4">Purity Spectrum</label>
-                                            <input required className="w-full px-8 py-5 rounded-[2rem] bg-white/50 border-2 border-roseMaison font-bold text-maisonDark"
-                                                   value={formData.purity || ''} onChange={e => setFormData({...formData, purity: e.target.value})} placeholder="99.9%"/>
-                                        </div>
-                                    </>
-                                )}
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-[10px] font-extrabold uppercase tracking-maison text-maisonDark/40 ml-4">Visual Identity (Image URL)</label>
-                                <input className="w-full px-8 py-5 rounded-[2rem] bg-white/50 border-2 border-roseMaison text-xs font-mono text-maisonDark"
-                                       value={formData.image || formData.avatar || ''} onChange={e => setFormData({...formData, image: e.target.value, avatar: e.target.value})} placeholder="https://unsplash..."/>
                             </div>
                             <div className="flex gap-6 pt-10">
                                 <button type="button" onClick={onCancel} className="flex-1 py-5 rounded-full border-2 border-roseDeep/20 font-bold text-xs uppercase tracking-maison hover:bg-roseDeep/5 transition-all">Abort</button>
@@ -670,10 +688,7 @@ const database = firebase.database();
         };
 
         const Toast = ({ message, onClose }) => {
-            useEffect(() => {
-                const timer = setTimeout(onClose, 3000);
-                return () => clearTimeout(timer);
-            }, [onClose]);
+            useEffect(() => { const timer = setTimeout(onClose, 3000); return () => clearTimeout(timer); }, [onClose]);
             return (
                 <div className="fixed top-8 right-8 z-[3000] glass-premium px-10 py-5 rounded-[2rem] shadow-2xl border-l-8 border-goldMaison animate-fade flex items-center gap-4">
                     <div className="p-2 bg-goldMaison/10 rounded-full text-goldMaison"><Icon name="Check" size={20}/></div>
@@ -684,75 +699,59 @@ const database = firebase.database();
 
         const AuthScreen = ({ onUnlock }) => {
             const [status, setStatus] = useState("IDLE");
-            const handleScan = () => {
-                setStatus("SCANNING");
-                setTimeout(() => { setStatus("SUCCESS"); setTimeout(onUnlock, 1200); }, 2500);
-            };
+            const handleScan = () => { setStatus("SCANNING"); setTimeout(() => { setStatus("SUCCESS"); setTimeout(onUnlock, 1200); }, 2500); };
             return (
                 <div className="fixed inset-0 z-[1000] bg-roseLight flex flex-col items-center justify-center p-12 text-center overflow-hidden">
                     <div className="absolute top-[-30%] right-[-20%] w-[1000px] h-[1000px] rounded-full bg-roseMaison/20 blur-[150px] animate-pulse"></div>
-                    <div className="absolute bottom-[-20%] left-[-10%] w-[800px] h-[800px] rounded-full bg-roseDeep/10 blur-[130px] animate-pulse" style={{animationDelay: '1s'}}></div>
                     <div className="w-full max-w-lg space-y-20 relative z-10 animate-fade">
                         <div className="space-y-8">
                             <h1 className="text-9xl font-serif italic text-maisonDark tracking-header leading-none select-none">LumiSkin</h1>
-                            <div className="flex items-center justify-center gap-4">
-                                <div className="h-[1px] w-12 bg-roseDeep"></div>
-                                <p className="text-roseDeep tracking-maison uppercase text-[12px] font-extrabold">Maison of Excellence</p>
-                                <div className="h-[1px] w-12 bg-roseDeep"></div>
-                            </div>
+                            <div className="flex items-center justify-center gap-4"><div className="h-[1px] w-12 bg-roseDeep"></div><p className="text-roseDeep tracking-maison uppercase text-[12px] font-extrabold">Maison of Excellence</p><div className="h-[1px] w-12 bg-roseDeep"></div></div>
                         </div>
                         <div className="relative group cursor-pointer" onClick={handleScan}>
                             <div className={`w-80 h-80 mx-auto rounded-full border-2 border-roseDeep/20 flex items-center justify-center transition-all duration-1000 ${status === 'SCANNING' ? 'scale-110' : 'hover:scale-105'}`}>
                                 <div className="w-72 h-72 rounded-full glass-premium shadow-2xl flex items-center justify-center relative overflow-hidden border-4 border-white/80">
-                                    {status === 'IDLE' && <Icon name="Fingerprint" size={120} className="text-roseDeep opacity-40 group-hover:opacity-100 transition-all duration-700 animate-float" />}
-                                    {status === 'SCANNING' && (
-                                        <div className="absolute inset-0 flex items-center justify-center">
-                                            <div className="w-full h-1 bg-roseDeep absolute top-0 shadow-[0_0_20px_#701c26] animate-[scan_2.5s_infinite]"></div>
-                                            <Icon name="ScanFace" size={120} className="text-roseDeep animate-pulse" />
-                                        </div>
-                                    )}
+                                    {status === 'IDLE' && <Icon name="Fingerprint" size={120} className="text-roseDeep opacity-40 animate-float" />}
+                                    {status === 'SCANNING' && <Icon name="ScanFace" size={120} className="text-roseDeep animate-pulse" />}
                                     {status === 'SUCCESS' && <Icon name="CheckCircle" size={120} className="text-green-500 scale-125 transition-transform" />}
                                 </div>
                             </div>
                         </div>
                         <div className="space-y-4">
-                            <h2 className="text-4xl font-serif italic text-maisonDark tracking-header">
-                                {status === 'IDLE' ? 'Identity Verification' : status === 'SCANNING' ? 'Analyzing DNA Biometrics...' : 'Welcome, Maison Elena'}
-                            </h2>
+                            <h2 className="text-4xl font-serif italic text-maisonDark tracking-header">{status === 'IDLE' ? 'Identity Verification' : status === 'SCANNING' ? 'Analyzing DNA Biometrics...' : 'Welcome, Maison Elena'}</h2>
                             <p className="text-maisonDark/40 text-[11px] uppercase font-extrabold tracking-maison italic">Secure Terminal Site-A Paris HQ</p>
                         </div>
                     </div>
-                    <style>{`@keyframes scan { 0% { top: 0%; opacity: 0; } 20% { opacity: 1; } 80% { opacity: 1; } 100% { top: 100%; opacity: 0; } }`}</style>
                 </div>
             );
         };
 
         const App = () => {
-
             const [isUnlocked, setIsUnlocked] = useState(false);
             const [currentPage, setCurrentPage] = useState('dashboard');
             const [sidebarOpen, setSidebarOpen] = useState(true);
             const [data, setData] = useState(INITIAL_DATA);
-            const [realOrders, setRealOrders] = useState([]); // Dòng mới
-
-    useEffect(() => {
-        if (isUnlocked) {
-            const ordersRef = database.ref('orders');
-            ordersRef.on('value', (snapshot) => {
-                const firebaseData = snapshot.val();
-                if (firebaseData) {
-                    const list = Object.keys(firebaseData).map(key => ({
-                        id: key.substring(1, 8).toUpperCase(),
-                        ...firebaseData[key]
-                    }));
-                    setRealOrders(list.reverse());
-                }
-            });
-        }
-    }, [isUnlocked]);
+            const [realOrders, setRealOrders] = useState(MOCK_ORDERS);
             const [modal, setModal] = useState({ show: false, type: '', item: null });
             const [confirm, setConfirm] = useState({ show: false, id: null });
             const [toast, setToast] = useState(null);
+
+            useEffect(() => {
+                if (isUnlocked) {
+                    const ordersRef = database.ref('orders');
+                    ordersRef.on('value', (snapshot) => {
+                        const firebaseData = snapshot.val();
+                        if (firebaseData) {
+                            const list = Object.keys(firebaseData).map(key => ({
+                                id: key.substring(1, 8).toUpperCase(),
+                                ...firebaseData[key]
+                            }));
+                            // Combine Firebase data with Simulation data
+                            setRealOrders([...list.reverse(), ...MOCK_ORDERS]);
+                        }
+                    });
+                }
+            }, [isUnlocked]);
 
             if (!isUnlocked) return <AuthScreen onUnlock={() => setIsUnlocked(true)} />;
 
@@ -781,44 +780,20 @@ const database = firebase.database();
             const renderContent = () => {
                 switch(currentPage) {
                     case 'dashboard': return <Dashboard realOrders={realOrders} />;
-                    case 'products': return <Products 
-                        products={data.products} 
-                        onEdit={(p) => setModal({show: true, type: 'product', item: p})} 
-                        onDelete={(id) => setConfirm({show: true, id})}
-                        onAdd={() => setModal({show: true, type: 'product', item: null})}
-                    />;
-                    case 'ambassadors': return <Ambassadors 
-                        ambassadors={data.ambassadors} 
-                        onEdit={(a) => setModal({show: true, type: 'muse', item: a})} 
-                        onDelete={(id) => setConfirm({show: true, id})}
-                        onAdd={() => setModal({show: true, type: 'muse', item: null})}
-                    />;
-                    case 'materials': return <Materials 
-                        materials={data.materials} 
-                        onEdit={(m) => setModal({show: true, type: 'material', item: m})} 
-                        onDelete={(id) => setConfirm({show: true, id})}
-                        onAdd={() => setModal({show: true, type: 'material', item: null})}
-                    />;
-                    <div className="glass-premium p-12 rounded-[4rem] mt-10">
-    <h3 className="text-3xl font-serif italic mb-8">Live Orders</h3>
-    <div className="space-y-4">
-        {realOrders.map((order, i) => (
-            <div key={i} className="flex justify-between p-4 border-b border-roseMaison">
-                <span>{order.client}</span>
-                <span className="font-bold text-goldMaison">{order.items}</span>
-            </div>
-        ))}
-    </div>
-</div>
-                    default: return <Dashboard />;
+                    case 'products': return <Products products={data.products} onEdit={(p) => setModal({show: true, type: 'product', item: p})} onDelete={(id) => setConfirm({show: true, id})} onAdd={() => setModal({show: true, type: 'product', item: null})} />;
+                    case 'materials': return <Materials materials={data.materials} />;
+                    case 'ambassadors': return <Ambassadors ambassadors={data.ambassadors} />;
+                    case 'orders': return <Orders realOrders={realOrders} />;
+                    default: return <Dashboard realOrders={realOrders} />;
                 }
             };
 
             return (
                 <div className="flex min-h-screen">
+                    {/* SIDEBAR */}
                     <aside className={`sidebar-transition fixed h-screen z-[500] bg-maisonDark text-white ${sidebarOpen ? 'w-80' : 'w-32'} overflow-hidden flex flex-col shadow-2xl`}>
                         <div className="p-12 flex items-center gap-6 mb-20">
-                            <div className="w-16 h-16 rounded-[1.5rem] bg-gradient-to-br from-roseDeep via-[#ff85a2] to-roseMaison flex-shrink-0 flex items-center justify-center font-serif text-5xl font-bold shadow-pink-glow animate-pulse leading-none">L</div>
+                            <div className="w-16 h-16 rounded-[1.5rem] bg-gradient-to-br from-roseDeep via-[#ff85a2] to-roseMaison flex-shrink-0 flex items-center justify-center font-serif text-5xl font-bold shadow-pink-glow animate-pulse">L</div>
                             {sidebarOpen && <span className="font-serif text-5xl tracking-header italic">LumiSkin</span>}
                         </div>
                         <nav className="flex-1 px-8 space-y-8">
@@ -826,7 +801,8 @@ const database = firebase.database();
                                 { id: 'dashboard', label: 'Intelligence', icon: 'BarChart3' },
                                 { id: 'products', label: 'Catalog', icon: 'Box' },
                                 { id: 'materials', label: 'Materials', icon: 'FlaskConical' },
-                                { id: 'ambassadors', label: 'Muses', icon: 'Users' }
+                                { id: 'ambassadors', label: 'Muses', icon: 'Users' },
+                                { id: 'orders', label: 'Acquisitions', icon: 'ShoppingBag' }
                             ].map(item => (
                                 <button key={item.id} onClick={() => setCurrentPage(item.id)}
                                     className={`w-full flex items-center gap-8 p-6 rounded-[2.5rem] transition-all duration-500 group ${currentPage === item.id ? 'bg-gradient-to-r from-roseDeep/80 to-roseDeep/40 shadow-lg text-white' : 'hover:bg-white/5 text-white/40'}`}>
@@ -850,23 +826,21 @@ const database = firebase.database();
                                 <div className="h-6 w-[2px] bg-roseMaison"></div>
                                 <Badge variant="gold">Bio-Security Level 5</Badge>
                             </div>
-                            <div className="flex items-center gap-6">
-                                <div className="flex items-center gap-6 group cursor-pointer">
-                                    <div className="text-right">
-                                        <p className="text-base font-extrabold text-maisonDark leading-none mb-1">Elena Lumi</p>
-                                        <p className="text-[11px] uppercase font-bold text-goldMaison tracking-maison italic">Maison Principal</p>
-                                    </div>
-                                    <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200" className="w-16 h-16 rounded-[1.5rem] object-cover border-2 border-goldMaison/20 shadow-sm" />
+                            <div className="flex items-center gap-6 group cursor-pointer">
+                                <div className="text-right">
+                                    <p className="text-base font-extrabold text-maisonDark leading-none mb-1">Elena Lumi</p>
+                                    <p className="text-[11px] uppercase font-bold text-goldMaison tracking-maison italic">Maison Principal</p>
                                 </div>
+                                <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200" className="w-16 h-16 rounded-[1.5rem] object-cover border-2 border-goldMaison/20 shadow-sm" />
                             </div>
                         </header>
+
                         <div className="p-20 max-w-[2000px] mx-auto w-full flex-1">
                             {renderContent()}
                         </div>
-                        <footer className="p-14 border-t border-roseMaison text-center">
-                            <p className="text-[11px] uppercase tracking-maison font-extrabold text-maisonDark/15 select-none">
-                                &copy; 2026 LumiSkin Molecular Cosmetics Maison &bull; Paris &bull; Dubai &bull; Seoul &bull; Tokyo &bull; Milan
-                            </p>
+
+                        <footer className="p-14 border-t border-roseMaison text-center text-[11px] uppercase tracking-maison font-extrabold text-maisonDark/15">
+                            &copy; 2026 LumiSkin Molecular Cosmetics Maison &bull; Paris &bull; Dubai &bull; Seoul &bull; Tokyo &bull; Milan
                         </footer>
                     </main>
 
