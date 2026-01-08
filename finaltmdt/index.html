@@ -147,6 +147,19 @@
             text-align: center; max-width: 500px; width: 90%;
         }
 
+        /* AI Recommendation Card */
+        .ai-recommendation-card {
+            border: 1px solid var(--rose-deep);
+            padding: 1rem;
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+            background: var(--primary);
+            margin-top: 1.5rem;
+            animation: slideUp 0.8s ease-out;
+        }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
         /* Scrollbar */
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: var(--primary); }
@@ -271,7 +284,7 @@
         </div>
     </div>
 
-    <!-- CHECKOUT MODAL (FIXED) -->
+    <!-- CHECKOUT MODAL -->
      <div id="checkout-modal"
      class="modal-overlay fixed inset-0 hidden items-center justify-center">
         <div class="bg-white max-w-5xl w-full relative rounded-sm shadow-2xl overflow-hidden flex flex-col md:flex-row h-[700px]">
@@ -298,7 +311,7 @@
                 </div>
             </div>
             
-            <!-- Forms Container (NƠI XỬ LÝ LỖI CHỒNG CHÉO) -->
+            <!-- Forms Container -->
             <div class="w-full md:w-3/5 p-12 relative flex flex-col justify-center bg-white">
                 <button onclick="closeCheckout()" class="absolute top-6 right-6 opacity-30 hover:opacity-100 text-2xl">✕</button>
 
@@ -449,16 +462,21 @@
                     </div>
                     <img id="ai-preview" class="w-full h-full object-cover hidden">
                     <div id="scanner-line" class="scanner-bar hidden"></div>
-                    <div id="ai-result-panel" class="absolute inset-x-0 bottom-0 bg-white/95 p-10 transform translate-y-full transition-transform duration-700">
+                    <div id="ai-result-panel" class="absolute inset-x-0 bottom-0 bg-white/95 p-8 transform translate-y-full transition-transform duration-700 max-h-[70%] overflow-y-auto">
                         <h4 class="serif text-4xl italic mb-4 text-[--rose-deep]">Laboratory Report</h4>
-                        <p id="ai-text" class="text-xs italic opacity-70 mb-8"></p>
-                        <button onclick="location.reload()" class="text-[8px] font-bold uppercase border-b border-[--rose-deep]">New Analysis</button>
+                        <p id="ai-text" class="text-xs italic opacity-70 mb-4"></p>
+                        
+                        <div id="ai-proposal-container">
+                            <!-- Đề xuất sản phẩm sẽ hiện ở đây -->
+                        </div>
+
+                        <button onclick="location.reload()" class="mt-6 text-[8px] font-bold uppercase border-b border-[--rose-deep]">New Analysis</button>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- JOURNAL SECTION (UPDATED: 5 ARTICLES WITH HIGH-IMPACT STATS) -->
+        <!-- JOURNAL SECTION -->
         <section id="journal" class="py-40 px-12 lg:px-24 bg-[--primary]">
             <div class="flex justify-between items-end mb-24 reveal">
                 <div>
@@ -514,7 +532,7 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // 2. DATA (TẤT CẢ 12 SẢN PHẨM & 5 BLOGS ĐÃ CẬP NHẬT CHỈ SỐ CAO CẤP)
+        // 2. DATA (12 PRODUCTS & 5 BLOGS)
         const products = [
             { id: 1, name: "Rose Elixir", price: 145, cat: "Luxury", img: "Rose Elixir.jpg", desc: "Concentrated essence from 10,000 rose petals harvested at the peak of dawn for maximum molecular vitality." },
             { id: 2, name: "Pearl Glow", price: 180, cat: "Brightening", img: "Pearl.png", desc: "A sophisticated blend of silk protein and crushed sea pearls to illuminate the complexion from within." },
@@ -626,44 +644,33 @@
             `).join('');
         }
 
-       function openCheckout() {
-    if (cart.length === 0) return;
-    toggleCart(false);
-    const modal = document.getElementById('checkout-modal');
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-    document.getElementById('checkout-final-total').innerText = document.getElementById('cart-total').innerText;
-    document.getElementById('checkout-item-count').innerText = `${cart.length} items`;
-    nextStep(1);
-}
+        function openCheckout() {
+            if (cart.length === 0) return;
+            toggleCart(false);
+            const modal = document.getElementById('checkout-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.getElementById('checkout-final-total').innerText = document.getElementById('cart-total').innerText;
+            document.getElementById('checkout-item-count').innerText = `${cart.length} items`;
+            nextStep(1);
+        }
 
-function closeCheckout() {
-    const modal = document.getElementById('checkout-modal');
-    modal.classList.add('hidden');
-    modal.classList.remove('flex');
-}
+        function closeCheckout() {
+            const modal = document.getElementById('checkout-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
 
         function nextStep(step) {
             const allSteps = document.querySelectorAll('.checkout-step');
-            allSteps.forEach(el => {
-                el.classList.remove('active-step');
-                el.style.display = 'none'; 
-            });
+            allSteps.forEach(el => { el.classList.remove('active-step'); el.style.display = 'none'; });
             const currentStep = document.getElementById(`checkout-step-${step}`);
-            if(currentStep) {
-                currentStep.classList.add('active-step');
-                currentStep.style.display = 'block';
-            }
+            if(currentStep) { currentStep.classList.add('active-step'); currentStep.style.display = 'block'; }
             for(let i=1; i<=3; i++) {
                 const dot = document.getElementById(`dot-${i}`);
                 const label = document.getElementById(`label-${i}`);
-                if(i <= step) {
-                    dot.classList.add('active');
-                    if(label) label.style.opacity = "1";
-                } else {
-                    dot.classList.remove('active');
-                    if(label) label.style.opacity = "0.4";
-                }
+                if(i <= step) { dot.classList.add('active'); if(label) label.style.opacity = "1"; }
+                else { dot.classList.remove('active'); if(label) label.style.opacity = "0.4"; }
             }
         }
 
@@ -713,28 +720,66 @@ function closeCheckout() {
             }, 1500);
         }
 
+        // --- NEW: AI SCAN & PROPOSAL LOGIC ---
         function startLumiScan(e) {
             const preview = document.getElementById('ai-preview');
             const placeholder = document.getElementById('ai-placeholder');
             const scanner = document.getElementById('scanner-line');
             const file = e.target.files[0];
+            
             if (file) {
                 const reader = new FileReader();
                 reader.onload = ev => {
-                    preview.src = ev.target.result; preview.classList.remove('hidden'); placeholder.classList.add('hidden'); scanner.classList.remove('hidden');
+                    preview.src = ev.target.result; 
+                    preview.classList.remove('hidden'); 
+                    placeholder.classList.add('hidden'); 
+                    scanner.classList.remove('hidden');
+                    
+                    // Giả lập quá trình scan sâu 3.5s
                     setTimeout(() => {
-                        scanner.classList.add('hidden'); document.getElementById('ai-result-panel').style.transform = "translateY(0)";
-                        document.getElementById('ai-text').innerText = "Analysis Complete: Cellular biorhythms detected for optimal absorption. Epidermal hydration locked.";
-                        document.getElementById('stat-h').innerText = "89%"; document.getElementById('stat-e').innerText = "94%";
+                        scanner.classList.add('hidden'); 
+                        document.getElementById('ai-result-panel').style.transform = "translateY(0)";
+                        
+                        // Chẩn đoán ngẫu nhiên tình trạng da
+                        const conditions = [
+                            { type: "Dehydrated", text: "Molecular moisture deficit detected in the deeper dermis layer. Optimal hydration lock is required.", productId: 5 }, // Alpine Dew
+                            { type: "Aging", text: "Cellular renewal rhythm slowed down. Bio-regeneration protocol highly recommended.", productId: 12 }, // Stem Cell Cream
+                            { type: "Dullness", text: "Light refraction index is low. Epidermal brightness needs enzymatic boost.", productId: 2 }, // Pearl Glow
+                            { type: "Congested", text: "Urban toxins detected in pore structure. Oxygenation and detox ritual needed.", productId: 8 } // Detox Clay
+                        ];
+                        
+                        const diagnosis = conditions[Math.floor(Math.random() * conditions.length)];
+                        const recommendedProduct = products.find(p => p.id === diagnosis.productId);
+
+                        document.getElementById('ai-text').innerText = `Analysis Complete: ${diagnosis.text}`;
+                        document.getElementById('stat-h').innerText = Math.floor(Math.random() * 40 + 50) + "%";
+                        document.getElementById('stat-e').innerText = Math.floor(Math.random() * 30 + 60) + "%";
+
+                        // Hiển thị đề xuất sản phẩm
+                        document.getElementById('ai-proposal-container').innerHTML = `
+                            <div class="ai-recommendation-card">
+                                <img src="${recommendedProduct.img}" class="w-20 h-24 object-cover shadow-lg">
+                                <div class="flex-1">
+                                    <span class="text-[8px] font-bold text-[--rose-deep] uppercase tracking-widest block mb-1">Recommended Ritual</span>
+                                    <h5 class="serif text-xl italic mb-2">${recommendedProduct.name}</h5>
+                                    <div class="flex gap-4">
+                                        <button onclick="openProductDetail(${recommendedProduct.id})" class="text-[8px] font-bold uppercase border-b border-black">Details</button>
+                                        <button onclick="addToCart(${recommendedProduct.id})" class="text-[8px] font-bold uppercase text-[--rose-deep]">Add to selection</button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
                     }, 3500);
                 };
                 reader.readAsDataURL(file);
             }  
         }
 
+        // --- THE "CGI" & ANIMATION ENGINE (NEVER REMOVE) ---
         window.onload = function () {
             renderUI();
             
+            // 3D Three.js Particles
             const scene = new THREE.Scene();
             const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1500);
             const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('bg-canvas'), alpha: true, antialias: true });
@@ -745,20 +790,24 @@ function closeCheckout() {
             geometry.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
             const particles = new THREE.Points(geometry, new THREE.PointsMaterial({ color: 0xffb6c1, size: 1.2, transparent: true, opacity: 0.2 }));
             scene.add(particles); camera.position.z = 1000;
+            
             function animate() { requestAnimationFrame(animate); particles.rotation.y += 0.0003; renderer.render(scene, camera); }
             animate();
 
+            // Custom Cursor Movement
             window.addEventListener('mousemove', e => {
                 gsap.to('#cursor', { duration: 0.1, x: e.clientX, y: e.clientY });
                 gsap.to('#cursor-follower', { duration: 0.4, x: e.clientX - 20, y: e.clientY - 20 });
             });
 
+            // Scroll Interactions
             window.addEventListener('scroll', () => {
                 const nav = document.getElementById('main-nav');
                 if(window.scrollY > 50) nav.classList.add('scrolled'); else nav.classList.remove('scrolled');
                 document.querySelectorAll('.parallax-img').forEach(img => { img.style.transform = `translateY(${window.scrollY * 0.05}px)`; });
             });
 
+            // Intersection Observer for Reveal
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('active'); });
             }, { threshold: 0.1 });
