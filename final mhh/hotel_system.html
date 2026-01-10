@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Imperial Palace | Luxury Hotel Automation System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@300;400;500;600&family=Fira+Code:wght@300;400&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
@@ -24,6 +24,7 @@
             --accent-red: #ef4444;
             --accent-blue: #3b82f6;
             --accent-orange: #f59e0b;
+            --cyber-green: #00ff41;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
         body {
@@ -40,6 +41,11 @@
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { background: var(--primary-gold); border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #b08d45; }
+
+        .toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+        .toast-item { background: var(--glass-bg); color: white; padding: 15px 25px; border-radius: 8px; border-left: 4px solid var(--primary-gold); box-shadow: var(--shadow-lg); backdrop-filter: blur(10px); animation: slideInRight 0.4s ease; min-width: 280px; }
+        @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
         .navbar {
             position: fixed; top: 0; width: 100%; z-index: 1000;
             display: flex; justify-content: space-between; align-items: center;
@@ -300,13 +306,24 @@
             .hide-sm { display: none; }
         }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        
         .automation-log {
-            position: fixed; bottom: 20px; right: 20px; background: rgba(0,0,0,0.8);
-            color: #10b981; padding: 10px 20px; border-radius: 5px; font-family: monospace;
-            font-size: 0.8rem; z-index: 5000; border: 1px solid #10b981;
+            position: fixed; bottom: 20px; right: 20px; background: rgba(0,0,0,0.9);
+            color: var(--cyber-green); padding: 15px 25px; border-radius: 5px; font-family: 'Fira Code', monospace;
+            font-size: 0.8rem; z-index: 5000; border: 1px solid var(--cyber-green);
             pointer-events: none; opacity: 0; transition: 0.3s;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.2); text-transform: uppercase;
         }
         .automation-log.active { opacity: 1; }
+        
+        .iot-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-top: 20px; }
+        .iot-card { background: #f8fafc; padding: 15px; border-radius: 12px; text-align: center; border: 1px solid #e2e8f0; transition: 0.3s; }
+        .iot-card:hover { border-color: var(--primary-gold); transform: translateY(-3px); }
+        .iot-card i { font-size: 1.8rem; color: var(--primary-gold); margin-bottom: 10px; }
+        .iot-slider { width: 100%; margin-top: 10px; accent-color: var(--primary-gold); }
+        .mood-btn { background: white; border: 1px solid var(--primary-gold); color: var(--primary-gold); padding: 5px 10px; font-size: 0.7rem; border-radius: 5px; cursor: pointer; margin: 2px; }
+        .mood-btn:hover { background: var(--primary-gold); color: white; }
+
         .supply-card { background: rgba(31, 41, 55, 0.5); padding: 20px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: space-between; }
         .supply-info { display: flex; align-items: center; gap: 15px; }
         .supply-icon { width: 45px; height: 45px; background: rgba(197, 160, 89, 0.1); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--primary-gold); font-size: 1.2rem; }
@@ -322,6 +339,8 @@
     </style>
 </head>
 <body>
+    <div class="toast-container" id="toast-container"></div>
+
     <div id="admin-pin-gate" class="auth-overlay">
         <div class="auth-card">
             <div style="color: var(--primary-gold); font-size: 3rem; margin-bottom: 20px;"><i class="fas fa-shield-alt"></i></div>
@@ -337,6 +356,7 @@
             <p style="margin-top: 25px; cursor: pointer; text-decoration: underline; font-size: 0.85rem;" onclick="app.closeAdminGate()">Return to Guest View</p>
         </div>
     </div>
+
     <div id="user-login-gate" class="auth-overlay">
         <div class="auth-card">
             <h2>GUEST LOGIN</h2>
@@ -351,6 +371,67 @@
             <p style="margin-top: 20px; cursor: pointer; text-decoration: underline; font-size: 0.85rem;" onclick="app.closeUserGate()">Back to Home</p>
         </div>
     </div>
+
+    <div class="modal-overlay" id="iot-modal">
+        <div class="modal-box" style="max-width: 800px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h3 style="margin:0; letter-spacing: 1px;"><i class="fas fa-microchip"></i> ADVANCED SMART HUB</h3>
+                <i class="fas fa-times" onclick="app.closeIotModal()" style="cursor:pointer; font-size:1.4rem; color: var(--text-gray);"></i>
+            </div>
+            <div style="display: flex; justify-content: space-between; background: var(--bg-off-white); padding: 10px 15px; border-radius: 8px; margin-bottom: 20px; font-size: 0.8rem;">
+                <span>RESIDENT: <b id="iot-guest-name">...</b></span>
+                <span>NODE: <b id="iot-room-number">...</b></span>
+                <span id="iot-conn-status" style="color: var(--accent-green); font-weight: 700;"><i class="fas fa-wifi"></i> CONNECTED</span>
+            </div>
+            <div class="iot-grid">
+                <div class="iot-card">
+                    <i class="fas fa-thermometer-half"></i>
+                    <h4>Climate</h4>
+                    <span id="temp-val">22°C</span>
+                    <input type="range" class="iot-slider" min="16" max="30" value="22" oninput="app.updateIoT('HVAC', this.value, 'temp-val', '°C')">
+                </div>
+                <div class="iot-card">
+                    <i class="fas fa-lightbulb"></i>
+                    <h4>Lighting</h4>
+                    <span id="light-val">80%</span>
+                    <input type="range" class="iot-slider" min="0" max="100" value="80" oninput="app.updateIoT('LIGHTS', this.value, 'light-val', '%')">
+                    <div style="margin-top: 10px;">
+                        <button class="mood-btn" onclick="app.setMood('Cinema')">Cinema</button>
+                        <button class="mood-btn" onclick="app.setMood('Sleep')">Sleep</button>
+                    </div>
+                </div>
+                <div class="iot-card">
+                    <i class="fas fa-person-booth"></i>
+                    <h4>Curtains</h4>
+                    <span id="curtain-val">Open</span>
+                    <input type="range" class="iot-slider" min="0" max="100" value="100" oninput="app.updateIoT('CURTAINS', this.value, 'curtain-val', '% Opened')">
+                </div>
+                <div class="iot-card">
+                    <i class="fas fa-tv"></i>
+                    <h4>Entertainment</h4>
+                    <button class="btn-portal" style="width:100%; margin-top:5px; font-size: 0.6rem;" onclick="app.toggleTV()">POWER ON/OFF</button>
+                    <input type="range" class="iot-slider" min="0" max="100" value="30" oninput="app.updateIoT('AUDIO', this.value, 'vol-val', ' Vol')">
+                    <small id="vol-val">30 Vol</small>
+                </div>
+                <div class="iot-card">
+                    <i class="fas fa-hand-paper"></i>
+                    <h4>Privacy</h4>
+                    <div style="display:flex; justify-content:center; align-items:center; height: 50px;">
+                        <label class="switch"><input type="checkbox" id="dnd-toggle" onchange="app.togglePrivacy(this.checked)"><span class="slider"></span></label>
+                    </div>
+                    <small>DO NOT DISTURB</small>
+                </div>
+                <div class="iot-card">
+                    <i class="fas fa-concierge-bell"></i>
+                    <h4>Service</h4>
+                    <button class="btn-portal" style="width:100%; margin-top:5px" onclick="app.requestService('Cleaning')">Request Housekeeping</button>
+                    <button class="btn-portal" style="width:100%; margin-top:5px" onclick="app.requestService('Laundry')">Laundry Pick-up</button>
+                </div>
+            </div>
+            <button class="btn-primary" style="width:100%; margin-top:20px" onclick="app.closeIotModal()">SYNC WITH MOBILE KEY</button>
+        </div>
+    </div>
+
     <div class="modal-overlay" id="checkin-modal">
         <div class="modal-box">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
@@ -360,6 +441,7 @@
             <div style="margin-bottom: 20px;">
                 <label class="form-label">Enter Booking Confirmation Code</label>
                 <input type="text" class="form-control" id="checkin-code" placeholder="Example: IP-7X9B2">
+                <p style="font-size: 0.7rem; color: var(--text-gray); margin-top: 5px;">This code is provided after your reservation is confirmed.</p>
             </div>
             <label class="form-label">E-KYC Verification (Identity Proof)</label>
             <div style="border: 2px dashed #e2e8f0; padding: 20px; text-align: center; margin-bottom: 20px; border-radius: 8px;">
@@ -374,6 +456,22 @@
             <button class="btn-primary" style="width: 100%" onclick="app.executeCheckin()">ACTIVATE STAY & KEY</button>
         </div>
     </div>
+
+    <div class="modal-overlay" id="guest-checkout-modal">
+        <div class="modal-box">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
+                <h3 style="margin:0; letter-spacing: 1px;">GUEST SELF CHECK-OUT</h3>
+                <i class="fas fa-times" onclick="app.closeCheckout()" style="cursor:pointer; font-size:1.4rem; color: var(--text-gray);"></i>
+            </div>
+            <div style="margin-bottom: 20px;">
+                <label class="form-label">Enter Booking Confirmation Code</label>
+                <input type="text" class="form-control" id="checkout-code-guest" placeholder="Example: IP-A2B3C">
+                <p style="font-size: 0.7rem; color: var(--text-gray); margin-top: 5px;">Your digital key will be deactivated upon confirmation.</p>
+            </div>
+            <button class="btn-primary" style="width: 100%; background: var(--accent-red);" onclick="app.executeGuestCheckout()">DEACTIVATE KEY & CHECK-OUT</button>
+        </div>
+    </div>
+
     <div id="client-app">
         <nav class="navbar" id="navbar">
             <div class="logo">IMPERIAL <span>PALACE</span></div>
@@ -382,6 +480,7 @@
                 <li><a href="#rooms" class="nav-link">Rooms & Suites</a></li>
                 <li><a href="#services" class="nav-link">Services</a></li>
                 <li><a href="javascript:app.openCheckin()" class="nav-link" style="color: var(--primary-gold); font-weight: 700;">Check-in</a></li>
+                <li><a href="javascript:app.openCheckout()" class="nav-link" style="color: var(--accent-red); font-weight: 700;">Check-out</a></li>
             </ul>
             <div class="nav-actions" id="nav-actions-container">
                 <button class="btn-login-user" onclick="app.openUserGate()">Guest Login</button>
@@ -463,6 +562,7 @@
             <div class="copyright">&copy; 2026 Imperial Palace Hotel System. Designed for Advanced Automation Portfolio.</div>
         </footer>
     </div>
+
     <div id="admin-interface" class="hidden">
         <aside class="sidebar">
             <div class="admin-logo">IMPERIAL <span class="hide-sm">PALACE</span></div>
@@ -478,6 +578,7 @@
         </aside>
         <main class="dashboard-main" id="admin-main-content"></main>
     </div>
+
     <div class="proc-overlay" id="proc-overlay">
         <div class="proc-box">
             <h2 style="margin-bottom:10px; font-family: 'Playfair Display';">Processing Request</h2>
@@ -491,6 +592,7 @@
             <div class="proc-status-text" id="proc-status-text">Encrypting Gateway Data...</div>
         </div>
     </div>
+
     <div class="modal-overlay" id="booking-modal">
         <div class="modal-box">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
@@ -533,33 +635,30 @@
             </form>
         </div>
     </div>
+
     <div class="automation-log" id="automation-log">SYSTEM: Neural Matrix Online.</div>
+
     <script>
         const DEFAULT_STATE = {
             currentUser: null,
             rooms: [
-                { id: 101, name: "Grand Deluxe Garden", type: "Deluxe", price: 350, basePrice: 350, status: "available", house: "Clean", revenue: 142000, ADR: 350, occRate: 75, parity: {booking: 355, expedia: 360}, img: "https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg?auto=compress&cs=tinysrgb&w=800" },
-                { id: 102, name: "Grand Deluxe Ocean", type: "Deluxe", price: 450, basePrice: 450, status: "booked", house: "Occupied", revenue: 158000, ADR: 450, occRate: 92, parity: {booking: 455, expedia: 465}, img: "https://images.pexels.com/photos/271618/pexels-photo-271618.jpeg?auto=compress&cs=tinysrgb&w=800", guestName: "Alexander Hamilton", bookingId: "IP-INIT-01" },
-                { id: 103, name: "Terrace Garden View", type: "Deluxe", price: 380, basePrice: 380, status: "available", house: "Clean", revenue: 131000, ADR: 380, occRate: 65, parity: {booking: 385, expedia: 390}, img: "https://images.pexels.com/photos/262048/pexels-photo-262048.jpeg?auto=compress&cs=tinysrgb&w=800" },
-                { id: 104, name: "Sunset Horizon Suite", type: "Deluxe", price: 420, basePrice: 420, status: "available", house: "Dirty", revenue: 112000, ADR: 420, occRate: 55, parity: {booking: 425, expedia: 430}, img: "https://images.pexels.com/photos/210604/pexels-photo-210604.jpeg?auto=compress&cs=tinysrgb&w=800" },
-                { id: 105, name: "Magnolia Wing Room", type: "Deluxe", price: 390, basePrice: 390, status: "available", house: "Clean", revenue: 95000, ADR: 390, occRate: 68, parity: {booking: 395, expedia: 405}, img: "https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg?auto=compress&cs=tinysrgb&w=800" },
-                { id: 201, name: "Imperial Suite", type: "Suite", price: 800, basePrice: 800, status: "available", house: "Dirty", revenue: 296000, ADR: 800, occRate: 60, parity: {booking: 810, expedia: 820}, img: "https://images.pexels.com/photos/1579253/pexels-photo-1579253.jpeg?auto=compress&cs=tinysrgb&w=800" },
-                { id: 202, name: "Royal Suite", type: "Suite", price: 1200, basePrice: 1200, status: "available", house: "Clean", revenue: 344000, ADR: 1200, occRate: 45, parity: {booking: 1220, expedia: 1240}, img: "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=800" },
-                { id: 203, name: "Executive Club Room", type: "Suite", price: 650, basePrice: 650, status: "available", house: "Clean", revenue: 185000, ADR: 650, occRate: 70, parity: {booking: 660, expedia: 670}, img: "https://images.pexels.com/photos/279746/pexels-photo-279746.jpeg?auto=compress&cs=tinysrgb&w=800" },
-                { id: 204, name: "Majestic Grand Suite", type: "Suite", price: 950, basePrice: 950, status: "booked", house: "Occupied", revenue: 210000, ADR: 950, occRate: 78, parity: {booking: 960, expedia: 980}, img: "https://images.pexels.com/photos/2506990/pexels-photo-2506990.jpeg?auto=compress&cs=tinysrgb&w=800", guestName: "George Washington", bookingId: "IP-INIT-02" },
-                { id: 205, name: "Diplomatic Suite", type: "Suite", price: 1100, basePrice: 1100, status: "available", house: "Dirty", revenue: 230000, ADR: 1100, occRate: 52, parity: {booking: 1110, expedia: 1150}, img: "https://images.pexels.com/photos/1457842/pexels-photo-1457842.jpeg?auto=compress&cs=tinysrgb&w=800" },
-                { id: 301, name: "Cliffside Villa", type: "Villa", price: 2500, basePrice: 2500, status: "available", house: "Clean", revenue: 850000, ADR: 2500, occRate: 30, parity: {booking: 2550, expedia: 2600}, img: "https://images.pexels.com/photos/189296/pexels-photo-189296.jpeg?auto=compress&cs=tinysrgb&w=800" },
-                { id: 302, name: "Presidential Villa", type: "Villa", price: 3500, basePrice: 3500, status: "booked", house: "Occupied", revenue: 1490000, ADR: 3500, occRate: 20, parity: {booking: 3580, expedia: 3650}, img: "https://images.pexels.com/photos/2467285/pexels-photo-2467285.jpeg?auto=compress&cs=tinysrgb&w=800", guestName: "James Madison", bookingId: "IP-INIT-03" },
-                { id: 303, name: "Overwater Bungalow", type: "Villa", price: 2800, basePrice: 2800, status: "available", house: "Clean", revenue: 720000, ADR: 2800, occRate: 35, parity: {booking: 2850, expedia: 2900}, img: "https://images.pexels.com/photos/1287460/pexels-photo-1287460.jpeg?auto=compress&cs=tinysrgb&w=800" },
-                { id: 304, name: "Sanctuary Beach Villa", type: "Villa", price: 3200, basePrice: 3200, status: "available", house: "Clean", revenue: 640000, ADR: 3200, occRate: 28, parity: {booking: 3250, expedia: 3300}, img: "https://images.pexels.com/photos/1134176/pexels-photo-1134176.jpeg?auto=compress&cs=tinysrgb&w=800" },
-                { id: 305, name: "Royal Ocean Villa", type: "Villa", price: 4500, basePrice: 4500, status: "available", house: "Dirty", revenue: 1200000, ADR: 4500, occRate: 15, parity: {booking: 4550, expedia: 4600}, img: "https://images.pexels.com/photos/261102/pexels-photo-261102.jpeg?auto=compress&cs=tinysrgb&w=800" }
+                { id: 101, name: "Grand Deluxe Garden", type: "Deluxe", price: 350, basePrice: 350, status: "available", house: "Clean", revenue: 142000, ADR: 350, occRate: 75, parity: {booking: 355, expedia: 360}, img: "https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg?auto=compress&cs=tinysrgb&w=800", iot: {temp: 22, light: 80, curtain: 100, tv: false, dnd: false} },
+                { id: 102, name: "Grand Deluxe Ocean", type: "Deluxe", price: 450, basePrice: 450, status: "booked", house: "Occupied", revenue: 158000, ADR: 450, occRate: 92, parity: {booking: 455, expedia: 465}, img: "https://images.pexels.com/photos/271618/pexels-photo-271618.jpeg?auto=compress&cs=tinysrgb&w=800", guestName: "Alexander Hamilton", bookingId: "IP-INIT-01", iot: {temp: 20, light: 50, curtain: 50, tv: true, dnd: false} },
+                { id: 103, name: "Terrace Garden View", type: "Deluxe", price: 380, basePrice: 380, status: "available", house: "Clean", revenue: 131000, ADR: 380, occRate: 65, parity: {booking: 385, expedia: 390}, img: "https://images.pexels.com/photos/262048/pexels-photo-262048.jpeg?auto=compress&cs=tinysrgb&w=800", iot: {temp: 22, light: 80, curtain: 100, tv: false, dnd: false} },
+                { id: 104, name: "Sunset Horizon Suite", type: "Deluxe", price: 420, basePrice: 420, status: "available", house: "Dirty", revenue: 112000, ADR: 420, occRate: 55, parity: {booking: 425, expedia: 430}, img: "https://images.pexels.com/photos/210604/pexels-photo-210604.jpeg?auto=compress&cs=tinysrgb&w=800", iot: {temp: 22, light: 80, curtain: 100, tv: false, dnd: false} },
+                { id: 105, name: "Magnolia Wing Room", type: "Deluxe", price: 390, basePrice: 390, status: "available", house: "Clean", revenue: 95000, ADR: 390, occRate: 68, parity: {booking: 395, expedia: 405}, img: "https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg?auto=compress&cs=tinysrgb&w=800", iot: {temp: 22, light: 80, curtain: 100, tv: false, dnd: false} },
+                { id: 201, name: "Imperial Suite", type: "Suite", price: 800, basePrice: 800, status: "available", house: "Dirty", revenue: 296000, ADR: 800, occRate: 60, parity: {booking: 810, expedia: 820}, img: "https://images.pexels.com/photos/1579253/pexels-photo-1579253.jpeg?auto=compress&cs=tinysrgb&w=800", iot: {temp: 22, light: 80, curtain: 100, tv: false, dnd: false} },
+                { id: 202, name: "Royal Suite", type: "Suite", price: 1200, basePrice: 1200, status: "available", house: "Clean", revenue: 344000, ADR: 1200, occRate: 45, parity: {booking: 1220, expedia: 1240}, img: "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=800", iot: {temp: 22, light: 80, curtain: 100, tv: false, dnd: false} },
+                { id: 203, name: "Executive Club Room", type: "Suite", price: 650, basePrice: 650, status: "available", house: "Clean", revenue: 185000, ADR: 650, occRate: 70, parity: {booking: 660, expedia: 670}, img: "https://images.pexels.com/photos/279746/pexels-photo-279746.jpeg?auto=compress&cs=tinysrgb&w=800", iot: {temp: 22, light: 80, curtain: 100, tv: false, dnd: false} },
+                { id: 204, name: "Majestic Grand Suite", type: "Suite", price: 950, basePrice: 950, status: "booked", house: "Occupied", revenue: 210000, ADR: 950, occRate: 78, parity: {booking: 960, expedia: 980}, img: "https://images.pexels.com/photos/2506990/pexels-photo-2506990.jpeg?auto=compress&cs=tinysrgb&w=800", guestName: "George Washington", bookingId: "IP-INIT-02", iot: {temp: 18, light: 100, curtain: 0, tv: true, dnd: true} },
+                { id: 205, name: "Diplomatic Suite", type: "Suite", price: 1100, basePrice: 1100, status: "available", house: "Dirty", revenue: 230000, ADR: 1100, occRate: 52, parity: {booking: 1110, expedia: 1150}, img: "https://images.pexels.com/photos/1457842/pexels-photo-1457842.jpeg?auto=compress&cs=tinysrgb&w=800", iot: {temp: 22, light: 80, curtain: 100, tv: false, dnd: false} },
+                { id: 301, name: "Cliffside Villa", type: "Villa", price: 2500, basePrice: 2500, status: "available", house: "Clean", revenue: 850000, ADR: 2500, occRate: 30, parity: {booking: 2550, expedia: 2600}, img: "https://images.pexels.com/photos/189296/pexels-photo-189296.jpeg?auto=compress&cs=tinysrgb&w=800", iot: {temp: 22, light: 80, curtain: 100, tv: false, dnd: false} },
+                { id: 302, name: "Presidential Villa", type: "Villa", price: 3500, basePrice: 3500, status: "booked", house: "Occupied", revenue: 1490000, ADR: 3500, occRate: 20, parity: {booking: 3580, expedia: 3650}, img: "https://images.pexels.com/photos/2467285/pexels-photo-2467285.jpeg?auto=compress&cs=tinysrgb&w=800", guestName: "James Madison", bookingId: "IP-INIT-03", iot: {temp: 24, light: 20, curtain: 20, tv: false, dnd: false} },
+                { id: 303, name: "Overwater Bungalow", type: "Villa", price: 2800, basePrice: 2800, status: "available", house: "Clean", revenue: 720000, ADR: 2800, occRate: 35, parity: {booking: 2850, expedia: 2900}, img: "https://images.pexels.com/photos/1287460/pexels-photo-1287460.jpeg?auto=compress&cs=tinysrgb&w=800", iot: {temp: 22, light: 80, curtain: 100, tv: false, dnd: false} },
+                { id: 304, name: "Sanctuary Beach Villa", type: "Villa", price: 3200, basePrice: 3200, status: "available", house: "Clean", revenue: 640000, ADR: 3200, occRate: 28, parity: {booking: 3250, expedia: 3300}, img: "https://images.pexels.com/photos/1134176/pexels-photo-1134176.jpeg?auto=compress&cs=tinysrgb&w=800", iot: {temp: 22, light: 80, curtain: 100, tv: false, dnd: false} },
+                { id: 305, name: "Royal Ocean Villa", type: "Villa", price: 4500, basePrice: 4500, status: "available", house: "Dirty", revenue: 1200000, ADR: 4500, occRate: 15, parity: {booking: 4550, expedia: 4600}, img: "https://images.pexels.com/photos/261102/pexels-photo-261102.jpeg?auto=compress&cs=tinysrgb&w=800", iot: {temp: 22, light: 80, curtain: 100, tv: false, dnd: false} }
             ],
-            logs: [
-                { time: "23:45", msg: "Channel Manager Sync: Booking.com (OK)" },
-                { time: "23:04", msg: "New Booking Confirmed: Unit 201 ($800)" },
-                { time: "22:15", msg: "AI Surge Pricing Triggered: +15% Weekend Rates" },
-                { time: "21:00", msg: "Daily Audit Completed: Financial Integrity Verified" }
-            ],
+            logs: [],
             crm: [
                 { name: "Alexander Hamilton", email: "alex@hamilton.com", tier: "PLATINUM", spend: 145200, last: "2 days ago", prefs: "High floor, Foam pillows", points: 15400, stays: 12, health: 98 },
                 { name: "George Washington", email: "george@imperial.com", tier: "PLATINUM", spend: 289000, last: "1 week ago", prefs: "Security detail, 18°C", points: 32000, stays: 24, health: 95 },
@@ -570,7 +669,7 @@
                 { name: "Bamboo Toothbrushes", stock: 450, min: 100, unit: "pcs", cat: "Amenities" },
                 { name: "Sandalwood Soap Bars", stock: 320, min: 80, unit: "pcs", cat: "Amenities" },
                 { name: "Egyptian Cotton Towels", stock: 85, min: 100, unit: "sets", cat: "Linens" },
-                { name: "Single Malt Whiskey (50ml)", stock: 120, min: 50, unit: "btl", cat: "Minibar" },
+                { name: "Single Malt Whiskey (50ml)", stock: 120, min: 50, unit: "btl", Gran: "Minibar" },
                 { name: "Luxury Tea Selection", stock: 1200, min: 300, unit: "sachets", cat: "F&B" },
                 { name: "Artisanal Water (330ml)", stock: 800, min: 200, unit: "btl", cat: "F&B" }
             ],
@@ -600,7 +699,94 @@
                 this.filterRooms();
                 this.applyDynamicPricing();
                 this.logAutomation("System core initialized. Multi-channel sync active.");
+                
+                setTimeout(() => this.showToast("Security Scan: 0 vulnerabilities found.", "success"), 2000);
             },
+
+            showToast: function(msg, type = "info") {
+                const container = document.getElementById('toast-container');
+                const toast = document.createElement('div');
+                toast.className = 'toast-item';
+                toast.style.borderLeftColor = type === 'success' ? '#10b981' : (type === 'error' ? '#ef4444' : '#c5a059');
+                toast.innerHTML = `
+                    <div style="display:flex; gap:12px; align-items:center;">
+                        <i class="fas ${type==='success'?'fa-check-circle':(type==='error'?'fa-exclamation-triangle':'fa-info-circle')}" style="color:${toast.style.borderLeftColor}"></i>
+                        <div><strong style="display:block; font-size:0.7rem; opacity:0.6;">SYSTEM ALERT</strong>${msg}</div>
+                    </div>
+                `;
+                container.appendChild(toast);
+                setTimeout(() => toast.remove(), 5000);
+            },
+
+            openIotModal: function(id) {
+                const room = DB.rooms.find(r => r.id === id);
+                if(!room) return;
+                document.getElementById('iot-guest-name').innerText = room.guestName || "Guest";
+                document.getElementById('iot-room-number').innerText = room.id;
+                document.getElementById('dnd-toggle').checked = room.iot?.dnd || false;
+                document.getElementById('iot-modal').classList.add('active');
+            },
+            closeIotModal: function() { document.getElementById('iot-modal').classList.remove('active'); },
+            updateIoT: function(device, val, displayId, unit) {
+                const display = document.getElementById(displayId);
+                if (device === 'CURTAINS') {
+                    display.innerText = val == 100 ? 'Fully Opened' : (val == 0 ? 'Closed' : val + unit);
+                } else {
+                    display.innerText = val + unit;
+                }
+                this.logAutomation(`IOT_UNIT: ${device} calibrated to ${val}${unit}. Feedback loop validated.`);
+            },
+            setMood: function(mood) {
+                this.showToast(`Mood Profile Activated: ${mood}`, "info");
+                this.logAutomation(`IOT_SCENE: Hardware preset '${mood}' applied. Lighting & Media synced.`);
+            },
+            toggleTV: function() {
+                this.showToast(`Entertainment System Toggle Triggered`, "success");
+                this.logAutomation(`IOT_MEDIA: TV unit signal sent. Power state changed.`);
+            },
+            togglePrivacy: function(isDnd) {
+                const type = isDnd ? "error" : "success";
+                const msg = isDnd ? "DND Active - Room Hidden" : "Privacy Released - Staff Access OK";
+                this.showToast(msg, type);
+                this.logAutomation(`IOT_SECURITY: Privacy Node ${isDnd?'LOCKED':'OPENED'}. Digital signage updated.`);
+            },
+            requestService: function(service) {
+                this.showToast(`Request Received: ${service} for Room ${document.getElementById('iot-room-number').innerText}`, "success");
+                this.logAutomation(`SERVICE: Neural queue updated. Dispatching staff for ${service}.`);
+            },
+
+            startCleaning: function(id) {
+                const room = DB.rooms.find(r => r.id === id);
+                if(!room) return;
+                
+                let progress = 0;
+                this.showToast(`Autonomous Housekeeping started for Unit ${id}`, "info");
+                
+                const interval = setInterval(() => {
+                    progress += 10;
+                    this.logAutomation(`CLEANING UNIT ${id}: ${progress}% COMPLETED...`);
+                    
+                    if(progress >= 100) {
+                        clearInterval(interval);
+                        this.updateSuppliesAfterCleaning(id);
+                        this.showToast(`Unit ${id} is now pristine and ready.`, "success");
+                    }
+                }, 400); 
+            },
+
+            executeAI: function() {
+                Swal.fire({
+                    title: 'Executing Neural Logic',
+                    html: 'AI is analyzing 1,402 market variables...',
+                    timer: 2500,
+                    timerProgressBar: true,
+                    didOpen: () => { Swal.showLoading(); },
+                }).then(() => {
+                    this.showToast("Scenario Optimized: High-Yield Mode Active", "success");
+                    this.logAutomation("AI_REASONING: Applied Peak Season logic. Yield curve normalized.");
+                });
+            },
+
             loadState: function() {
                 const saved = localStorage.getItem('IP_HOT_PROF_EN_V1');
                 if (saved) {
@@ -627,7 +813,7 @@
             verifyAdmin: function() {
                 let pin = ""; document.querySelectorAll('.pin-digit').forEach(d => pin += d.value);
                 if(pin === "1234") { 
-                    this.closeAdminGate(); this.toggleAdmin(true); this.logAutomation("Staff session authorized.");
+                    this.closeAdminGate(); this.toggleAdmin(true); this.logAutomation("Staff session authorized. AES-256 bridge established.");
                 } else { Swal.fire('Security Alert', 'Unauthorized PIN Entry Detected.', 'error'); }
                 document.querySelectorAll('.pin-digit').forEach(d => d.value = "");
             },
@@ -641,7 +827,7 @@
                     this.saveState();
                     this.closeUserGate();
                     this.renderNavbar();
-                    Swal.fire('Welcome Back', `Imperial Elite Member: ${member.name} Dashboard Active`, 'success');
+                    this.showToast(`REAL-TIME: Welcome back, ${member.name}. Mobile Key Active.`, "success");
                 } else {
                     DB.currentUser = { name: "Guest User", tier: "GUEST" };
                     this.saveState();
@@ -710,6 +896,8 @@
             },
             openCheckin: function() { document.getElementById('checkin-modal').classList.add('active'); },
             closeCheckin: function() { document.getElementById('checkin-modal').classList.remove('active'); },
+            openCheckout: function() { document.getElementById('guest-checkout-modal').classList.add('active'); },
+            closeCheckout: function() { document.getElementById('guest-checkout-modal').classList.remove('active'); },
             handleEKycPreview: function(input) {
                 const previewBox = document.getElementById('ekyc-preview-box');
                 const previewImg = document.getElementById('ekyc-img-preview');
@@ -720,7 +908,7 @@
                         previewImg.src = e.target.result;
                         previewBox.classList.remove('hidden');
                         scanLine.style.opacity = '1';
-                        app.logAutomation("E-KYC: Biometric capture ready.");
+                        app.logAutomation("E-KYC: Biometric capture ready. Analyzing facial nodes.");
                     }
                     reader.readAsDataURL(input.files[0]);
                 }
@@ -730,11 +918,24 @@
                 const ekyc = document.getElementById('ekyc-file-checkin');
                 if(!code) return Swal.fire('Error', 'Please enter your Booking ID', 'error');
                 if(!ekyc.files[0]) return Swal.fire('E-KYC Failed', 'Identification image is mandatory.', 'error');
+                
+                const room = DB.rooms.find(r => r.bookingId === code);
+                if(!room) {
+                    return Swal.fire({
+                        title: 'Invalid Code',
+                        text: 'No reservation found matching this code. Please check and try again.',
+                        icon: 'error',
+                        confirmButtonColor: '#ef4444'
+                    });
+                }
+
                 const overlay = document.getElementById('proc-overlay');
                 overlay.style.display = 'flex';
-                document.getElementById('tx-id').innerText = "KYC_VERIF: OCR PROCESSING...";
-                const names = ["Alexander Hamilton", "George Washington", "Thomas Jefferson", "James Madison", "John Adams"];
-                const verifiedName = names[Math.floor(Math.random() * names.length)];
+                document.getElementById('tx-id').innerText = "KYC_VERIF: " + code;
+                
+                const verifiedName = room.guestName; 
+                const roomId = room.id;
+
                 const steps = [
                     { time: 800, text: "Scanning ID Biometric Points...", active: 1 },
                     { time: 1600, text: "OCR Extraction: Identity Found.", active: 2 },
@@ -748,14 +949,31 @@
                 setTimeout(() => {
                     overlay.style.display = 'none';
                     this.closeCheckin();
+                    this.showToast(`Check-in Successful for Room ${roomId}`, "success");
                     Swal.fire({
                         title: 'Check-in Complete',
-                        html: `<b>Identity Verified: ${verifiedName}</b><br><br>Welcome to Imperial Palace. Your Digital Mobile Key has been activated.`,
+                        html: `<b>Identity Verified: ${verifiedName}</b><br>Unit Assignment: <b>${roomId}</b><br><br>Welcome to Imperial Palace. Your Digital Mobile Key has been activated.`,
                         icon: 'success',
                         confirmButtonColor: '#c5a059'
                     });
                     document.querySelectorAll('.step-circle').forEach(c => c.classList.remove('active', 'done'));
                 }, 4000);
+            },
+            executeGuestCheckout: function() {
+                const code = document.getElementById('checkout-code-guest').value;
+                if(!code) return Swal.fire('Error', 'Please enter your Booking ID', 'error');
+                const room = DB.rooms.find(r => r.bookingId === code);
+                if(!room) return Swal.fire('Invalid Code', 'No active booking found with this ID.', 'error');
+
+                const guestName = room.guestName;
+                const roomId = room.id;
+                
+                this.closeCheckout();
+                this.checkoutRoom(roomId); 
+                
+                this.showToast(`Check-out success: Thank you, ${guestName}!`, "success");
+                Swal.fire('Session Terminated', `Unit ${roomId} has been released. Safe travels!`, 'success');
+                document.getElementById('checkout-code-guest').value = "";
             },
             checkoutRoom: function(id) {
                 const room = DB.rooms.find(r => r.id === id);
@@ -764,7 +982,7 @@
                     room.house = "Dirty"; 
                     room.guestName = null;
                     room.bookingId = null;
-                    this.logAutomation(`GUEST_OUT: Unit ${id} flagged as DIRTY. Housekeeping notified.`);
+                    this.logAutomation(`GUEST_OUT: Unit ${id} flagged as DIRTY. Scheduled for sanitization.`);
                     this.saveState();
                     this.syncUI();
                 }
@@ -778,19 +996,19 @@
                     if(item && item.stock > 0) {
                         item.stock -= 1;
                         if(item.stock < item.min) {
-                            DB.logs.unshift({ time: new Date().toLocaleTimeString(), msg: `LOW_STOCK: ${itemName} below minimum (${item.stock} left)` });
+                            this.showToast(`Low Stock Alert: ${itemName}`, "error");
+                            DB.logs.unshift({ time: new Date().toLocaleTimeString(), msg: `LOW_STOCK: ${itemName} below threshold.` });
                         }
                     }
                 });
                 room.house = "Clean";
                 room.status = "available";
-                this.logAutomation(`HOUSEKEEPING: Unit ${id} is now CLEAN. Supplies deducted.`);
                 this.saveState();
                 this.syncUI();
             },
             logAutomation: function(msg) {
                 const log = document.getElementById('automation-log');
-                if(log) { log.innerText = `SYS_ALERT: ${msg}`; log.classList.add('active'); setTimeout(() => log.classList.remove('active'), 3000); }
+                if(log) { log.innerText = `SYS_COMMAND: ${msg}`; log.classList.add('active'); setTimeout(() => log.classList.remove('active'), 4000); }
             },
             setupDates: function() {
                 const today = new Date().toISOString().split('T')[0];
@@ -830,6 +1048,9 @@
                     }
                     const statusClass = room.status === 'Needs Cleaning' ? 'bg-cleaning' : (room.status === 'booked' ? 'bg-booked' : 'bg-avail');
                     const statusText = isBuffer ? 'SYSTEM BUFFER' : (room.status === 'Needs Cleaning' ? 'CLEANING REQ' : room.status.toUpperCase());
+                    
+                    const iotBtn = (room.status === 'booked') ? `<button class="btn-book" onclick="app.openIotModal(${room.id})" style="background:var(--primary-gold); color:white; margin-top:10px; border:none"><i class="fas fa-home"></i> MY SMART ROOM</button>` : '';
+
                     grid.innerHTML += `
                         <div class="room-card ${isBuffer ? 'buffer-locked' : ''}">
                             <div class="room-img-box">
@@ -846,6 +1067,7 @@
                                 <button class="btn-book" ${room.status !== 'available' || isBuffer ? 'disabled' : ''} onclick="app.openBooking(${room.id})">
                                     ${isBuffer ? 'LOCKED BY BUFFER' : (room.status !== 'available' ? 'NOT AVAILABLE' : 'AUTHORIZE STAY')}
                                 </button>
+                                ${iotBtn}
                             </div>
                         </div>`;
                 });
@@ -861,6 +1083,13 @@
                 const depositValue = Math.round(totalStay * 0.3);
                 document.getElementById('bill-deposit-amt').innerText = '$' + depositValue.toLocaleString();
                 document.getElementById('bill-total').innerText = '$' + totalStay.toLocaleString();
+                
+                if(DB.currentUser && DB.currentUser.name !== "Guest User") {
+                    document.getElementById('cust-name').value = DB.currentUser.name;
+                    document.getElementById('cust-email').value = DB.currentUser.email || "";
+                    document.getElementById('cust-phone').value = DB.currentUser.phone || "";
+                }
+
                 document.getElementById('booking-modal').classList.add('active');
             },
             closeModal: function() { document.getElementById('booking-modal').classList.remove('active'); },
@@ -896,38 +1125,27 @@
                     const depositVal = Math.round(stayValue * 0.3);
                     DB.totalRevenue += depositVal;
 
-                    // --- TRỰC TIẾP CẬP NHẬT GUEST CRM ---
                     let existingGuest = DB.crm.find(c => c.email.toLowerCase() === guestEmail.toLowerCase());
                     if(!existingGuest) {
                         DB.crm.unshift({
-                            name: guestName,
-                            email: guestEmail,
-                            phone: guestPhone,
-                            tier: "GUEST",
-                            spend: stayValue,
-                            last: "Today",
-                            prefs: "Direct booking resident",
-                            points: Math.round(stayValue * 0.1),
-                            stays: 1,
-                            health: 100
+                            name: guestName, email: guestEmail, phone: guestPhone, tier: "GUEST", spend: stayValue, last: "Today", prefs: "Direct booking resident", points: Math.round(stayValue * 0.1), stays: 1, health: 100
                         });
                     } else {
-                        existingGuest.spend += stayValue;
-                        existingGuest.stays += 1;
-                        existingGuest.last = "Today";
-                        existingGuest.points += Math.round(stayValue * 0.1);
+                        existingGuest.spend += stayValue; existingGuest.stays += 1; existingGuest.last = "Today"; existingGuest.points += Math.round(stayValue * 0.1);
                         if(existingGuest.spend > 100000) existingGuest.tier = "PLATINUM";
                         else if(existingGuest.spend > 50000) existingGuest.tier = "GOLD";
                     }
 
                     DB.logs.unshift({ time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), msg: `DEPOSIT_PAID: ${bookingId} (+$${depositVal}) by ${guestName}` });
-                    this.saveState(); 
-                    this.syncUI();
+                    this.saveState(); this.syncUI();
+                    
+                    const notifyName = DB.currentUser ? DB.currentUser.name : guestName;
+                    this.showToast(`REAL-TIME: ${notifyName}, your booking ${bookingId} is secured!`, "success");
+                    
                     Swal.fire({ 
                         title: conflictDetected ? 'Conflict Resolved' : 'Booking Successful', 
-                        html: `Transaction successful. Your Booking ID is <b>${bookingId}</b>.<br><br>Welcome <b>${guestName}</b> to the Imperial Palace CRM ecosystem.`, 
-                        icon: 'success', 
-                        confirmButtonColor: '#c5a059' 
+                        html: `<b>Congratulations, ${guestName}!</b><br>Your booking code is: <b style="color: var(--primary-gold); font-size: 1.2rem;">${bookingId}</b><br>Please save this code for your check-in.`, 
+                        icon: 'success', confirmButtonColor: '#c5a059' 
                     });
                     document.querySelectorAll('.step-circle').forEach(c => c.classList.remove('active', 'done'));
                 }, 4000);
@@ -957,31 +1175,35 @@
                 new Chart(ctx, { 
                     type: 'line', 
                     data: { 
-                        labels: ['06h', '09h', '12h', '15h', '18h', '21h', '00h'], 
-                        datasets: [{ 
+                        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], 
+                        datasets: [
+                        { 
                             label: 'Yield Performance ($)', 
-                            data: [baseVal-50000, baseVal-35000, baseVal-20000, baseVal-10000, baseVal-5000, baseVal-2000, baseVal], 
-                            borderColor: '#c5a059', 
-                            backgroundColor: 'rgba(197, 160, 89, 0.1)',
-                            fill: true, 
-                            tension: 0.4 
-                        }] 
+                            data: [baseVal-80000, baseVal-60000, baseVal-45000, baseVal-30000, baseVal-15000, baseVal-5000, baseVal], 
+                            borderColor: '#c5a059', backgroundColor: 'rgba(197, 160, 89, 0.1)', fill: true, tension: 0.4 
+                        },
+                        { 
+                            label: 'AI Forecast (Predictive)', 
+                            data: [baseVal, baseVal+12000, baseVal+25000, baseVal+40000, baseVal+60000, baseVal+85000, baseVal+120000], 
+                            borderColor: '#10b981', borderDash: [5, 5], fill: false, tension: 0.4 
+                        }
+                        ] 
                     },
-                    options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { grid: { color: 'rgba(255,255,255,0.05)' } } } }
+                    options: { responsive: true, plugins: { legend: { display: true, labels: { color: '#94a3b8' } } }, scales: { y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } }, x: { ticks: { color: '#94a3b8' } } } }
                 });
             },
             getOverviewHTML: function() {
                 const booked = DB.rooms.filter(r => r.status === 'booked').length;
                 return `
-                    <div class="admin-header"><h2>Executive Overview</h2></div>
+                    <div class="admin-header"><h2>Executive Overview</h2><button class="btn-portal" onclick="app.executeAI()"><i class="fas fa-bolt"></i> OPTIMIZE YIELD</button></div>
                     <div class="stats-grid">
-                        <div class="stat-box"><span class="label">Gross Revenue (Cash Flow)</span><div class="value">$${DB.totalRevenue.toLocaleString()}</div></div>
-                        <div class="stat-box"><span class="label">Current Buffer Hold</span><div class="value" style="color: var(--accent-orange);">${DB.bufferHoldCount} Rooms</div></div>
-                        <div class="stat-box"><span class="label">System Occupancy</span><div class="value">${Math.round((booked/DB.rooms.length)*100)}%</div></div>
+                        <div class="stat-box"><span class="label">Gross Revenue</span><div class="value">$${DB.totalRevenue.toLocaleString()}</div></div>
+                        <div class="stat-box"><span class="label">ADR (Avg Daily Rate)</span><div class="value">$${Math.round(DB.totalRevenue/(booked||1)).toLocaleString()}</div></div>
+                        <div class="stat-box"><span class="label">Occupancy Rate</span><div class="value">${Math.round((booked/DB.rooms.length)*100)}%</div></div>
                         <div class="stat-box"><span class="label">AI Yield Index</span><div class="value">9.8/10</div></div>
                     </div>
                     <div class="matrix-container" style="border-top: 4px solid var(--primary-gold);">
-                        <h4 style="margin-bottom: 20px;"><i class="fas fa-chart-line"></i> Real-time Financial Orchestration</h4>
+                        <h4 style="margin-bottom: 20px;"><i class="fas fa-chart-line"></i> Performance Analytics & AI Forecasting</h4>
                         <canvas id="revenueChart" height="100"></canvas>
                     </div>`;
             },
@@ -990,7 +1212,7 @@
                     <div class="admin-header">
                         <div>
                             <h2>Inventory Allocation Matrix</h2>
-                            <p style="font-size:0.8rem; color: var(--text-gray);">Mapping across 14 channels (Direct, GDS, OTA).</p>
+                            <p style="font-size:0.8rem; color: var(--text-gray);">Mapping across 14 channels. Node locking protocol active.</p>
                         </div>
                     </div>
                     <div class="matrix-container">
@@ -1007,14 +1229,8 @@
                             </thead>
                             <tbody>
                                 ${DB.rooms.map((r, i) => {
-                                    let channelHTML = '';
-                                    if(i%3===0) channelHTML = '<span style="color:#003580; font-weight:700;"><i class="fas fa-bold"></i> Booking.com</span>';
-                                    else if(i%2===0) channelHTML = '<span style="color:#e21a2c; font-weight:700;"><i class="fas fa-h-square"></i> Agoda</span>';
-                                    else channelHTML = '<span style="color:#001e32; font-weight:700;"><i class="fas fa-globe"></i> Expedia</span>';
-                                    let actionBtn = '';
-                                    if(r.status === 'booked') actionBtn = `<button onclick="app.checkoutRoom(${r.id})" style="background:#ef4444; color:white; border:none; padding:5px 10px; border-radius:4px; font-size:0.6rem;">CHECK-OUT</button>`;
-                                    else if(r.status === 'Needs Cleaning') actionBtn = `<button onclick="app.updateSuppliesAfterCleaning(${r.id})" style="background:#f59e0b; color:white; border:none; padding:5px 10px; border-radius:4px; font-size:0.6rem;">CLEAN ROOM</button>`;
-                                    else actionBtn = `<span style="color:#10b981; font-size:0.6rem; font-weight:700;">READY</span>`;
+                                    let channelHTML = i%3===0 ? '<span style="color:#003580; font-weight:700;"><i class="fas fa-bold"></i> Booking.com</span>' : (i%2===0 ? '<span style="color:#e21a2c; font-weight:700;"><i class="fas fa-h-square"></i> Agoda</span>' : '<span style="color:#001e32; font-weight:700;"><i class="fas fa-globe"></i> Expedia</span>');
+                                    let actionBtn = r.status === 'booked' ? `<button onclick="app.checkoutRoom(${r.id})" style="background:#ef4444; color:white; border:none; padding:5px 10px; border-radius:4px; font-size:0.6rem;">CHECK-OUT</button>` : (r.status === 'Needs Cleaning' ? `<button onclick="app.startCleaning(${r.id})" style="background:#f59e0b; color:white; border:none; padding:5px 10px; border-radius:4px; font-size:0.6rem;">START CLEANING</button>` : `<span style="color:#10b981; font-size:0.6rem; font-weight:700;">READY</span>`);
                                     const guestDisplay = r.status === 'booked' ? `Resident: ${r.guestName || 'GUEST'} <br><small style="color:var(--text-gray)">ID: ${r.bookingId || 'N/A'}</small>` : 'OPEN';
                                     return `
                                     <tr>
@@ -1037,21 +1253,16 @@
             },
             updateEngineParam: function(key, val) {
                 DB.engine[key] = parseInt(val);
-                this.applyDynamicPricing();
-                this.renderAdminTab();
-                this.saveState();
+                this.applyDynamicPricing(); this.renderAdminTab(); this.saveState();
                 this.logAutomation(`Neural Param: ${key} recalibrated to ${val}`);
             },
             getEngineHTML: function() {
                 const s = [
                     { k: 'pricingSens', l: 'Dynamic Yield Engine', d: 'Surge pricing logic based on global demand sensors.', val: DB.engine.pricingSens, unit: '% Sens' },
-                    { k: 'gapThreshold', l: 'Vacant Slot Optimizer', d: 'Heuristic LOS calculation to fill calendar gaps.', val: DB.engine.gapThreshold, unit: ' Day Fill' },
-                    { k: 'predictiveSens', l: 'Predictive Maintenance', d: 'Hardware telemetry for pre-emptive repair cycles.', val: DB.engine.predictiveSens || 75, unit: '% Accuracy' },
-                    { k: 'conciergeLogic', l: 'Neural Concierge Logic', d: 'AI automated guest request routing and queuing.', val: DB.engine.conciergeLogic || 90, unit: ' Intelligence' },
-                    { k: 'ecoTemp', l: 'Neural HVAC Automation', d: 'Centralized energy management via hardware nodes.', val: DB.engine.ecoTemp, unit: '°C Limit' },
-                    { k: 'guardLimit', l: 'Anti-Overbooking Shield', d: 'Cross-channel node locking protection protocol.', val: DB.engine.guardLimit, unit: '% Cap' }
+                    { k: 'predictiveSens', l: 'Predictive Maintenance', d: 'Hardware telemetry for pre-emptive repair cycles.', val: DB.engine.predictiveSens || 75, unit: '% Acc' },
+                    { k: 'conciergeLogic', l: 'Neural Concierge Logic', d: 'AI automated guest request routing and queuing.', val: DB.engine.conciergeLogic || 90, unit: ' IQ' },
+                    { k: 'ecoTemp', l: 'Neural HVAC Automation', d: 'Centralized energy management via hardware nodes.', val: DB.engine.ecoTemp, unit: '°C Limit' }
                 ];
-                const now = new Date().toLocaleTimeString();
                 return `
                     <div class="admin-header"><h2>Automation & Neural Heuristics</h2></div>
                     <div class="automation-grid">
@@ -1070,119 +1281,70 @@
                                 </div>
                             </div>`).join('')}
                     </div>
-                    <div class="matrix-container" style="margin-top:30px; border-left:4px solid var(--primary-gold);">
-                        <h4 style="margin-bottom:15px;"><i class="fas fa-terminal"></i> Deep Reasoning Trace & Operational Logs</h4>
-                        <div style="font-family:'Consolas', monospace; font-size:0.75rem; color:#10b981; line-height:1.8; height: 350px; overflow-y: auto; background: rgba(0,0,0,0.4); padding: 25px; border-radius: 12px; border: 1px solid rgba(16, 185, 129, 0.1);">
-                            <div>[${now}] > [SYSTEM] Initialization complete. Core Neural Matrix v4.2.0.8 ONLINE.</div>
-                            <div>[${now}] > [ANALYZING] Scanned 14 channel nodes (Expedia, Agoda, Booking). Sync status: 100%.</div>
-                            <div>[${now}] > [HEURISTIC] Global demand sensors detect 15% spike in Region-A hospitality index.</div>
-                            <div>[${now}] > [ADJUSTING] Dynamic ADR incremented by +$42.50 for peak efficiency nodes.</div>
-                            <div>[${now}] > [IOT_WATCH] Unit 105 humidity sensors report 65%. Activating HVAC Node 4-Alpha.</div>
-                            <div>[${now}] > [IOT_WATCH] Unit 202 occupancy detected via infrared node. Cross-referencing check-in status... Verified.</div>
-                            <div>[${now}] > [CRM_SYNC] New metadata entry detected for resident booking IP-X728. Profiling sentiment...</div>
-                            <div>[${now}] > [SENTIMENT] Guest preference extracted: "High floor", "Late checkout prospect".</div>
-                            <div>[${now}] > [LOGISTICS] Amenities inventory dropped below 15% threshold. Predictive procurement order #LX-9921 queued.</div>
-                            <div>[${now}] > [SECURITY] RSA-4096 handshake successful with Global GDS Gateway. Encryption tunnels stable.</div>
-                            <div>[${now}] > [CONFLICT] Concurrent request on Unit 301 detected from API Agoda-8. Implementing node locking.</div>
-                            <div>[${now}] > [CONFLICT] Node lock applied. Conflict resolved via priority heuristic (Tier-PLATINUM override).</div>
-                            <div>[${now}] > [YIELD_OPTIMIZER] Gap calculation: Found 2-night slot on Unit 205. Deploying tactical discount on Expedia node.</div>
-                            <div>[${now}] > [CLEANING_SCHEDULER] Unit 104 flagged as 'DIRTY'. Housekeeping AI dispatched to floor 2.</div>
-                            <div>[${now}] > [ENERGY_ALGO] Vacant unit power reduction: Units 101, 103, 305 entered Deep Sleep mode.</div>
-                            <div>[${now}] > [CRM_SYNC] Auto-updating Loyalty points for Alexander Hamilton. Total: 15,400. Tier: PLATINUM.</div>
-                            <div>[${now}] > [FINANCE] Real-time revenue delta: +$1,250.00 since last audit cycle (0.002s latency).</div>
-                            <div>[${now}] > [LOG] System heartbeat stable. 256,412 operations per millisecond.</div>
-                            <div style="color: white; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 10px; padding-top: 5px;">[TERMINAL] Listening for incoming neural inputs...</div>
+                    <div class="matrix-container" style="margin-top:30px; border-left:4px solid var(--cyber-green);">
+                        <h4 style="margin-bottom:15px; font-family:'Fira Code'"><i class="fas fa-terminal"></i> NEURAL REASONING TRACE [v4.2]</h4>
+                        <div style="font-family:'Fira Code', monospace; font-size:0.75rem; color:var(--cyber-green); line-height:1.8; height: 350px; overflow-y: auto; background: #000; padding: 25px; border-radius: 12px; box-shadow: inset 0 0 15px rgba(0,255,65,0.1);">
+                            <div style="color: white; opacity: 0.5;">[${new Date().toLocaleTimeString()}] > INITIALIZING SECURITY SCAN...</div>
+                            <div style="color: #fff">[OK] 256-BIT ENCRYPTION HANDSHAKE SUCCESSFUL.</div>
+                            <div>[SYSTEM] Neural Matrix Online. 14,021 threads active.</div>
+                            <div>[ANALYZING] Scanned 14 channel nodes (Expedia, Agoda, Booking). Sync status: 100%.</div>
+                            <div>[HEURISTIC] Demand sensors detect 15% spike in Region-A hospitality index.</div>
+                            <div>[IOT_WATCH] Unit 105 humidity sensors report 65%. Activating HVAC Node 4-Alpha.</div>
+                            <div>[IOT_WATCH] Unit 202 occupancy detected via infrared node. Cross-referencing check-in... Verified.</div>
+                            <div>[SENTIMENT] Guest preference extracted: "High floor", "Late checkout prospect".</div>
+                            <div>[SECURITY] RSA-4096 handshake successful with Global GDS Gateway.</div>
+                            <div>[CLEANING_SCHEDULER] Dispatching autonomous drone unit to Floor 2 for Unit 104.</div>
+                            <div>[YIELD] Predictive revenue delta: +$1,250.00 since last audit cycle.</div>
+                            <div style="border-top: 1px solid rgba(0,255,65,0.2); margin-top:10px; padding-top:10px;">[LISTENING] Ready for neural inputs... _</div>
                         </div>
                     </div>`;
             },
             getCRMHTML: function() {
                 return `
-                    <div class="admin-header">
-                        <h2>Guest Insights & Loyalty Matrix</h2>
-                        <div style="display:flex; gap:10px;">
-                            <input type="text" placeholder="Search members..." style="padding:10px; border-radius:20px; border:1px solid #1f2937; background:transparent; color:white; font-size:0.8rem; width:250px;">
-                            <button class="btn-portal" style="background:var(--primary-gold); color:white; border:none; padding:10px 20px;">+ NEW ENTRY</button>
-                        </div>
-                    </div>
+                    <div class="admin-header"><h2>Guest Insights & Loyalty Matrix</h2></div>
                     <div class="matrix-container">
                         <table class="matrix-table">
                             <thead>
-                                <tr>
-                                    <th style="text-align:left">Elite Member Profile</th>
-                                    <th>Tier Status</th>
-                                    <th>Stays</th>
-                                    <th>Total Spend</th>
-                                    <th>Loyalty Points</th>
-                                    <th>Sentiment Score</th>
-                                    <th>Preferences</th>
-                                </tr>
+                                <tr><th style="text-align:left">Elite Member Profile</th><th>Tier Status</th><th>Stays</th><th>Total Spend</th><th>Points</th><th>Sentiment</th><th>Preferences</th></tr>
                             </thead>
                             <tbody>
-                                ${DB.crm.map(c => {
-                                    const healthColor = c.health > 90 ? '#10b981' : (c.health > 70 ? '#f59e0b' : '#ef4444');
-                                    return `
+                                ${DB.crm.map(c => `
                                     <tr>
-                                        <td style="text-align:left">
-                                            <div style="display:flex; align-items:center; gap:12px;">
-                                                <div style="width:40px; height:40px; background:var(--primary-dark); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.9rem; font-weight:700; border:1px solid var(--primary-gold); color:var(--primary-gold);">${c.name[0]}</div>
-                                                <div><strong>${c.name}</strong><br><small style="color:var(--text-gray)">Last Visit: ${c.last}</small></div>
-                                            </div>
-                                        </td>
+                                        <td style="text-align:left"><div style="display:flex; align-items:center; gap:12px;"><div style="width:40px; height:40px; background:var(--primary-dark); border-radius:50%; display:flex; align-items:center; justify-content:center; border:1px solid var(--primary-gold); color:var(--primary-gold);">${c.name[0]}</div><div><strong>${c.name}</strong><br><small style="color:var(--text-gray)">${c.last}</small></div></div></td>
                                         <td><span style="border:1px solid var(--primary-gold); padding:4px 12px; border-radius:20px; font-size:0.65rem; font-weight:700; color:var(--primary-gold);">${c.tier}</span></td>
-                                        <td><strong style="color:white">${c.stays}</strong> Stays</td>
+                                        <td><strong style="color:white">${c.stays}</strong></td>
                                         <td><strong style="color:var(--accent-green)">$${c.spend.toLocaleString()}</strong></td>
-                                        <td>${(c.points || 0).toLocaleString()} pts</td>
-                                        <td><div style="display:flex; align-items:center; gap:8px;"><div style="width:50px; height:6px; background:#1f2937; border-radius:3px;"><div style="width:${c.health || 80}%; height:100%; background:${healthColor}; border-radius:3px;"></div></div><small>${c.health || 80}%</small></div></td>
-                                        <td><span style="font-size:0.6rem; color:#9ca3af; font-style:italic;">"${c.prefs || 'N/A'}"</span></td>
-                                    </tr>`}).join('')}
+                                        <td>${(c.points || 0).toLocaleString()}</td>
+                                        <td><div style="display:flex; align-items:center; gap:8px;"><div style="width:50px; height:6px; background:#1f2937; border-radius:3px;"><div style="width:${c.health || 80}%; height:100%; background:#10b981; border-radius:3px;"></div></div><small>${c.health || 80}%</small></div></td>
+                                        <td><span style="font-size:0.6rem; font-style:italic;">"${c.prefs || 'N/A'}"</span></td>
+                                    </tr>`).join('')}
                             </tbody>
                         </table>
                     </div>`;
             },
             getSuppliesHTML: function() {
-                if (!DB.supplies) return '<div class="admin-header"><h2>Loading Supply Chain...</h2></div>';
                 return `
-                    <div class="admin-header">
-                        <h2>Supply Chain & Resource Inventory</h2>
-                        <button class="btn-portal" style="background:var(--primary-gold); color:white; border:none; padding:10px 20px;"><i class="fas fa-file-download"></i> EXPORT LOGISTICS</button>
-                    </div>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px;">
+                    <div class="admin-header"><h2>Supply Chain & Resource Inventory</h2></div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
                         ${DB.supplies.map(s => {
                             const percent = Math.min((s.stock / (s.min * 2)) * 100, 100);
-                            const isLow = s.stock < s.min;
                             return `
                                 <div class="supply-card">
                                     <div style="width: 100%">
                                         <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                                            <div class="supply-info">
-                                                <div class="supply-icon"><i class="fas ${s.cat==='Minibar'?'fa-glass-martini-alt':(s.cat==='F&B'?'fa-coffee':'fa-pump-soap')}"></i></div>
-                                                <div>
-                                                    <h4 style="color:white">${s.name}</h4>
-                                                    <small style="color:var(--text-gray)">${s.cat} System</small>
-                                                </div>
-                                            </div>
-                                            <span class="supply-status ${isLow?'status-low':'status-ok'}">${isLow?'REORDER REQ':'STABLE'}</span>
+                                            <div class="supply-info"><div class="supply-icon"><i class="fas ${s.cat==='Minibar'?'fa-glass-martini-alt':(s.cat==='F&B'?'fa-coffee':'fa-pump-soap')}"></i></div><div><h4 style="color:white">${s.name}</h4><small style="color:var(--text-gray)">${s.cat}</small></div></div>
+                                            <span class="supply-status ${s.stock < s.min?'status-low':'status-ok'}">${s.stock < s.min?'REORDER':'OK'}</span>
                                         </div>
-                                        <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#9ca3af;">
-                                            <span>Current Stock: <strong>${s.stock} ${s.unit}</strong></span>
-                                            <span>Min threshold: ${s.min}</span>
-                                        </div>
-                                        <div class="supply-stock-bar">
-                                            <div class="supply-stock-fill" style="width: ${percent}%; background: ${isLow?'#f59e0b':'#c5a059'}"></div>
-                                        </div>
+                                        <div class="supply-stock-bar"><div class="supply-stock-fill" style="width: ${percent}%;"></div></div>
                                     </div>
-                                </div>
-                            `;
+                                </div>`;
                         }).join('')}
                     </div>`;
             },
             toggleAdmin: function(show) {
                 document.getElementById('admin-interface').classList.toggle('hidden', !show);
                 document.getElementById('client-app').classList.toggle('hidden', show);
-                if(show) {
-                    this.currentAdminTab = 'overview';
-                    this.renderAdminTab();
-                }
+                if(show) { this.currentAdminTab = 'overview'; this.renderAdminTab(); }
             }
         };
         document.addEventListener('DOMContentLoaded', () => app.init());
