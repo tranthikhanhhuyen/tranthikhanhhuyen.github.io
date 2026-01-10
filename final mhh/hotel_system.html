@@ -26,265 +26,975 @@
             --accent-orange: #f59e0b;
             --cyber-green: #00ff41;
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
         body {
             font-family: 'Montserrat', sans-serif;
             color: var(--primary-dark);
             background-color: var(--bg-off-white);
             overflow-x: hidden;
         }
-        h1, h2, h3, h4, h5 { font-family: 'Playfair Display', serif; }
-        a { text-decoration: none; color: inherit; transition: var(--transition); }
-        ul { list-style: none; }
-        .hidden { display: none !important; }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: var(--primary-gold); border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #b08d45; }
-
-        .toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
-        .toast-item { background: var(--glass-bg); color: white; padding: 15px 25px; border-radius: 8px; border-left: 4px solid var(--primary-gold); box-shadow: var(--shadow-lg); backdrop-filter: blur(10px); animation: slideInRight 0.4s ease; min-width: 280px; }
-        @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-
+        h1, h2, h3, h4, h5 {
+            font-family: 'Playfair Display', serif;
+        }
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: var(--transition);
+        }
+        ul {
+            list-style: none;
+        }
+        .hidden {
+            display: none !important;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-gold);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #b08d45;
+        }
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .toast-item {
+            background: var(--glass-bg);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-gold);
+            box-shadow: var(--shadow-lg);
+            backdrop-filter: blur(10px);
+            animation: slideInRight 0.4s ease;
+            min-width: 280px;
+        }
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
         .navbar {
-            position: fixed; top: 0; width: 100%; z-index: 1000;
-            display: flex; justify-content: space-between; align-items: center;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             padding: 20px 5%;
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(15px);
             border-bottom: var(--glass-border);
             transition: var(--transition);
         }
-        .navbar.scrolled { background: var(--primary-dark); padding: 15px 5%; box-shadow: var(--shadow-lg); }
-        .logo { font-size: 1.8rem; font-weight: 700; color: var(--text-light); letter-spacing: 2px; }
-        .logo span { color: var(--primary-gold); }
-        .nav-menu { display: flex; gap: 30px; }
-        .nav-link { color: var(--text-light); font-size: 0.9rem; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; position: relative; }
-        .nav-link::after {
-            content: ''; position: absolute; bottom: -5px; left: 0; width: 0; height: 2px;
-            background: var(--primary-gold); transition: var(--transition);
+        .navbar.scrolled {
+            background: var(--primary-dark);
+            padding: 15px 5%;
+            box-shadow: var(--shadow-lg);
         }
-        .nav-link:hover::after { width: 100%; }
-        .nav-link:hover { color: var(--primary-gold); }
-        .nav-actions { display: flex; gap: 15px; align-items: center; }
-        .btn-login-user { background: none; border: 1px solid white; color: white; padding: 8px 20px; border-radius: 30px; cursor: pointer; font-weight: 600; font-size: 0.8rem; transition: 0.3s; }
-        .btn-login-user:hover { background: white; color: var(--primary-dark); }
-        .user-profile-badge { display: flex; align-items: center; gap: 10px; color: white; cursor: pointer; padding: 5px 15px; border-radius: 30px; background: rgba(255,255,255,0.1); border: 1px solid var(--primary-gold); }
-        .user-profile-badge:hover { background: rgba(255,255,255,0.2); }
-        .user-avatar { width: 30px; height: 30px; background: var(--primary-gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem; color: var(--primary-dark); }
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-light);
+            letter-spacing: 2px;
+        }
+        .logo span {
+            color: var(--primary-gold);
+        }
+        .nav-menu {
+            display: flex;
+            gap: 30px;
+        }
+        .nav-link {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary-gold);
+            transition: var(--transition);
+        }
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        .nav-link:hover {
+            color: var(--primary-gold);
+        }
+        .nav-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        .btn-login-user {
+            background: none;
+            border: 1px solid white;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.8rem;
+            transition: 0.3s;
+        }
+        .btn-login-user:hover {
+            background: white;
+            color: var(--primary-dark);
+        }
+        .user-profile-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+            cursor: pointer;
+            padding: 5px 15px;
+            border-radius: 30px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid var(--primary-gold);
+        }
+        .user-profile-badge:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        .user-avatar {
+            width: 30px;
+            height: 30px;
+            background: var(--primary-gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.8rem;
+            color: var(--primary-dark);
+        }
         .btn-portal {
-            padding: 10px 25px; border: 1px solid var(--primary-gold);
-            color: var(--primary-gold); border-radius: 30px;
-            font-weight: 600; font-size: 0.8rem; letter-spacing: 1px;
+            padding: 10px 25px;
+            border: 1px solid var(--primary-gold);
+            color: var(--primary-gold);
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
             transition: var(--transition);
             background: transparent;
             cursor: pointer;
         }
-        .btn-portal:hover { background: var(--primary-gold); color: white; box-shadow: 0 0 15px rgba(197, 160, 89, 0.5); }
+        .btn-portal:hover {
+            background: var(--primary-gold);
+            color: white;
+            box-shadow: 0 0 15px rgba(197, 160, 89, 0.5);
+        }
         .auth-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.98); z-index: 9000;
-            display: none; justify-content: center; align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.98);
+            z-index: 9000;
+            display: none;
+            justify-content: center;
+            align-items: center;
             backdrop-filter: blur(10px);
         }
-        .auth-overlay.active { display: flex; }
-        .auth-card {
-            background: white; padding: 50px; border-radius: 5px; width: 100%; max-width: 450px;
-            text-align: center; box-shadow: var(--shadow-lg); animation: fadeInUp 0.6s ease;
+        .auth-overlay.active {
+            display: flex;
         }
-        .auth-card h2 { font-size: 2rem; margin-bottom: 10px; color: var(--primary-dark); }
-        .auth-card p { color: var(--text-gray); margin-bottom: 30px; font-size: 0.9rem; }
-        .pin-container { display: flex; gap: 10px; justify-content: center; margin-bottom: 30px; }
-        .pin-digit { width: 50px; height: 60px; border: 2px solid #e2e8f0; font-size: 1.5rem; text-align: center; font-weight: 700; outline: none; transition: 0.3s; }
-        .pin-digit:focus { border-color: var(--primary-gold); box-shadow: 0 0 10px rgba(197, 160, 89, 0.3); }
+        .auth-card {
+            background: white;
+            padding: 50px;
+            border-radius: 5px;
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+            animation: fadeInUp 0.6s ease;
+        }
+        .auth-card h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: var(--primary-dark);
+        }
+        .auth-card p {
+            color: var(--text-gray);
+            margin-bottom: 30px;
+            font-size: 0.9rem;
+        }
+        .pin-container {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        .pin-digit {
+            width: 50px;
+            height: 60px;
+            border: 2px solid #e2e8f0;
+            font-size: 1.5rem;
+            text-align: center;
+            font-weight: 700;
+            outline: none;
+            transition: 0.3s;
+        }
+        .pin-digit:focus {
+            border-color: var(--primary-gold);
+            box-shadow: 0 0 10px rgba(197, 160, 89, 0.3);
+        }
         .hero {
-            height: 100vh; position: relative; display: flex; align-items: center; justify-content: center;
+            height: 100vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             background: url('https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') center/cover no-repeat fixed;
-            color: white; text-align: center;
+            color: white;
+            text-align: center;
         }
         .hero::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background: linear-gradient(to bottom, rgba(0,0,0,0.4), rgba(0,0,0,0.7));
         }
-        .hero-content { position: relative; z-index: 10; animation: fadeInUp 1.2s ease-out; }
-        .hero-subtitle { font-size: 1.2rem; letter-spacing: 5px; text-transform: uppercase; margin-bottom: 20px; display: block; color: var(--primary-gold); }
-        .hero-title { font-size: 4.5rem; margin-bottom: 30px; line-height: 1.1; }
-        .hero-desc { font-size: 1.1rem; max-width: 600px; margin: 0 auto 40px; color: rgba(255,255,255,0.8); }
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            animation: fadeInUp 1.2s ease-out;
+        }
+        .hero-subtitle {
+            font-size: 1.2rem;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            display: block;
+            color: var(--primary-gold);
+        }
+        .hero-title {
+            font-size: 4.5rem;
+            margin-bottom: 30px;
+            line-height: 1.1;
+        }
+        .hero-desc {
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto 40px;
+            color: rgba(255,255,255,0.8);
+        }
         .btn-primary {
-            background: var(--primary-gold); color: white; padding: 15px 40px;
-            border: none; font-size: 1rem; letter-spacing: 2px; text-transform: uppercase;
-            cursor: pointer; position: relative; overflow: hidden; font-weight: 600;
+            background: var(--primary-gold);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            font-size: 1rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            font-weight: 600;
         }
         .btn-primary::before {
-            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
             background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
             transition: 0.5s;
         }
-        .btn-primary:hover::before { left: 100%; }
-        .btn-primary:hover { background: #b08d45; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+        .btn-primary:hover {
+            background: #b08d45;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
         .booking-engine {
-            position: relative; margin-top: -80px; z-index: 20; padding: 0 5%;
+            position: relative;
+            margin-top: -80px;
+            z-index: 20;
+            padding: 0 5%;
         }
         .search-bar {
-            background: white; padding: 40px; border-radius: 5px;
-            box-shadow: var(--shadow-lg); display: flex; gap: 20px;
-            align-items: flex-end; flex-wrap: wrap;
+            background: white;
+            padding: 40px;
+            border-radius: 5px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            gap: 20px;
+            align-items: flex-end;
+            flex-wrap: wrap;
         }
-        .input-group { flex: 1; min-width: 200px; display: flex; flex-direction: column; gap: 10px; }
-        .input-group label { font-size: 0.8rem; font-weight: 700; color: var(--primary-dark); text-transform: uppercase; letter-spacing: 1px; }
+        .input-group {
+            flex: 1;
+            min-width: 200px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .input-group label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
         .input-group input, .input-group select {
-            padding: 15px; border: 1px solid #e2e8f0; border-radius: 0;
-            font-family: 'Montserrat', sans-serif; transition: 0.3s;
+            padding: 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 0;
+            font-family: 'Montserrat', sans-serif;
+            transition: 0.3s;
         }
-        .input-group input:focus { border-color: var(--primary-gold); outline: none; }
+        .input-group input:focus {
+            border-color: var(--primary-gold);
+            outline: none;
+        }
         .search-btn {
-            background: var(--primary-dark); color: white; padding: 15px 30px;
-            border: none; cursor: pointer; text-transform: uppercase; font-weight: 600; letter-spacing: 1px; height: 50px;
+            background: var(--primary-dark);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 1px;
+            height: 50px;
         }
-        .search-btn:hover { background: var(--primary-gold); }
-        .section-padding { padding: 100px 5%; }
-        .section-header { text-align: center; margin-bottom: 60px; }
-        .section-header span { color: var(--primary-gold); font-weight: 600; letter-spacing: 3px; text-transform: uppercase; display: block; margin-bottom: 10px; }
-        .section-header h2 { font-size: 3rem; color: var(--primary-dark); }
-        .room-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 40px; }
+        .search-btn:hover {
+            background: var(--primary-gold);
+        }
+        .section-padding {
+            padding: 100px 5%;
+        }
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        .section-header span {
+            color: var(--primary-gold);
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 10px;
+        }
+        .section-header h2 {
+            font-size: 3rem;
+            color: var(--primary-dark);
+        }
+        .room-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 40px;
+        }
         .room-card {
-            background: white; border: 1px solid #f0f0f0; transition: var(--transition);
-            position: relative; overflow: hidden; cursor: pointer;
+            background: white;
+            border: 1px solid #f0f0f0;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
         }
-        .room-card:hover { transform: translateY(-15px); box-shadow: var(--shadow-lg); border-color: transparent; }
-        .room-img-box { height: 280px; overflow: hidden; position: relative; background-color: #f1f1f1; display: flex; align-items: center; justify-content: center; }
-        .room-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.8s ease; }
-        .room-card:hover .room-img { transform: scale(1.1); }
+        .room-card:hover {
+            transform: translateY(-15px);
+            box-shadow: var(--shadow-lg);
+            border-color: transparent;
+        }
+        .room-img-box {
+            height: 280px;
+            overflow: hidden;
+            position: relative;
+            background-color: #f1f1f1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .room-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.8s ease;
+        }
+        .room-card:hover .room-img {
+            transform: scale(1.1);
+        }
         .status-badge {
-            position: absolute; top: 20px; left: 20px; padding: 8px 15px;
-            font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: white; z-index: 5;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 8px 15px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: white;
+            z-index: 5;
         }
         .bg-avail { background-color: #10b981; }
         .bg-booked { background-color: #ef4444; }
         .bg-maint { background-color: #64748b; }
         .bg-cleaning { background-color: #f59e0b; }
         .price-badge {
-            position: absolute; bottom: 0; right: 0; background: var(--primary-gold);
-            color: white; padding: 10px 25px; font-family: 'Playfair Display'; font-size: 1.2rem; font-weight: 700;
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background: var(--primary-gold);
+            color: white;
+            padding: 10px 25px;
+            font-family: 'Playfair Display';
+            font-size: 1.2rem;
+            font-weight: 700;
         }
-        .room-details { padding: 30px; }
-        .room-type { color: var(--primary-gold); font-size: 0.8rem; letter-spacing: 2px; text-transform: uppercase; font-weight: 600; }
-        .room-title { font-size: 1.8rem; margin: 10px 0; color: var(--primary-dark); }
-        .room-amenities { display: flex; gap: 15px; color: var(--text-gray); margin-bottom: 25px; font-size: 0.9rem; }
-        .room-amenities i { color: var(--primary-gold); }
+        .room-details {
+            padding: 30px;
+        }
+        .room-type {
+            color: var(--primary-gold);
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+        .room-title {
+            font-size: 1.8rem;
+            margin: 10px 0;
+            color: var(--primary-dark);
+        }
+        .room-amenities {
+            display: flex;
+            gap: 15px;
+            color: var(--text-gray);
+            margin-bottom: 25px;
+            font-size: 0.9rem;
+        }
+        .room-amenities i {
+            color: var(--primary-gold);
+        }
         .btn-book {
-            width: 100%; padding: 15px; border: 1px solid var(--primary-dark);
-            background: transparent; color: var(--primary-dark); font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
-            cursor: pointer; transition: 0.3s;
+            width: 100%;
+            padding: 15px;
+            border: 1px solid var(--primary-dark);
+            background: transparent;
+            color: var(--primary-dark);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: 0.3s;
         }
-        .btn-book:hover:not(:disabled) { background: var(--primary-dark); color: white; }
-        .btn-book:disabled { border-color: #cbd5e1; color: #cbd5e1; cursor: not-allowed; }
-        .services-section { background: var(--primary-dark); color: white; text-align: center; }
-        .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; margin-top: 50px; }
-        .service-item i { font-size: 3rem; color: var(--primary-gold); margin-bottom: 20px; }
-        .service-item h4 { margin-bottom: 10px; font-size: 1.2rem; }
-        .service-item p { color: #94a3b8; font-size: 0.9rem; line-height: 1.6; }
-        footer { background: #0b1120; padding: 80px 5% 30px; color: #94a3b8; }
-        .footer-content { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 50px; }
-        .footer-brand h2 { color: white; margin-bottom: 20px; font-size: 2rem; }
-        .footer-brand span { color: var(--primary-gold); }
-        .footer-col h4 { color: white; margin-bottom: 25px; font-size: 1.1rem; letter-spacing: 1px; text-transform: uppercase; }
-        .footer-col ul li { margin-bottom: 15px; transition: 0.3s; cursor: pointer; }
-        .footer-col ul li:hover { color: var(--primary-gold); padding-left: 5px; }
-        .copyright { text-align: center; margin-top: 30px; font-size: 0.8rem; }
+        .btn-book:hover:not(:disabled) {
+            background: var(--primary-dark);
+            color: white;
+        }
+        .btn-book:disabled {
+            border-color: #cbd5e1;
+            color: #cbd5e1;
+            cursor: not-allowed;
+        }
+        .services-section {
+            background: var(--primary-dark);
+            color: white;
+            text-align: center;
+        }
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+        .service-item i {
+            font-size: 3rem;
+            color: var(--primary-gold);
+            margin-bottom: 20px;
+        }
+        .service-item h4 {
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+        .service-item p {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        footer {
+            background: #0b1120;
+            padding: 80px 5% 30px;
+            color: #94a3b8;
+        }
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 50px;
+        }
+        .footer-brand h2 {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 2rem;
+        }
+        .footer-brand span {
+            color: var(--primary-gold);
+        }
+        .footer-col h4 {
+            color: white;
+            margin-bottom: 25px;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .footer-col ul li {
+            margin-bottom: 15px;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+        .footer-col ul li:hover {
+            color: var(--primary-gold);
+            padding-left: 5px;
+        }
+        .copyright {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 0.8rem;
+        }
         #admin-interface {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: #0b0f1a; z-index: 2000; color: #e2e8f0;
-            display: grid; grid-template-columns: 280px 1fr;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #0b0f1a;
+            z-index: 2000;
+            color: #e2e8f0;
+            display: grid;
+            grid-template-columns: 280px 1fr;
         }
-        .sidebar { background: #111827; border-right: 1px solid #1f2937; padding: 40px 20px; display: flex; flex-direction: column; }
-        .admin-logo { font-family: 'Playfair Display'; font-size: 1.8rem; color: white; margin-bottom: 60px; text-align: left; padding-left: 10px; }
-        .admin-logo span { color: var(--primary-gold); display: block; font-size: 0.7rem; font-family: 'Montserrat'; letter-spacing: 2px; }
+        .sidebar {
+            background: #111827;
+            border-right: 1px solid #1f2937;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        .admin-logo {
+            font-family: 'Playfair Display';
+            font-size: 1.8rem;
+            color: white;
+            margin-bottom: 60px;
+            text-align: left;
+            padding-left: 10px;
+        }
+        .admin-logo span {
+            color: var(--primary-gold);
+            display: block;
+            font-size: 0.7rem;
+            font-family: 'Montserrat';
+            letter-spacing: 2px;
+        }
         .menu-item {
-            padding: 16px 20px; margin-bottom: 8px; border-radius: 12px; cursor: pointer;
-            display: flex; align-items: center; gap: 15px; color: #9ca3af; transition: 0.3s;
-            font-size: 0.9rem; font-weight: 500;
+            padding: 16px 20px;
+            margin-bottom: 8px;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: #9ca3af;
+            transition: 0.3s;
+            font-size: 0.9rem;
+            font-weight: 500;
         }
-        .menu-item:hover, .menu-item.active { background: #1f2937; color: white; }
-        .menu-item.active { background: #1f2937; color: var(--primary-gold); border-left: 4px solid var(--primary-gold); border-radius: 0 12px 12px 0; }
-        .menu-item i { width: 20px; font-size: 1.1rem; }
-        .dashboard-main { padding: 40px; overflow-y: auto; background: radial-gradient(circle at top right, #111827, #0b0f1a); }
-        .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; flex-wrap: wrap; gap: 20px; }
-        .admin-header h2 { font-size: 2.2rem; }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; margin-bottom: 40px; }
-        .stat-box { 
-            background: rgba(31, 41, 55, 0.5); padding: 30px; border-radius: 20px; 
-            border: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(10px);
+        .menu-item:hover, .menu-item.active {
+            background: #1f2937;
+            color: white;
+        }
+        .menu-item.active {
+            background: #1f2937;
+            color: var(--primary-gold);
+            border-left: 4px solid var(--primary-gold);
+            border-radius: 0 12px 12px 0;
+        }
+        .menu-item i {
+            width: 20px;
+            font-size: 1.1rem;
+        }
+        .dashboard-main {
+            padding: 40px;
+            overflow-y: auto;
+            background: radial-gradient(circle at top right, #111827, #0b0f1a);
+        }
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .admin-header h2 {
+            font-size: 2.2rem;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+        .stat-box {
+            background: rgba(31, 41, 55, 0.5);
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
             transition: transform 0.3s, border-color 0.3s;
         }
-        .stat-box:hover { transform: translateY(-5px); border-color: var(--primary-gold); }
-        .stat-box .label { color: #9ca3af; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; display: block; }
-        .stat-box .value { font-size: 2rem; font-weight: 700; color: white; margin-bottom: 10px; }
-        .matrix-container { background: rgba(31, 41, 55, 0.5); border-radius: 20px; padding: 30px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 30px; overflow-x: auto; }
-        .matrix-table { width: 100%; min-width: 1000px; border-collapse: separate; border-spacing: 0 10px; }
-        .matrix-table th { color: #9ca3af; font-weight: 500; padding: 15px; font-size: 0.75rem; text-align: center; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .matrix-table td { padding: 15px; text-align: center; vertical-align: middle; border-bottom: 1px solid rgba(255,255,255,0.02); }
-        .status-slot { 
-            width: auto; min-width: 80px; padding: 0 10px; height: 35px; border-radius: 8px; font-size: 0.7rem; font-weight: 700;
-            display: flex; align-items: center; justify-content: center;
-            transition: 0.3s; cursor: help; white-space: nowrap;
+        .stat-box:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary-gold);
+        }
+        .stat-box .label {
+            color: #9ca3af;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            display: block;
+        }
+        .stat-box .value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 10px;
+        }
+        .matrix-container {
+            background: rgba(31, 41, 55, 0.5);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255,255,255,0.05);
+            margin-bottom: 30px;
+            overflow-x: auto;
+        }
+        .matrix-table {
+            width: 100%;
+            min-width: 1000px;
+            border-collapse: separate;
+            border-spacing: 0 10px;
+        }
+        .matrix-table th {
+            color: #9ca3af;
+            font-weight: 500;
+            padding: 15px;
+            font-size: 0.75rem;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .matrix-table td {
+            padding: 15px;
+            text-align: center;
+            vertical-align: middle;
+            border-bottom: 1px solid rgba(255,255,255,0.02);
+        }
+        .status-slot {
+            width: auto;
+            min-width: 80px;
+            padding: 0 10px;
+            height: 35px;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
+            cursor: help;
+            white-space: nowrap;
         }
         .slot-open { background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); }
         .slot-booked { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); }
         .slot-ai { background: rgba(59, 130, 246, 0.1); color: #3b82f6; border: 1px solid rgba(59, 130, 246, 0.2); }
         .slot-maint { background: rgba(100, 116, 139, 0.1); color: #64748b; border: 1px solid rgba(100, 116, 139, 0.2); }
         .slot-cleaning { background: rgba(245, 158, 11, 0.1); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.2); }
-        .automation-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; }
-        .engine-card { 
-            background: rgba(31, 41, 55, 0.5); padding: 30px; border-radius: 20px; 
-            border: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; 
-            gap: 20px; transition: 0.3s;
+        .automation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
         }
-        .engine-card:hover { border-color: var(--primary-gold); transform: translateY(-5px); }
-        .engine-top { display: flex; justify-content: space-between; align-items: center; }
-        .engine-config { display: flex; flex-direction: column; gap: 10px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); }
-        .config-row { display: flex; justify-content: space-between; font-size: 0.75rem; color: #9ca3af; }
-        .config-val { color: var(--primary-gold); font-weight: 600; }
-        .engine-slider { width: 100%; accent-color: var(--primary-gold); cursor: pointer; height: 4px; }
-        .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #374151; transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: var(--primary-gold); }
-        input:checked + .slider:before { transform: translateX(24px); }
+        .engine-card {
+            background: rgba(31, 41, 55, 0.5);
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            transition: 0.3s;
+        }
+        .engine-card:hover {
+            border-color: var(--primary-gold);
+            transform: translateY(-5px);
+        }
+        .engine-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .engine-config {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .config-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: #9ca3af;
+        }
+        .config-val {
+            color: var(--primary-gold);
+            font-weight: 600;
+        }
+        .engine-slider {
+            width: 100%;
+            accent-color: var(--primary-gold);
+            cursor: pointer;
+            height: 4px;
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #374151;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: var(--primary-gold);
+        }
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
         .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.9); z-index: 5000;
-            display: none; justify-content: center; align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.9);
+            z-index: 5000;
+            display: none;
+            justify-content: center;
+            align-items: center;
             backdrop-filter: blur(8px);
         }
-        .modal-overlay.active { display: flex; }
-        .modal-box { 
-            background: white; width: 95%; max-width: 650px; padding: 40px; border-radius: 0; 
-            box-shadow: var(--shadow-lg); animation: fadeInUp 0.5s ease; overflow-y: auto; max-height: 90vh;
+        .modal-overlay.active {
+            display: flex;
         }
-        .form-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--primary-dark); margin-bottom: 8px; display: block; }
-        .form-control { width: 100%; padding: 12px; border: 1px solid #e2e8f0; outline: none; margin-bottom: 15px; font-family: inherit; transition: 0.3s; }
-        .form-control:focus { border-color: var(--primary-gold); }
-        .form-control.invalid { border-color: var(--accent-red); background: #fff5f5; }
-        .bill-summary { background: #f8fafc; padding: 25px; border-left: 5px solid var(--primary-gold); margin-bottom: 25px; }
-        .bill-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.95rem; }
-        .bill-total { font-size: 1.6rem; font-weight: 700; border-top: 1px solid #e2e8f0; padding-top: 15px; margin-top: 15px; color: var(--primary-dark); }
-        .payment-box { border-top: 1px solid #e2e8f0; padding-top: 30px; }
-        .card-inputs { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 10px; }
+        .modal-box {
+            background: white;
+            width: 95%;
+            max-width: 650px;
+            padding: 40px;
+            border-radius: 0;
+            box-shadow: var(--shadow-lg);
+            animation: fadeInUp 0.5s ease;
+            overflow-y: auto;
+            max-height: 90vh;
+        }
+        .form-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--primary-dark);
+            margin-bottom: 8px;
+            display: block;
+        }
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            outline: none;
+            margin-bottom: 15px;
+            font-family: inherit;
+            transition: 0.3s;
+        }
+        .form-control:focus {
+            border-color: var(--primary-gold);
+        }
+        .form-control.invalid {
+            border-color: var(--accent-red);
+            background: #fff5f5;
+        }
+        .bill-summary {
+            background: #f8fafc;
+            padding: 25px;
+            border-left: 5px solid var(--primary-gold);
+            margin-bottom: 25px;
+        }
+        .bill-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+        .bill-total {
+            font-size: 1.6rem;
+            font-weight: 700;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 15px;
+            margin-top: 15px;
+            color: var(--primary-dark);
+        }
+        .payment-box {
+            border-top: 1px solid #e2e8f0;
+            padding-top: 30px;
+        }
+        .card-inputs {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 10px;
+        }
         .proc-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); z-index: 9999;
-            display: none; justify-content: center; align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
         }
-        .proc-box { background: #111827; width: 90%; max-width: 600px; padding: 50px; border-radius: 30px; text-align: center; color: white; border: 1px solid rgba(255,255,255,0.1); }
-        .proc-steps { display: flex; justify-content: space-between; margin-top: 40px; position: relative; }
-        .proc-steps::before { content: ''; position: absolute; top: 15px; left: 0; width: 100%; height: 2px; background: #374151; z-index: 1; }
-        .step-circle { width: 32px; height: 32px; background: #111827; border: 2px solid #374151; border-radius: 50%; position: relative; z-index: 2; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; transition: 0.3s; }
-        .step-circle.active { border-color: var(--primary-gold); color: var(--primary-gold); box-shadow: 0 0 15px rgba(197, 160, 89, 0.5); }
-        .step-circle.done { background: var(--primary-gold); border-color: var(--primary-gold); color: white; }
-        .step-label { position: absolute; top: 40px; left: 50%; transform: translateX(-50%); font-size: 0.7rem; white-space: nowrap; color: #9ca3af; }
-        .proc-status-text { margin-top: 80px; color: var(--primary-gold); font-family: monospace; font-size: 0.9rem; }
+        .proc-box {
+            background: #111827;
+            width: 90%;
+            max-width: 600px;
+            padding: 50px;
+            border-radius: 30px;
+            text-align: center;
+            color: white;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .proc-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            position: relative;
+        }
+        .proc-steps::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #374151;
+            z-index: 1;
+        }
+        .step-circle {
+            width: 32px;
+            height: 32px;
+            background: #111827;
+            border: 2px solid #374151;
+            border-radius: 50%;
+            position: relative;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            transition: 0.3s;
+        }
+        .step-circle.active {
+            border-color: var(--primary-gold);
+            color: var(--primary-gold);
+            box-shadow: 0 0 15px rgba(197, 160, 89, 0.5);
+        }
+        .step-circle.done {
+            background: var(--primary-gold);
+            border-color: var(--primary-gold);
+            color: white;
+        }
+        .step-label {
+            position: absolute;
+            top: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.7rem;
+            white-space: nowrap;
+            color: #9ca3af;
+        }
+        .proc-status-text {
+            margin-top: 80px;
+            color: var(--primary-gold);
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
         @media (max-width: 1024px) {
             #admin-interface { grid-template-columns: 80px 1fr; }
             .sidebar .admin-logo span, .sidebar .menu-item span { display: none; }
@@ -305,42 +1015,155 @@
             .card-inputs { grid-template-columns: 1fr; }
             .hide-sm { display: none; }
         }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .automation-log {
-            position: fixed; bottom: 20px; right: 20px; background: rgba(0,0,0,0.9);
-            color: var(--cyber-green); padding: 15px 25px; border-radius: 5px; font-family: 'Fira Code', monospace;
-            font-size: 0.8rem; z-index: 5000; border: 1px solid var(--cyber-green);
-            pointer-events: none; opacity: 0; transition: 0.3s;
-            box-shadow: 0 0 20px rgba(0, 255, 65, 0.2); text-transform: uppercase;
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        .automation-log.active { opacity: 1; }
-        
-        .iot-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-top: 20px; }
-        .iot-card { background: #f8fafc; padding: 15px; border-radius: 12px; text-align: center; border: 1px solid #e2e8f0; transition: 0.3s; }
-        .iot-card:hover { border-color: var(--primary-gold); transform: translateY(-3px); }
-        .iot-card i { font-size: 1.8rem; color: var(--primary-gold); margin-bottom: 10px; }
-        .iot-slider { width: 100%; margin-top: 10px; accent-color: var(--primary-gold); }
-        .mood-btn { background: white; border: 1px solid var(--primary-gold); color: var(--primary-gold); padding: 5px 10px; font-size: 0.7rem; border-radius: 5px; cursor: pointer; margin: 2px; }
-        .mood-btn:hover { background: var(--primary-gold); color: white; }
-
-        .supply-card { background: rgba(31, 41, 55, 0.5); padding: 20px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: space-between; }
-        .supply-info { display: flex; align-items: center; gap: 15px; }
-        .supply-icon { width: 45px; height: 45px; background: rgba(197, 160, 89, 0.1); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--primary-gold); font-size: 1.2rem; }
-        .supply-stock-bar { height: 6px; background: #1f2937; border-radius: 3px; margin-top: 10px; overflow: hidden; width: 100%; }
-        .supply-stock-fill { height: 100%; background: var(--primary-gold); transition: 0.3s; }
-        .supply-status { font-size: 0.7rem; font-weight: 700; padding: 4px 8px; border-radius: 4px; }
+        .automation-log {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.9);
+            color: var(--cyber-green);
+            padding: 15px 25px;
+            border-radius: 5px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            z-index: 5000;
+            border: 1px solid var(--cyber-green);
+            pointer-events: none;
+            opacity: 0;
+            transition: 0.3s;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
+            text-transform: uppercase;
+        }
+        .automation-log.active {
+            opacity: 1;
+        }
+        .iot-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .iot-card {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+            transition: 0.3s;
+        }
+        .iot-card:hover {
+            border-color: var(--primary-gold);
+            transform: translateY(-3px);
+        }
+        .iot-card i {
+            font-size: 1.8rem;
+            color: var(--primary-gold);
+            margin-bottom: 10px;
+        }
+        .iot-slider {
+            width: 100%;
+            margin-top: 10px;
+            accent-color: var(--primary-gold);
+        }
+        .mood-btn {
+            background: white;
+            border: 1px solid var(--primary-gold);
+            color: var(--primary-gold);
+            padding: 5px 10px;
+            font-size: 0.7rem;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 2px;
+        }
+        .mood-btn:hover {
+            background: var(--primary-gold);
+            color: white;
+        }
+        .supply-card {
+            background: rgba(31, 41, 55, 0.5);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .supply-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .supply-icon {
+            width: 45px;
+            height: 45px;
+            background: rgba(197, 160, 89, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-gold);
+            font-size: 1.2rem;
+        }
+        .supply-stock-bar {
+            height: 6px;
+            background: #1f2937;
+            border-radius: 3px;
+            margin-top: 10px;
+            overflow: hidden;
+            width: 100%;
+        }
+        .supply-stock-fill {
+            height: 100%;
+            background: var(--primary-gold);
+            transition: 0.3s;
+        }
+        .supply-status {
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
         .status-ok { background: rgba(16, 185, 129, 0.1); color: #10b981; }
         .status-low { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
-        #ekyc-preview-box { width: 100%; height: 180px; background: #f8fafc; border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-top: 15px; position: relative; }
-        #ekyc-preview-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
-        .scan-line { position: absolute; width: 100%; height: 4px; background: var(--primary-gold); box-shadow: 0 0 15px var(--primary-gold); top: 0; left: 0; animation: scanAnim 3s infinite linear; opacity: 0; }
-        @keyframes scanAnim { 0% { top: 0; } 100% { top: 100%; } }
+        #ekyc-preview-box {
+            width: 100%;
+            height: 180px;
+            background: #f8fafc;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            margin-top: 15px;
+            position: relative;
+        }
+        #ekyc-preview-box img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        .scan-line {
+            position: absolute;
+            width: 100%;
+            height: 4px;
+            background: var(--primary-gold);
+            box-shadow: 0 0 15px var(--primary-gold);
+            top: 0;
+            left: 0;
+            animation: scanAnim 3s infinite linear;
+            opacity: 0;
+        }
+        @keyframes scanAnim {
+            0% { top: 0; }
+            100% { top: 100%; }
+        }
     </style>
 </head>
 <body>
     <div class="toast-container" id="toast-container"></div>
-
     <div id="admin-pin-gate" class="auth-overlay">
         <div class="auth-card">
             <div style="color: var(--primary-gold); font-size: 3rem; margin-bottom: 20px;"><i class="fas fa-shield-alt"></i></div>
@@ -356,7 +1179,6 @@
             <p style="margin-top: 25px; cursor: pointer; text-decoration: underline; font-size: 0.85rem;" onclick="app.closeAdminGate()">Return to Guest View</p>
         </div>
     </div>
-
     <div id="user-login-gate" class="auth-overlay">
         <div class="auth-card">
             <h2>GUEST LOGIN</h2>
@@ -371,7 +1193,6 @@
             <p style="margin-top: 20px; cursor: pointer; text-decoration: underline; font-size: 0.85rem;" onclick="app.closeUserGate()">Back to Home</p>
         </div>
     </div>
-
     <div class="modal-overlay" id="iot-modal">
         <div class="modal-box" style="max-width: 800px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
@@ -431,7 +1252,6 @@
             <button class="btn-primary" style="width:100%; margin-top:20px" onclick="app.closeIotModal()">SYNC WITH MOBILE KEY</button>
         </div>
     </div>
-
     <div class="modal-overlay" id="checkin-modal">
         <div class="modal-box">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
@@ -441,7 +1261,7 @@
             <div style="margin-bottom: 20px;">
                 <label class="form-label">Enter Booking Confirmation Code</label>
                 <input type="text" class="form-control" id="checkin-code" placeholder="Example: IP-7X9B2">
-                <p style="font-size: 0.7rem; color: var(--text-gray); margin-top: 5px;">This code is provided after your reservation is confirmed.</p>
+                <p style="font-size: 0.7rem; color: var(--text-gray); margin-top: 5px;">A unique code is generated per session. Static codes will be rejected.</p>
             </div>
             <label class="form-label">E-KYC Verification (Identity Proof)</label>
             <div style="border: 2px dashed #e2e8f0; padding: 20px; text-align: center; margin-bottom: 20px; border-radius: 8px;">
@@ -456,7 +1276,6 @@
             <button class="btn-primary" style="width: 100%" onclick="app.executeCheckin()">ACTIVATE STAY & KEY</button>
         </div>
     </div>
-
     <div class="modal-overlay" id="guest-checkout-modal">
         <div class="modal-box">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
@@ -471,7 +1290,6 @@
             <button class="btn-primary" style="width: 100%; background: var(--accent-red);" onclick="app.executeGuestCheckout()">DEACTIVATE KEY & CHECK-OUT</button>
         </div>
     </div>
-
     <div id="client-app">
         <nav class="navbar" id="navbar">
             <div class="logo">IMPERIAL <span>PALACE</span></div>
@@ -562,7 +1380,6 @@
             <div class="copyright">&copy; 2026 Imperial Palace Hotel System. Designed for Advanced Automation Portfolio.</div>
         </footer>
     </div>
-
     <div id="admin-interface" class="hidden">
         <aside class="sidebar">
             <div class="admin-logo">IMPERIAL <span class="hide-sm">PALACE</span></div>
@@ -578,7 +1395,6 @@
         </aside>
         <main class="dashboard-main" id="admin-main-content"></main>
     </div>
-
     <div class="proc-overlay" id="proc-overlay">
         <div class="proc-box">
             <h2 style="margin-bottom:10px; font-family: 'Playfair Display';">Processing Request</h2>
@@ -592,7 +1408,6 @@
             <div class="proc-status-text" id="proc-status-text">Encrypting Gateway Data...</div>
         </div>
     </div>
-
     <div class="modal-overlay" id="booking-modal">
         <div class="modal-box">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
@@ -635,9 +1450,7 @@
             </form>
         </div>
     </div>
-
     <div class="automation-log" id="automation-log">SYSTEM: Neural Matrix Online.</div>
-
     <script>
         const DEFAULT_STATE = {
             currentUser: null,
@@ -674,12 +1487,9 @@
                 { name: "Artisanal Water (330ml)", stock: 800, min: 200, unit: "btl", cat: "F&B" }
             ],
             engine: { 
-                pricing: true, pricingSens: 85,
-                gap: true, gapThreshold: 2,
-                vip: true, vipTier: 'Gold',
-                eco: false, ecoTemp: 24,
-                guard: true, guardLimit: 105,
-                predictive: true, predictiveSens: 75,
+                pricing: true, pricingSens: 85, gap: true, gapThreshold: 2,
+                vip: true, vipTier: 'Gold', eco: false, ecoTemp: 24,
+                guard: true, guardLimit: 105, predictive: true, predictiveSens: 75,
                 concierge: true, conciergeLogic: 90
             },
             totalRevenue: 3758650,
@@ -699,10 +1509,8 @@
                 this.filterRooms();
                 this.applyDynamicPricing();
                 this.logAutomation("System core initialized. Multi-channel sync active.");
-                
                 setTimeout(() => this.showToast("Security Scan: 0 vulnerabilities found.", "success"), 2000);
             },
-
             showToast: function(msg, type = "info") {
                 const container = document.getElementById('toast-container');
                 const toast = document.createElement('div');
@@ -717,7 +1525,6 @@
                 container.appendChild(toast);
                 setTimeout(() => toast.remove(), 5000);
             },
-
             openIotModal: function(id) {
                 const room = DB.rooms.find(r => r.id === id);
                 if(!room) return;
@@ -729,11 +1536,8 @@
             closeIotModal: function() { document.getElementById('iot-modal').classList.remove('active'); },
             updateIoT: function(device, val, displayId, unit) {
                 const display = document.getElementById(displayId);
-                if (device === 'CURTAINS') {
-                    display.innerText = val == 100 ? 'Fully Opened' : (val == 0 ? 'Closed' : val + unit);
-                } else {
-                    display.innerText = val + unit;
-                }
+                if (device === 'CURTAINS') display.innerText = val == 100 ? 'Fully Opened' : (val == 0 ? 'Closed' : val + unit);
+                else display.innerText = val + unit;
                 this.logAutomation(`IOT_UNIT: ${device} calibrated to ${val}${unit}. Feedback loop validated.`);
             },
             setMood: function(mood) {
@@ -754,18 +1558,14 @@
                 this.showToast(`Request Received: ${service} for Room ${document.getElementById('iot-room-number').innerText}`, "success");
                 this.logAutomation(`SERVICE: Neural queue updated. Dispatching staff for ${service}.`);
             },
-
             startCleaning: function(id) {
                 const room = DB.rooms.find(r => r.id === id);
                 if(!room) return;
-                
                 let progress = 0;
                 this.showToast(`Autonomous Housekeeping started for Unit ${id}`, "info");
-                
                 const interval = setInterval(() => {
                     progress += 10;
                     this.logAutomation(`CLEANING UNIT ${id}: ${progress}% COMPLETED...`);
-                    
                     if(progress >= 100) {
                         clearInterval(interval);
                         this.updateSuppliesAfterCleaning(id);
@@ -773,7 +1573,6 @@
                     }
                 }, 400); 
             },
-
             executeAI: function() {
                 Swal.fire({
                     title: 'Executing Neural Logic',
@@ -786,7 +1585,6 @@
                     this.logAutomation("AI_REASONING: Applied Peak Season logic. Yield curve normalized.");
                 });
             },
-
             loadState: function() {
                 const saved = localStorage.getItem('IP_HOT_PROF_EN_V1');
                 if (saved) {
@@ -797,9 +1595,7 @@
                     this.saveState(); 
                 }
             },
-            saveState: function() { 
-                localStorage.setItem('IP_HOT_PROF_EN_V1', JSON.stringify(DB)); 
-            },
+            saveState: function() { localStorage.setItem('IP_HOT_PROF_EN_V1', JSON.stringify(DB)); },
             resetSystem: function() {
                 Swal.fire({ title: 'System Reset?', text: "Factory reset will wipe all revenue and logs.", icon: 'warning', showCancelButton: true, confirmButtonColor: '#c5a059', confirmButtonText: 'Execute Wipe' })
                 .then((result) => { if (result.isConfirmed) { localStorage.removeItem('IP_HOT_PROF_EN_V1'); location.reload(); } });
@@ -914,28 +1710,25 @@
                 }
             },
             executeCheckin: function() {
-                const code = document.getElementById('checkin-code').value;
+                const codeInput = document.getElementById('checkin-code');
+                const code = codeInput.value.trim();
                 const ekyc = document.getElementById('ekyc-file-checkin');
                 if(!code) return Swal.fire('Error', 'Please enter your Booking ID', 'error');
                 if(!ekyc.files[0]) return Swal.fire('E-KYC Failed', 'Identification image is mandatory.', 'error');
-                
-                const room = DB.rooms.find(r => r.bookingId === code);
-                if(!room) {
+                const roomMatch = DB.rooms.find(r => r.bookingId === code);
+                if(!roomMatch) {
                     return Swal.fire({
-                        title: 'Invalid Code',
-                        text: 'No reservation found matching this code. Please check and try again.',
+                        title: 'Invalid Authentication Code',
+                        text: 'No matching reservation found in the live neural database. Please use the unique ID generated during your stay request.',
                         icon: 'error',
                         confirmButtonColor: '#ef4444'
                     });
                 }
-
                 const overlay = document.getElementById('proc-overlay');
                 overlay.style.display = 'flex';
-                document.getElementById('tx-id').innerText = "KYC_VERIF: " + code;
-                
-                const verifiedName = room.guestName; 
-                const roomId = room.id;
-
+                document.getElementById('tx-id').innerText = "KYC_VERIF_CORE: " + code;
+                const verifiedName = roomMatch.guestName; 
+                const roomId = roomMatch.id;
                 const steps = [
                     { time: 800, text: "Scanning ID Biometric Points...", active: 1 },
                     { time: 1600, text: "OCR Extraction: Identity Found.", active: 2 },
@@ -949,10 +1742,10 @@
                 setTimeout(() => {
                     overlay.style.display = 'none';
                     this.closeCheckin();
-                    this.showToast(`Check-in Successful for Room ${roomId}`, "success");
+                    this.showToast(`Key Activated for Unit ${roomId}`, "success");
                     Swal.fire({
                         title: 'Check-in Complete',
-                        html: `<b>Identity Verified: ${verifiedName}</b><br>Unit Assignment: <b>${roomId}</b><br><br>Welcome to Imperial Palace. Your Digital Mobile Key has been activated.`,
+                        html: `<b>Identity Verified: ${verifiedName}</b><br>Assigned Unit: <b>${roomId}</b><br><br>Welcome to Imperial Palace. Your Digital Key has been successfully synced to your session.`,
                         icon: 'success',
                         confirmButtonColor: '#c5a059'
                     });
@@ -960,17 +1753,14 @@
                 }, 4000);
             },
             executeGuestCheckout: function() {
-                const code = document.getElementById('checkout-code-guest').value;
+                const code = document.getElementById('checkout-code-guest').value.trim();
                 if(!code) return Swal.fire('Error', 'Please enter your Booking ID', 'error');
                 const room = DB.rooms.find(r => r.bookingId === code);
                 if(!room) return Swal.fire('Invalid Code', 'No active booking found with this ID.', 'error');
-
                 const guestName = room.guestName;
                 const roomId = room.id;
-                
                 this.closeCheckout();
                 this.checkoutRoom(roomId); 
-                
                 this.showToast(`Check-out success: Thank you, ${guestName}!`, "success");
                 Swal.fire('Session Terminated', `Unit ${roomId} has been released. Safe travels!`, 'success');
                 document.getElementById('checkout-code-guest').value = "";
@@ -1030,9 +1820,7 @@
                 grid.innerHTML = '';
                 const roomTypeCounts = {};
                 DB.rooms.forEach(r => {
-                    if(r.status === 'available') {
-                        roomTypeCounts[r.type] = (roomTypeCounts[r.type] || 0) + 1;
-                    }
+                    if(r.status === 'available') roomTypeCounts[r.type] = (roomTypeCounts[r.type] || 0) + 1;
                 });
                 let bufferCounters = { Deluxe: 0, Suite: 0, Villa: 0 };
                 let totalBuffer = 0;
@@ -1048,9 +1836,7 @@
                     }
                     const statusClass = room.status === 'Needs Cleaning' ? 'bg-cleaning' : (room.status === 'booked' ? 'bg-booked' : 'bg-avail');
                     const statusText = isBuffer ? 'SYSTEM BUFFER' : (room.status === 'Needs Cleaning' ? 'CLEANING REQ' : room.status.toUpperCase());
-                    
                     const iotBtn = (room.status === 'booked') ? `<button class="btn-book" onclick="app.openIotModal(${room.id})" style="background:var(--primary-gold); color:white; margin-top:10px; border:none"><i class="fas fa-home"></i> MY SMART ROOM</button>` : '';
-
                     grid.innerHTML += `
                         <div class="room-card ${isBuffer ? 'buffer-locked' : ''}">
                             <div class="room-img-box">
@@ -1083,13 +1869,11 @@
                 const depositValue = Math.round(totalStay * 0.3);
                 document.getElementById('bill-deposit-amt').innerText = '$' + depositValue.toLocaleString();
                 document.getElementById('bill-total').innerText = '$' + totalStay.toLocaleString();
-                
                 if(DB.currentUser && DB.currentUser.name !== "Guest User") {
                     document.getElementById('cust-name').value = DB.currentUser.name;
                     document.getElementById('cust-email').value = DB.currentUser.email || "";
                     document.getElementById('cust-phone').value = DB.currentUser.phone || "";
                 }
-
                 document.getElementById('booking-modal').classList.add('active');
             },
             closeModal: function() { document.getElementById('booking-modal').classList.remove('active'); },
@@ -1124,7 +1908,6 @@
                     const stayValue = room.price * 3;
                     const depositVal = Math.round(stayValue * 0.3);
                     DB.totalRevenue += depositVal;
-
                     let existingGuest = DB.crm.find(c => c.email.toLowerCase() === guestEmail.toLowerCase());
                     if(!existingGuest) {
                         DB.crm.unshift({
@@ -1135,13 +1918,10 @@
                         if(existingGuest.spend > 100000) existingGuest.tier = "PLATINUM";
                         else if(existingGuest.spend > 50000) existingGuest.tier = "GOLD";
                     }
-
                     DB.logs.unshift({ time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), msg: `DEPOSIT_PAID: ${bookingId} (+$${depositVal}) by ${guestName}` });
                     this.saveState(); this.syncUI();
-                    
                     const notifyName = DB.currentUser ? DB.currentUser.name : guestName;
                     this.showToast(`REAL-TIME: ${notifyName}, your booking ${bookingId} is secured!`, "success");
-                    
                     Swal.fire({ 
                         title: conflictDetected ? 'Conflict Resolved' : 'Booking Successful', 
                         html: `<b>Congratulations, ${guestName}!</b><br>Your booking code is: <b style="color: var(--primary-gold); font-size: 1.2rem;">${bookingId}</b><br>Please save this code for your check-in.`, 
@@ -1177,16 +1957,8 @@
                     data: { 
                         labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], 
                         datasets: [
-                        { 
-                            label: 'Yield Performance ($)', 
-                            data: [baseVal-80000, baseVal-60000, baseVal-45000, baseVal-30000, baseVal-15000, baseVal-5000, baseVal], 
-                            borderColor: '#c5a059', backgroundColor: 'rgba(197, 160, 89, 0.1)', fill: true, tension: 0.4 
-                        },
-                        { 
-                            label: 'AI Forecast (Predictive)', 
-                            data: [baseVal, baseVal+12000, baseVal+25000, baseVal+40000, baseVal+60000, baseVal+85000, baseVal+120000], 
-                            borderColor: '#10b981', borderDash: [5, 5], fill: false, tension: 0.4 
-                        }
+                        { label: 'Yield Performance ($)', data: [baseVal-80000, baseVal-60000, baseVal-45000, baseVal-30000, baseVal-15000, baseVal-5000, baseVal], borderColor: '#c5a059', backgroundColor: 'rgba(197, 160, 89, 0.1)', fill: true, tension: 0.4 },
+                        { label: 'AI Forecast (Predictive)', data: [baseVal, baseVal+12000, baseVal+25000, baseVal+40000, baseVal+60000, baseVal+85000, baseVal+120000], borderColor: '#10b981', borderDash: [5, 5], fill: false, tension: 0.4 }
                         ] 
                     },
                     options: { responsive: true, plugins: { legend: { display: true, labels: { color: '#94a3b8' } } }, scales: { y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } }, x: { ticks: { color: '#94a3b8' } } } }
