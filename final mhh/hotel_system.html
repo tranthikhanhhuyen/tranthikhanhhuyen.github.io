@@ -1864,11 +1864,19 @@
                 const room = DB.rooms.find(r => r.id === id);
                 document.getElementById('modal-room-id').value = id;
                 document.getElementById('bill-room-name').innerText = room.name;
-                document.getElementById('bill-nights').innerText = 3;
-                const totalStay = (3 * room.price);
+                
+                // MÔ HÌNH HÓA ĐỘNG: Số đêm = (Ngày về - Ngày đi) dựa trên thanh tìm kiếm
+                const searchCheckIn = new Date(document.getElementById('search-checkin').value);
+                const searchCheckOut = new Date(document.getElementById('search-checkout').value);
+                let nights = Math.ceil((searchCheckOut - searchCheckIn) / (1000 * 60 * 60 * 24));
+                if (isNaN(nights) || nights <= 0) nights = 1; // Logic bảo vệ: Tối thiểu 1 đêm nếu dữ liệu lỗi
+                
+                document.getElementById('bill-nights').innerText = nights;
+                const totalStay = (nights * room.price);
                 const depositValue = Math.round(totalStay * 0.3);
                 document.getElementById('bill-deposit-amt').innerText = '$' + depositValue.toLocaleString();
                 document.getElementById('bill-total').innerText = '$' + totalStay.toLocaleString();
+                
                 if(DB.currentUser && DB.currentUser.name !== "Guest User") {
                     document.getElementById('cust-name').value = DB.currentUser.name;
                     document.getElementById('cust-email').value = DB.currentUser.email || "";
@@ -1882,6 +1890,10 @@
                 const guestName = document.getElementById('cust-name').value;
                 const guestEmail = document.getElementById('cust-email').value;
                 const guestPhone = document.getElementById('cust-phone').value;
+                
+                // Trích xuất số đêm hiện tại từ Bill Summary để tính toán doanh thu chính xác
+                const currentNights = parseInt(document.getElementById('bill-nights').innerText);
+                
                 this.closeModal();
                 const overlay = document.getElementById('proc-overlay');
                 overlay.style.display = 'flex';
@@ -1905,7 +1917,8 @@
                     room.status = 'booked';
                     room.guestName = guestName;
                     room.bookingId = bookingId;
-                    const stayValue = room.price * 3;
+                    
+                    const stayValue = room.price * currentNights;
                     const depositVal = Math.round(stayValue * 0.3);
                     DB.totalRevenue += depositVal;
                     let existingGuest = DB.crm.find(c => c.email.toLowerCase() === guestEmail.toLowerCase());
@@ -1924,7 +1937,7 @@
                     this.showToast(`REAL-TIME: ${notifyName}, your booking ${bookingId} is secured!`, "success");
                     Swal.fire({ 
                         title: conflictDetected ? 'Conflict Resolved' : 'Booking Successful', 
-                        html: `<b>Congratulations, ${guestName}!</b><br>Your booking code is: <b style="color: var(--primary-gold); font-size: 1.2rem;">${bookingId}</b><br>Please save this code for your check-in.`, 
+                        html: `<b>Congratulations, ${guestName}!</b><br>Stay Duration: <b>${currentNights} nights</b><br>Your booking code is: <b style="color: var(--primary-gold); font-size: 1.2rem;">${bookingId}</b><br>Please save this code for your check-in.`, 
                         icon: 'success', confirmButtonColor: '#c5a059' 
                     });
                     document.querySelectorAll('.step-circle').forEach(c => c.classList.remove('active', 'done'));
@@ -1992,18 +2005,18 @@
                             <thead>
                                 <tr>
                                     <th style="text-align:left; width: 220px;">Node Identifier</th>
-                                    <th>Ops Status</th>
-                                    <th>Channel Source</th>
-                                    <th>Parity Price</th>
-                                    <th>Action Control</th>
-                                    <th>Guest / Resident</th>
+                                    <th>Operations Status</th>
+                                    <th>Distribution Channel</th>
+                                    <th>Parity Pricing</th>
+                                    <th>Admin Control</th>
+                                    <th>Resident Profile</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 ${DB.rooms.map((r, i) => {
                                     let channelHTML = i%3===0 ? '<span style="color:#003580; font-weight:700;"><i class="fas fa-bold"></i> Booking.com</span>' : (i%2===0 ? '<span style="color:#e21a2c; font-weight:700;"><i class="fas fa-h-square"></i> Agoda</span>' : '<span style="color:#001e32; font-weight:700;"><i class="fas fa-globe"></i> Expedia</span>');
                                     let actionBtn = r.status === 'booked' ? `<button onclick="app.checkoutRoom(${r.id})" style="background:#ef4444; color:white; border:none; padding:5px 10px; border-radius:4px; font-size:0.6rem;">CHECK-OUT</button>` : (r.status === 'Needs Cleaning' ? `<button onclick="app.startCleaning(${r.id})" style="background:#f59e0b; color:white; border:none; padding:5px 10px; border-radius:4px; font-size:0.6rem;">START CLEANING</button>` : `<span style="color:#10b981; font-size:0.6rem; font-weight:700;">READY</span>`);
-                                    const guestDisplay = r.status === 'booked' ? `Resident: ${r.guestName || 'GUEST'} <br><small style="color:var(--text-gray)">ID: ${r.bookingId || 'N/A'}</small>` : 'OPEN';
+                                    const guestDisplay = r.status === 'booked' ? `Resident: ${r.guestName || 'GUEST'} <br><small style="color:var(--text-gray)">ID: ${r.bookingId || 'N/A'}</small>` : 'OPEN NODE';
                                     return `
                                     <tr>
                                         <td style="text-align:left">
@@ -2060,6 +2073,7 @@
                             <div style="color: #fff">[OK] 256-BIT ENCRYPTION HANDSHAKE SUCCESSFUL.</div>
                             <div>[SYSTEM] Neural Matrix Online. 14,021 threads active.</div>
                             <div>[ANALYZING] Scanned 14 channel nodes (Expedia, Agoda, Booking). Sync status: 100%.</div>
+                            <div>[ANALYZING] Booking Engine date integrity check: VALID.</div>
                             <div>[HEURISTIC] Demand sensors detect 15% spike in Region-A hospitality index.</div>
                             <div>[IOT_WATCH] Unit 105 humidity sensors report 65%. Activating HVAC Node 4-Alpha.</div>
                             <div>[IOT_WATCH] Unit 202 occupancy detected via infrared node. Cross-referencing check-in... Verified.</div>
