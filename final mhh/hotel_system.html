@@ -1090,6 +1090,8 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            position: relative;
+            overflow: hidden;
         }
         .supply-info {
             display: flex;
@@ -1159,6 +1161,114 @@
         @keyframes scanAnim {
             0% { top: 0; }
             100% { top: 100%; }
+        }
+        /* Supplementing Supply Visualization Styles */
+        .usage-deduction {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: var(--accent-red);
+            font-weight: 800;
+            font-size: 0.8rem;
+            font-family: 'Fira Code', monospace;
+            animation: fadeOutUp 2s forwards;
+            pointer-events: none;
+            z-index: 10;
+        }
+        @keyframes fadeOutUp {
+            0% { opacity: 0; transform: translateY(0); }
+            20% { opacity: 1; transform: translateY(-5px); }
+            100% { opacity: 0; transform: translateY(-20px); }
+        }
+        .supply-card.deduction-active {
+            border-color: var(--accent-red) !important;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.3);
+            transition: 0.3s;
+        }
+        /* Imperial Dining Styles */
+        .dining-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 40px;
+        }
+        .food-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            transition: var(--transition);
+            border: 1px solid #f0f0f0;
+        }
+        .food-card:hover {
+            transform: translateY(-10px);
+        }
+        .food-img-box {
+            height: 200px;
+            overflow: hidden;
+            position: relative;
+        }
+        .food-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        .food-card:hover .food-img {
+            transform: scale(1.1);
+        }
+        .food-price-tag {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--primary-gold);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        .food-info {
+            padding: 20px;
+        }
+        .food-cat {
+            font-size: 0.65rem;
+            color: var(--primary-gold);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            display: block;
+        }
+        .food-title {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: var(--primary-dark);
+        }
+        .food-desc {
+            font-size: 0.8rem;
+            color: var(--text-gray);
+            line-height: 1.5;
+            margin-bottom: 20px;
+            height: 45px;
+            overflow: hidden;
+        }
+        .btn-order-food {
+            width: 100%;
+            padding: 10px;
+            background: var(--primary-dark);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .btn-order-food:hover {
+            background: var(--primary-gold);
         }
     </style>
 </head>
@@ -1290,12 +1400,38 @@
             <button class="btn-primary" style="width: 100%; background: var(--accent-red);" onclick="app.executeGuestCheckout()">DEACTIVATE KEY & CHECK-OUT</button>
         </div>
     </div>
+    <!-- NEW PROCUREMENT MODAL -->
+    <div class="modal-overlay" id="procurement-modal">
+        <div class="modal-box" style="max-width: 450px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h3 style="margin:0; letter-spacing: 1px;"><i class="fas fa-shuttle-van"></i> PROCUREMENT TERMINAL</h3>
+                <i class="fas fa-times" onclick="app.closeProcurement()" style="cursor:pointer; font-size:1.4rem; color: var(--text-gray);"></i>
+            </div>
+            <div id="proc-details-panel" style="background: var(--bg-off-white); padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 0.85rem;">
+                <div style="display:flex; justify-content:space-between; margin-bottom: 8px;">
+                    <span>Resource Node:</span>
+                    <strong id="proc-item-name" style="color: var(--primary-gold)">...</strong>
+                </div>
+                <div style="display:flex; justify-content:space-between;">
+                    <span>Current Inventory:</span>
+                    <strong id="proc-current-stock">...</strong>
+                </div>
+            </div>
+            <div style="margin-bottom: 25px;">
+                <label class="form-label">Quantity to Add (Incoming Units)</label>
+                <input type="number" class="form-control" id="proc-qty-input" placeholder="Enter amount to restock..." min="1">
+                <p style="font-size: 0.7rem; color: var(--text-gray); margin-top: 5px;"><i class="fas fa-shield-alt"></i> Authorized acquisition will sync across all GDS supply nodes.</p>
+            </div>
+            <button class="btn-primary" style="width: 100%; background: var(--accent-blue);" onclick="app.executeProcurement()">AUTHORIZE SHIPMENT & SYNC</button>
+        </div>
+    </div>
     <div id="client-app">
         <nav class="navbar" id="navbar">
             <div class="logo">IMPERIAL <span>PALACE</span></div>
             <ul class="nav-menu">
                 <li><a href="#" class="nav-link">Home</a></li>
                 <li><a href="#rooms" class="nav-link">Rooms & Suites</a></li>
+                <li><a href="#dining" class="nav-link">Dining</a></li>
                 <li><a href="#services" class="nav-link">Services</a></li>
                 <li><a href="javascript:app.openCheckin()" class="nav-link" style="color: var(--primary-gold); font-weight: 700;">Check-in</a></li>
                 <li><a href="javascript:app.openCheckout()" class="nav-link" style="color: var(--accent-red); font-weight: 700;">Check-out</a></li>
@@ -1317,11 +1453,11 @@
             <div class="search-bar">
                 <div class="input-group">
                     <label>Check-in Date</label>
-                    <input type="date" id="search-checkin">
+                    <input type="date" id="search-checkin" lang="en">
                 </div>
                 <div class="input-group">
                     <label>Check-out Date</label>
-                    <input type="date" id="search-checkout">
+                    <input type="date" id="search-checkout" lang="en">
                 </div>
                 <div class="input-group">
                     <label>Collection Type</label>
@@ -1342,6 +1478,19 @@
             </div>
             <div class="room-grid" id="room-grid"></div>
         </section>
+
+        <!-- NEW IMPERIAL DINING SECTION -->
+        <section class="section-padding" id="dining" style="background: white;">
+            <div class="section-header">
+                <span>Culinary Excellence</span>
+                <h2>Imperial Fine Dining</h2>
+                <p style="max-width: 600px; margin: 20px auto 0; color: var(--text-gray); font-size: 0.9rem;">
+                    Exquisite Michelin-star room service delivered with surgical precision to your suite.
+                </p>
+            </div>
+            <div class="dining-grid" id="dining-grid"></div>
+        </section>
+
         <section class="section-padding services-section" id="services">
             <div class="section-header">
                 <span style="color:var(--primary-gold)">Curated Amenities</span>
@@ -1386,6 +1535,7 @@
             <div class="menu-item active" onclick="app.switchAdminTab('overview', this)"><i class="fas fa-th-large"></i> <span>Executive Overview</span></div>
             <div class="menu-item" onclick="app.switchAdminTab('matrix', this)"><i class="fas fa-calendar-alt"></i> <span>Inventory Matrix</span></div>
             <div class="menu-item" onclick="app.switchAdminTab('engine', this)"><i class="fas fa-microchip"></i> <span>Automation Engine</span></div>
+            <div class="menu-item" onclick="app.switchAdminTab('dining_mgmt', this)"><i class="fas fa-utensils"></i> <span>Culinary Control</span></div>
             <div class="menu-item" onclick="app.switchAdminTab('crm', this)"><i class="fas fa-id-card"></i> <span>Guest CRM</span></div>
             <div class="menu-item" onclick="app.switchAdminTab('supplies', this)"><i class="fas fa-boxes"></i> <span>Supply Logistics</span></div>
             <div style="margin-top:auto">
@@ -1403,7 +1553,7 @@
                 <div class="step-circle" id="step-1"><i class="fas fa-credit-card"></i><span class="step-label">Authorization</span></div>
                 <div class="step-circle" id="step-2"><i class="fas fa-lock"></i><span class="step-label">Inventory Hold</span></div>
                 <div class="step-circle" id="step-3"><i class="fas fa-brain"></i><span class="step-label">Neural Logic</span></div>
-                <div class="step-circle" id="step-4"><i class="fas fa-check"></i><span class="step-label">Confirmation</span></div>
+                <div class="step-circle" id="step-4"><i class="fas fa-checklabel"></i><span class="step-label">Confirmation</span></div>
             </div>
             <div class="proc-status-text" id="proc-status-text">Encrypting Gateway Data...</div>
         </div>
@@ -1471,6 +1621,23 @@
                 { id: 304, name: "Sanctuary Beach Villa", type: "Villa", price: 3200, basePrice: 3200, status: "available", house: "Clean", revenue: 640000, ADR: 3200, occRate: 28, parity: {booking: 3250, expedia: 3300}, img: "https://images.pexels.com/photos/1134176/pexels-photo-1134176.jpeg?auto=compress&cs=tinysrgb&w=800", iot: {temp: 22, light: 80, curtain: 100, tv: false, dnd: false} },
                 { id: 305, name: "Royal Ocean Villa", type: "Villa", price: 4500, basePrice: 4500, status: "available", house: "Dirty", revenue: 1200000, ADR: 4500, occRate: 15, parity: {booking: 4550, expedia: 4600}, img: "https://images.pexels.com/photos/261102/pexels-photo-261102.jpeg?auto=compress&cs=tinysrgb&w=800", iot: {temp: 22, light: 80, curtain: 100, tv: false, dnd: false} }
             ],
+            menu: [
+                { id: 1, name: "Truffle Filet Mignon", price: 85, cat: "Main Course", desc: "Premium A5 Wagyu with black winter truffle and gold leaf garnish.", img: "https://images.pexels.com/photos/675951/pexels-photo-675951.jpeg?auto=compress&cs=tinysrgb&w=600", available: true },
+                { id: 2, name: "Atlantic Lobster Thermidor", price: 120, cat: "Seafood", desc: "Fresh Atlantic lobster with brandy cream sauce and gruyere.", img: "https://images.pexels.com/photos/699953/pexels-photo-699953.jpeg?auto=compress&cs=tinysrgb&w=600", available: true },
+                { id: 3, name: "Golden Caviar Pasta", price: 95, cat: "Pasta", desc: "Hand-made fettuccine topped with Beluga caviar and uni.", img: "https://images.pexels.com/photos/1437267/pexels-photo-1437267.jpeg?auto=compress&cs=tinysrgb&w=600", available: true },
+                { id: 4, name: "Imperial Breakfast Tower", price: 45, cat: "Breakfast", desc: "Assortment of global pastries, organic fruits, and champagne.", img: "https://images.pexels.com/photos/103124/pexels-photo-103124.jpeg?auto=compress&cs=tinysrgb&w=600", available: true },
+                { id: 5, name: "Wagyu Beef Sliders", price: 55, cat: "Appetizer", desc: "Miniature Wagyu burgers with caramelized onions and blue cheese.", img: "https://images.pexels.com/photos/1600711/pexels-photo-1600711.jpeg?auto=compress&cs=tinysrgb&w=600", available: true },
+                { id: 6, name: "Saffron Seafood Risotto", price: 78, cat: "Main Course", desc: "Creamy Arborio rice infused with Persian saffron and local shellfish.", img: "https://images.pexels.com/photos/2295285/pexels-photo-2295285.jpeg?auto=compress&cs=tinysrgb&w=600", available: true },
+                { id: 7, name: "Peking Duck Bao Buns", price: 38, cat: "Appetizer", desc: "Steamed lotus buns with crispy duck, hoisin, and scallions.", img: "https://images.pexels.com/photos/6605214/pexels-photo-6605214.jpeg?auto=compress&cs=tinysrgb&w=600", available: true },
+                { id: 8, name: "Organic Quinoa Superbowl", price: 32, cat: "Salad", desc: "Nutrient-dense quinoa with avocado, pomegranate, and kale.", img: "https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=600", available: true },
+                { id: 9, name: "Valrhona Chocolate Lava", price: 28, cat: "Dessert", desc: "Molten dark chocolate cake with Madagascan vanilla bean gelato.", img: "https://images.pexels.com/photos/1126359/pexels-photo-1126359.jpeg?auto=compress&cs=tinysrgb&w=600", available: true },
+                { id: 10, name: "Premium Omakase Set", price: 150, cat: "Sushi", desc: "Chef's selection of the finest seasonal sashimi and nigiri.", img: "https://images.pexels.com/photos/2098085/pexels-photo-2098085.jpeg?auto=compress&cs=tinysrgb&w=600", available: true },
+                { id: 11, name: "Gold Leaf Opera Cake", price: 35, cat: "Dessert", desc: "Layers of almond sponge, coffee buttercream, and 24k gold leaf.", img: "https://images.pexels.com/photos/1854652/pexels-photo-1854652.jpeg?auto=compress&cs=tinysrgb&w=600", available: true },
+                { id: 12, name: "Signature Imperial Fizz", price: 24, cat: "Cocktail", desc: "Artisanal gin with elderflower, lychee, and sparkling rosé.", img: "https://images.pexels.com/photos/1189257/pexels-photo-1189257.jpeg?auto=compress&cs=tinysrgb&w=600", available: true },
+                { id: 13, name: "Pan-Seared Sea Scallops", price: 42, cat: "Appetizer", desc: "Premium scallops with cauliflower puree and citrus reduction.", img: "https://images.pexels.com/photos/2092916/pexels-photo-2092916.jpeg?auto=compress&cs=tinysrgb&w=600", available: true },
+                { id: 14, name: "Black Ink Squid Risotto", price: 65, cat: "Main Course", desc: "Deep black risotto with grilled octopus and lemon zest.", img: "https://images.pexels.com/photos/3475617/pexels-photo-3475617.jpeg?auto=compress&cs=tinysrgb&w=600", available: true },
+                { id: 15, name: "Tomahawk Prime Rib", price: 185, cat: "Steak", desc: "40oz dry-aged Tomahawk served with bone marrow butter.", img: "https://images.pexels.com/photos/410648/pexels-photo-410648.jpeg?auto=compress&cs=tinysrgb&w=600", available: true }
+            ],
             logs: [],
             crm: [
                 { name: "Alexander Hamilton", email: "alex@hamilton.com", tier: "PLATINUM", spend: 145200, last: "2 days ago", prefs: "High floor, Foam pillows", points: 15400, stays: 12, health: 98 },
@@ -1479,12 +1646,12 @@
                 { name: "John Adams", email: "john@adams.com", tier: "GOLD", spend: 52000, last: "2 months ago", prefs: "Newspaper daily", points: 9200, stays: 7, health: 88 }
             ],
             supplies: [
-                { name: "Bamboo Toothbrushes", stock: 450, min: 100, unit: "pcs", cat: "Amenities" },
-                { name: "Sandalwood Soap Bars", stock: 320, min: 80, unit: "pcs", cat: "Amenities" },
-                { name: "Egyptian Cotton Towels", stock: 85, min: 100, unit: "sets", cat: "Linens" },
-                { name: "Single Malt Whiskey (50ml)", stock: 120, min: 50, unit: "btl", Gran: "Minibar" },
-                { name: "Luxury Tea Selection", stock: 1200, min: 300, unit: "sachets", cat: "F&B" },
-                { name: "Artisanal Water (330ml)", stock: 800, min: 200, unit: "btl", cat: "F&B" }
+                { name: "Bamboo Toothbrushes", stock: 450, min: 100, unit: "pcs", cat: "Amenities", lastUsage: 0 },
+                { name: "Sandalwood Soap Bars", stock: 320, min: 80, unit: "pcs", cat: "Amenities", lastUsage: 0 },
+                { name: "Egyptian Cotton Towels", stock: 85, min: 100, unit: "sets", cat: "Linens", lastUsage: 0 },
+                { name: "Single Malt Whiskey (50ml)", stock: 120, min: 50, unit: "btl", Gran: "Minibar", lastUsage: 0 },
+                { name: "Luxury Tea Selection", stock: 1200, min: 300, unit: "sachets", cat: "F&B", lastUsage: 0 },
+                { name: "Artisanal Water (330ml)", stock: 800, min: 200, unit: "btl", cat: "F&B", lastUsage: 0 }
             ],
             engine: { 
                 pricing: true, pricingSens: 85, gap: true, gapThreshold: 2,
@@ -1501,6 +1668,7 @@
                 this.loadState();
                 this.setupDates();
                 this.syncUI();
+                this.startSystemPulse();
                 window.addEventListener('scroll', () => {
                     const nav = document.getElementById('navbar');
                     if(nav && window.scrollY > 50) nav.classList.add('scrolled');
@@ -1508,6 +1676,7 @@
                 });
                 this.filterRooms();
                 this.applyDynamicPricing();
+                this.renderMenu();
                 this.logAutomation("System core initialized. Multi-channel sync active.");
                 setTimeout(() => this.showToast("Security Scan: 0 vulnerabilities found.", "success"), 2000);
             },
@@ -1525,6 +1694,20 @@
                 container.appendChild(toast);
                 setTimeout(() => toast.remove(), 5000);
             },
+            startSystemPulse: function() {
+                const pulseMsgs = [
+                    "NETWORK_HEARTBEAT: Latency 12ms. All nodes operational.",
+                    "NEURAL_SYNC: Inventory parity validated across 8 global channels.",
+                    "SECURITY_WATCH: AES-256 session keys refreshed. No intrusions detected.",
+                    "CORE_MONITOR: High-yield heuristic models updated with real-time data.",
+                    "IOT_WATCH: Thermal sensors in Sector A reported within range (22.5°C).",
+                    "GDS_GATEWAY: RSA-4096 handshake renewed with Booking.com API."
+                ];
+                setInterval(() => {
+                    const randomMsg = pulseMsgs[Math.floor(Math.random() * pulseMsgs.length)];
+                    this.logAutomation(randomMsg);
+                }, 12000);
+            },
             openIotModal: function(id) {
                 const room = DB.rooms.find(r => r.id === id);
                 if(!room) return;
@@ -1538,25 +1721,25 @@
                 const display = document.getElementById(displayId);
                 if (device === 'CURTAINS') display.innerText = val == 100 ? 'Fully Opened' : (val == 0 ? 'Closed' : val + unit);
                 else display.innerText = val + unit;
-                this.logAutomation(`IOT_UNIT: ${device} calibrated to ${val}${unit}. Feedback loop validated.`);
+                this.logAutomation(`IOT_UNIT: Sensor input detected. ${device} calibrated to ${val}${unit}. Propagating hardware state...`);
             },
             setMood: function(mood) {
                 this.showToast(`Mood Profile Activated: ${mood}`, "info");
-                this.logAutomation(`IOT_SCENE: Hardware preset '${mood}' applied. Lighting & Media synced.`);
+                this.logAutomation(`IOT_SCENE: User triggered '${mood}' profile. Synchronizing Lighting & Media nodes.`);
             },
             toggleTV: function() {
                 this.showToast(`Entertainment System Toggle Triggered`, "success");
-                this.logAutomation(`IOT_MEDIA: TV unit signal sent. Power state changed.`);
+                this.logAutomation(`IOT_MEDIA: Remote signal broadcasted. TV power state transitioning.`);
             },
             togglePrivacy: function(isDnd) {
                 const type = isDnd ? "error" : "success";
                 const msg = isDnd ? "DND Active - Room Hidden" : "Privacy Released - Staff Access OK";
                 this.showToast(msg, type);
-                this.logAutomation(`IOT_SECURITY: Privacy Node ${isDnd?'LOCKED':'OPENED'}. Digital signage updated.`);
+                this.logAutomation(`IOT_SECURITY: Privacy node ${isDnd?'LOCKED':'OPENED'}. Digital signage and door-lock synced.`);
             },
             requestService: function(service) {
                 this.showToast(`Request Received: ${service} for Room ${document.getElementById('iot-room-number').innerText}`, "success");
-                this.logAutomation(`SERVICE: Neural queue updated. Dispatching staff for ${service}.`);
+                this.logAutomation(`SERVICE_LOG: Neural queue prioritized task: ${service}. Staff dispatch initialized.`);
             },
             startCleaning: function(id) {
                 const room = DB.rooms.find(r => r.id === id);
@@ -1565,7 +1748,7 @@
                 this.showToast(`Autonomous Housekeeping started for Unit ${id}`, "info");
                 const interval = setInterval(() => {
                     progress += 10;
-                    this.logAutomation(`CLEANING UNIT ${id}: ${progress}% COMPLETED...`);
+                    this.logAutomation(`MAINTENANCE_BOT: Sanitizing Unit ${id}... ${progress}% task completion.`);
                     if(progress >= 100) {
                         clearInterval(interval);
                         this.updateSuppliesAfterCleaning(id);
@@ -1582,7 +1765,7 @@
                     didOpen: () => { Swal.showLoading(); },
                 }).then(() => {
                     this.showToast("Scenario Optimized: High-Yield Mode Active", "success");
-                    this.logAutomation("AI_REASONING: Applied Peak Season logic. Yield curve normalized.");
+                    this.logAutomation("AI_OPTIMIZER: Yield curve normalized. High-demand logic applied to pricing matrix.");
                 });
             },
             loadState: function() {
@@ -1590,6 +1773,11 @@
                 if (saved) {
                     DB = JSON.parse(saved);
                     if (!DB.crm) DB.crm = [...DEFAULT_STATE.crm];
+                    // FORCE REFRESH FOR IMAGE FIX AND MENU EXPANSION
+                    const isOldMenu = !DB.menu || DB.menu.length < DEFAULT_STATE.menu.length || DB.menu[12].name.includes('Carpaccio');
+                    if (isOldMenu) {
+                        DB.menu = JSON.parse(JSON.stringify(DEFAULT_STATE.menu));
+                    }
                 } else { 
                     DB = JSON.parse(JSON.stringify(DEFAULT_STATE)); 
                     this.saveState(); 
@@ -1609,7 +1797,7 @@
             verifyAdmin: function() {
                 let pin = ""; document.querySelectorAll('.pin-digit').forEach(d => pin += d.value);
                 if(pin === "1234") { 
-                    this.closeAdminGate(); this.toggleAdmin(true); this.logAutomation("Staff session authorized. AES-256 bridge established.");
+                    this.closeAdminGate(); this.toggleAdmin(true); this.logAutomation("ADMIN_ACCESS: Executive terminal authorized. AES-256 session established.");
                 } else { Swal.fire('Security Alert', 'Unauthorized PIN Entry Detected.', 'error'); }
                 document.querySelectorAll('.pin-digit').forEach(d => d.value = "");
             },
@@ -1624,12 +1812,14 @@
                     this.closeUserGate();
                     this.renderNavbar();
                     this.showToast(`REAL-TIME: Welcome back, ${member.name}. Mobile Key Active.`, "success");
+                    this.logAutomation(`USER_AUTH: CRM verified resident ${member.name}. Session token generated.`);
                 } else {
                     DB.currentUser = { name: "Guest User", tier: "GUEST" };
                     this.saveState();
                     this.closeUserGate();
                     this.renderNavbar();
                     Swal.fire('Welcome', 'Imperial Guest Dashboard Active', 'success');
+                    this.logAutomation("USER_AUTH: Guest session initialized via public gateway.");
                 }
             },
             logout: function() {
@@ -1637,6 +1827,7 @@
                 this.saveState();
                 this.renderNavbar();
                 Swal.fire('Logged Out', 'You have been safely disconnected.', 'info');
+                this.logAutomation("USER_AUTH: Terminal disconnected. Cache purged.");
             },
             renderNavbar: function() {
                 const container = document.getElementById('nav-actions-container');
@@ -1704,7 +1895,7 @@
                         previewImg.src = e.target.result;
                         previewBox.classList.remove('hidden');
                         scanLine.style.opacity = '1';
-                        app.logAutomation("E-KYC: Biometric capture ready. Analyzing facial nodes.");
+                        app.logAutomation("E-KYC: Biometric capture ready. Analyzing facial nodes for RSA encryption.");
                     }
                     reader.readAsDataURL(input.files[0]);
                 }
@@ -1749,6 +1940,7 @@
                         icon: 'success',
                         confirmButtonColor: '#c5a059'
                     });
+                    this.logAutomation(`GUEST_EVENT: Resident ${verifiedName} check-in finalized. Unit ${roomId} node unlocked.`);
                     document.querySelectorAll('.step-circle').forEach(c => c.classList.remove('active', 'done'));
                 }, 4000);
             },
@@ -1772,7 +1964,7 @@
                     room.house = "Dirty"; 
                     room.guestName = null;
                     room.bookingId = null;
-                    this.logAutomation(`GUEST_OUT: Unit ${id} flagged as DIRTY. Scheduled for sanitization.`);
+                    this.logAutomation(`GUEST_OUT: Unit ${id} session terminated. Key revoked. Flagged for sanitization.`);
                     this.saveState();
                     this.syncUI();
                 }
@@ -1780,25 +1972,66 @@
             updateSuppliesAfterCleaning: function(id) {
                 const room = DB.rooms.find(r => r.id === id);
                 if(!room || room.house !== "Dirty") return;
-                const supplyItems = ["Sandalwood Soap Bars", "Bamboo Toothbrushes"];
-                supplyItems.forEach(itemName => {
-                    const item = DB.supplies.find(s => s.name === itemName);
-                    if(item && item.stock > 0) {
-                        item.stock -= 1;
+                
+                // Define items to subtract when a room is cleaned
+                const supplyItemsToDeduct = [
+                    { name: "Sandalwood Soap Bars", qty: 1 },
+                    { name: "Bamboo Toothbrushes", qty: 1 },
+                    { name: "Egyptian Cotton Towels", qty: 0 }, // Just swapped, not consumed
+                    { name: "Artisanal Water (330ml)", qty: 2 }
+                ];
+
+                let usedList = [];
+                supplyItemsToDeduct.forEach(usage => {
+                    const item = DB.supplies.find(s => s.name === usage.name);
+                    if(item && item.stock > 0 && usage.qty > 0) {
+                        item.stock -= usage.qty;
+                        item.lastUsage = usage.qty; // Store for visual highlight
+                        item.isDeducted = true; // Flag for UI
+                        usedList.push(`${usage.qty}x ${item.name}`);
                         if(item.stock < item.min) {
-                            this.showToast(`Low Stock Alert: ${itemName}`, "error");
-                            DB.logs.unshift({ time: new Date().toLocaleTimeString(), msg: `LOW_STOCK: ${itemName} below threshold.` });
+                            this.showToast(`Low Stock Alert: ${item.name}`, "error");
+                            this.logAutomation(`SUPPLY_ALERT: ${item.name} falling below minimum threshold!`);
+                            DB.logs.unshift({ time: new Date().toLocaleTimeString('en-US'), msg: `LOW_STOCK: ${item.name} below threshold.` });
                         }
+                        
+                        // Reset deduction highlight after 3 seconds
+                        setTimeout(() => {
+                            item.isDeducted = false;
+                            if(this.currentAdminTab === 'supplies') this.renderAdminTab();
+                        }, 3000);
                     }
                 });
+
                 room.house = "Clean";
                 room.status = "available";
+                
                 this.saveState();
-                this.syncUI();
+                this.syncUI(); // This will refresh the Supply Logistics tab if currently open
+                
+                this.logAutomation(`LOGISTICS: Unit ${id} sanitized. Deducted items: ${usedList.join(', ')}. Inventory sync complete.`);
             },
             logAutomation: function(msg) {
+                const timeStr = new Date().toLocaleTimeString('en-US');
+                const logEntry = { time: timeStr, msg: `[SYS] ${msg}` };
+                DB.logs.unshift(logEntry);
+                if(DB.logs.length > 50) DB.logs.pop();
+                this.saveState();
+
+                const isAdminMode = !document.getElementById('admin-interface').classList.contains('hidden');
                 const log = document.getElementById('automation-log');
-                if(log) { log.innerText = `SYS_COMMAND: ${msg}`; log.classList.add('active'); setTimeout(() => log.classList.remove('active'), 4000); }
+                if(log && isAdminMode) {
+                    log.innerText = `SYS_COMMAND: ${msg}`;
+                    log.classList.add('active');
+                    setTimeout(() => log.classList.remove('active'), 4000);
+                }
+
+                const terminalBody = document.getElementById('neural-terminal-body');
+                if(terminalBody) {
+                    const entry = document.createElement('div');
+                    entry.innerHTML = `<span style="color: white; opacity: 0.5;">[${timeStr}]</span> > ${msg}`;
+                    terminalBody.prepend(entry);
+                }
             },
             setupDates: function() {
                 const today = new Date().toISOString().split('T')[0];
@@ -1808,6 +2041,7 @@
             syncUI: function() {
                 this.renderNavbar();
                 this.renderRooms();
+                this.renderMenu();
                 if(!document.getElementById('admin-interface').classList.contains('hidden')) { this.renderAdminTab(); }
             },
             handleImgError: function(img, id) {
@@ -1859,17 +2093,99 @@
                 });
                 DB.bufferHoldCount = totalBuffer;
             },
-            filterRooms: function() { this.renderRooms(document.getElementById('search-type')?.value || 'all'); },
+            renderMenu: function() {
+                const grid = document.getElementById('dining-grid');
+                if(!grid) return;
+                grid.innerHTML = '';
+                DB.menu.forEach(item => {
+                    if (!item.available) return;
+                    grid.innerHTML += `
+                        <div class="food-card">
+                            <div class="food-img-box">
+                                <img src="${item.img}" class="food-img" alt="${item.name}">
+                                <div class="food-price-tag">$${item.price}</div>
+                            </div>
+                            <div class="food-info">
+                                <span class="food-cat">${item.cat}</span>
+                                <h3 class="food-title">${item.name}</h3>
+                                <p class="food-desc">${item.desc}</p>
+                                <button class="btn-order-food" onclick="app.orderFood(${item.id})">Order Room Service</button>
+                            </div>
+                        </div>`;
+                });
+            },
+            orderFood: function(foodId) {
+                const food = DB.menu.find(f => f.id === foodId);
+                let verifiedRoom = null;
+
+                // Nếu đã login
+                if(DB.currentUser) {
+                    verifiedRoom = DB.rooms.find(r => r.guestName === DB.currentUser.name);
+                }
+
+                // Nếu chưa login hoặc chưa có phòng, yêu cầu nhập mã
+                if(!verifiedRoom) {
+                    Swal.fire({
+                        title: 'Verify Your Suite',
+                        text: 'Enter your Booking ID or Room Number to place order:',
+                        input: 'text',
+                        inputPlaceholder: 'e.g. IP-A2B3C or 102',
+                        showCancelButton: true,
+                        confirmButtonColor: '#c5a059'
+                    }).then((result) => {
+                        if (result.value) {
+                            const input = result.value.trim().toUpperCase();
+                            const match = DB.rooms.find(r => (r.bookingId === input || r.id.toString() === input) && r.status === 'booked');
+                            
+                            if(match) {
+                                this.processFoodOrder(food, match);
+                            } else {
+                                Swal.fire('Unauthorized', 'No active stay found with that identifier.', 'error');
+                            }
+                        }
+                    });
+                } else {
+                    this.processFoodOrder(food, verifiedRoom);
+                }
+            },
+            processFoodOrder: function(food, room) {
+                Swal.fire({
+                    title: 'Confirm Gourmet Order',
+                    html: `Deliver <b>${food.name}</b> to <b>Suite ${room.id}</b>?<br>Charge: <b>$${food.price}</b>`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Confirm Order',
+                    confirmButtonColor: '#10b981'
+                }).then((result) => {
+                    if(result.isConfirmed) {
+                        DB.totalRevenue += food.price;
+                        // Cộng dồn chi tiêu cho khách nếu là khách thành viên
+                        const member = DB.crm.find(c => c.name === room.guestName);
+                        if(member) member.spend += food.price;
+                        
+                        this.logAutomation(`FOOD_ORDER: Gourmet shipment of ${food.name} dispatched to Suite ${room.id}. Revenue accrued: +$${food.price}.`);
+                        this.showToast(`Chef: Preparation started for Suite ${room.id}`, "success");
+                        
+                        Swal.fire('Order Placed', 'Your Michelin-star selection is being prepared.', 'success');
+                        this.saveState();
+                        this.syncUI();
+                    }
+                });
+            },
+            filterRooms: function() { 
+                this.renderRooms(document.getElementById('search-type')?.value || 'all');
+                this.logAutomation(`SEARCH_ENGINE: Filter criteria updated: ${document.getElementById('search-type')?.value}. Re-indexing inventory.`);
+            },
             openBooking: function(id) {
                 const room = DB.rooms.find(r => r.id === id);
                 document.getElementById('modal-room-id').value = id;
                 document.getElementById('bill-room-name').innerText = room.name;
                 
-                // MÔ HÌNH HÓA ĐỘNG: Số đêm = (Ngày về - Ngày đi) dựa trên thanh tìm kiếm
+                // DYNAMIC MODELLING: Nights = (Return Date - Departure Date) based on Search Bar
                 const searchCheckIn = new Date(document.getElementById('search-checkin').value);
                 const searchCheckOut = new Date(document.getElementById('search-checkout').value);
                 let nights = Math.ceil((searchCheckOut - searchCheckIn) / (1000 * 60 * 60 * 24));
-                if (isNaN(nights) || nights <= 0) nights = 1; // Logic bảo vệ: Tối thiểu 1 đêm nếu dữ liệu lỗi
+                if (isNaN(nights) || nights <= 0) nights = 1; // Safeguard: Min 1 night
                 
                 document.getElementById('bill-nights').innerText = nights;
                 const totalStay = (nights * room.price);
@@ -1883,6 +2199,7 @@
                     document.getElementById('cust-phone').value = DB.currentUser.phone || "";
                 }
                 document.getElementById('booking-modal').classList.add('active');
+                this.logAutomation(`BOOKING_FLOW: Node ${id} initialization. Extracting pricing heuristics for ${nights} nights.`);
             },
             closeModal: function() { document.getElementById('booking-modal').classList.remove('active'); },
             confirmBooking: function() {
@@ -1891,7 +2208,7 @@
                 const guestEmail = document.getElementById('cust-email').value;
                 const guestPhone = document.getElementById('cust-phone').value;
                 
-                // Trích xuất số đêm hiện tại từ Bill Summary để tính toán doanh thu chính xác
+                // Extract current nights from Bill Summary to ensure accurate revenue sync
                 const currentNights = parseInt(document.getElementById('bill-nights').innerText);
                 
                 this.closeModal();
@@ -1931,7 +2248,7 @@
                         if(existingGuest.spend > 100000) existingGuest.tier = "PLATINUM";
                         else if(existingGuest.spend > 50000) existingGuest.tier = "GOLD";
                     }
-                    DB.logs.unshift({ time: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), msg: `DEPOSIT_PAID: ${bookingId} (+$${depositVal}) by ${guestName}` });
+                    DB.logs.unshift({ time: new Date().toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'}), msg: `DEPOSIT_PAID: ${bookingId} (+$${depositVal}) by ${guestName}` });
                     this.saveState(); this.syncUI();
                     const notifyName = DB.currentUser ? DB.currentUser.name : guestName;
                     this.showToast(`REAL-TIME: ${notifyName}, your booking ${bookingId} is secured!`, "success");
@@ -1940,6 +2257,7 @@
                         html: `<b>Congratulations, ${guestName}!</b><br>Stay Duration: <b>${currentNights} nights</b><br>Your booking code is: <b style="color: var(--primary-gold); font-size: 1.2rem;">${bookingId}</b><br>Please save this code for your check-in.`, 
                         icon: 'success', confirmButtonColor: '#c5a059' 
                     });
+                    this.logAutomation(`TRANSACTION_OK: Payment node verified. Stay authorized for ${guestName} (UID: ${id}).`);
                     document.querySelectorAll('.step-circle').forEach(c => c.classList.remove('active', 'done'));
                 }, 4000);
             },
@@ -1948,6 +2266,7 @@
                 this.currentAdminTab = tab;
                 document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
                 el.classList.add('active'); this.renderAdminTab();
+                this.logAutomation(`TERMINAL_UI: Switched focus to [${tab.toUpperCase()}]. Loading analytics metadata...`);
             },
             renderAdminTab: function() {
                 const main = document.getElementById('admin-main-content');
@@ -1956,6 +2275,7 @@
                     case 'overview': main.innerHTML = this.getOverviewHTML(); break;
                     case 'matrix': main.innerHTML = this.getMatrixHTML(); break;
                     case 'engine': main.innerHTML = this.getEngineHTML(); break;
+                    case 'dining_mgmt': main.innerHTML = this.getDiningMgmtHTML(); break;
                     case 'crm': main.innerHTML = this.getCRMHTML(); break;
                     case 'supplies': main.innerHTML = this.getSuppliesHTML(); break;
                 }
@@ -2039,7 +2359,7 @@
             updateEngineParam: function(key, val) {
                 DB.engine[key] = parseInt(val);
                 this.applyDynamicPricing(); this.renderAdminTab(); this.saveState();
-                this.logAutomation(`Neural Param: ${key} recalibrated to ${val}`);
+                this.logAutomation(`NEURAL_TUNE: Hyperparameter [${key}] recalibrated to ${val}. Yield index re-calculated.`);
             },
             getEngineHTML: function() {
                 const s = [
@@ -2048,6 +2368,8 @@
                     { k: 'conciergeLogic', l: 'Neural Concierge Logic', d: 'AI automated guest request routing and queuing.', val: DB.engine.conciergeLogic || 90, unit: ' IQ' },
                     { k: 'ecoTemp', l: 'Neural HVAC Automation', d: 'Centralized energy management via hardware nodes.', val: DB.engine.ecoTemp, unit: '°C Limit' }
                 ];
+                const terminalLogs = DB.logs.slice(0, 20).map(log => `<div><span style="color: white; opacity: 0.5;">[${log.time}]</span> > ${log.msg}</div>`).join('');
+
                 return `
                     <div class="admin-header"><h2>Automation & Neural Heuristics</h2></div>
                     <div class="automation-grid">
@@ -2068,22 +2390,81 @@
                     </div>
                     <div class="matrix-container" style="margin-top:30px; border-left:4px solid var(--cyber-green);">
                         <h4 style="margin-bottom:15px; font-family:'Fira Code'"><i class="fas fa-terminal"></i> NEURAL REASONING TRACE [v4.2]</h4>
-                        <div style="font-family:'Fira Code', monospace; font-size:0.75rem; color:var(--cyber-green); line-height:1.8; height: 350px; overflow-y: auto; background: #000; padding: 25px; border-radius: 12px; box-shadow: inset 0 0 15px rgba(0,255,65,0.1);">
-                            <div style="color: white; opacity: 0.5;">[${new Date().toLocaleTimeString()}] > INITIALIZING SECURITY SCAN...</div>
-                            <div style="color: #fff">[OK] 256-BIT ENCRYPTION HANDSHAKE SUCCESSFUL.</div>
-                            <div>[SYSTEM] Neural Matrix Online. 14,021 threads active.</div>
-                            <div>[ANALYZING] Scanned 14 channel nodes (Expedia, Agoda, Booking). Sync status: 100%.</div>
-                            <div>[ANALYZING] Booking Engine date integrity check: VALID.</div>
-                            <div>[HEURISTIC] Demand sensors detect 15% spike in Region-A hospitality index.</div>
-                            <div>[IOT_WATCH] Unit 105 humidity sensors report 65%. Activating HVAC Node 4-Alpha.</div>
-                            <div>[IOT_WATCH] Unit 202 occupancy detected via infrared node. Cross-referencing check-in... Verified.</div>
-                            <div>[SENTIMENT] Guest preference extracted: "High floor", "Late checkout prospect".</div>
-                            <div>[SECURITY] RSA-4096 handshake successful with Global GDS Gateway.</div>
-                            <div>[CLEANING_SCHEDULER] Dispatching autonomous drone unit to Floor 2 for Unit 104.</div>
-                            <div>[YIELD] Predictive revenue delta: +$1,250.00 since last audit cycle.</div>
+                        <div id="neural-terminal-body" style="font-family:'Fira Code', monospace; font-size:0.75rem; color:var(--cyber-green); line-height:1.8; height: 350px; overflow-y: auto; background: #000; padding: 25px; border-radius: 12px; box-shadow: inset 0 0 15px rgba(0,255,65,0.1);">
+                            ${terminalLogs}
                             <div style="border-top: 1px solid rgba(0,255,65,0.2); margin-top:10px; padding-top:10px;">[LISTENING] Ready for neural inputs... _</div>
                         </div>
                     </div>`;
+            },
+            getDiningMgmtHTML: function() {
+                return `
+                    <div class="admin-header">
+                        <div>
+                            <h2>Culinary Inventory & Pricing Control</h2>
+                            <p style="font-size:0.8rem; color: var(--text-gray);">Manage Michelin menu availability and real-time gourmet pricing.</p>
+                        </div>
+                    </div>
+                    <div class="matrix-container">
+                        <table class="matrix-table">
+                            <thead>
+                                <tr>
+                                    <th style="text-align:left">Dish Identifier</th>
+                                    <th>Category</th>
+                                    <th>Guest Price ($)</th>
+                                    <th>Availability</th>
+                                    <th>Live Control</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${DB.menu.map(food => `
+                                    <tr>
+                                        <td style="text-align:left">
+                                            <div style="display:flex; align-items:center; gap:12px;">
+                                                <img src="${food.img}" style="width:45px; height:45px; border-radius:8px; object-fit:cover;">
+                                                <div><strong>${food.name}</strong><br><small style="color:var(--text-gray)">ID: ${food.id}</small></div>
+                                            </div>
+                                        </td>
+                                        <td><span style="font-size:0.7rem; color:var(--primary-gold)">${food.cat}</span></td>
+                                        <td>
+                                            <input type="number" value="${food.price}" 
+                                                style="width:70px; background:#111827; border:1px solid #374151; color:white; padding:4px; border-radius:4px; text-align:center;"
+                                                onchange="app.updateFoodPrice(${food.id}, this.value)">
+                                        </td>
+                                        <td>
+                                            <span style="font-weight:700; color:${food.available?'#10b981':'#ef4444'}">
+                                                ${food.available?'IN STOCK':'OUT OF STOCK'}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <button class="mood-btn" style="border-color:${food.available?'#ef4444':'#10b981'}; color:${food.available?'#ef4444':'#10b981'}"
+                                                onclick="app.toggleFoodStatus(${food.id})">
+                                                ${food.available?'DISABLE':'ENABLE'}
+                                            </button>
+                                        </td>
+                                    </tr>`).join('')}
+                            </tbody>
+                        </table>
+                    </div>`;
+            },
+            updateFoodPrice: function(id, newPrice) {
+                const food = DB.menu.find(f => f.id === id);
+                if(food) {
+                    const oldPrice = food.price;
+                    food.price = parseFloat(newPrice);
+                    this.logAutomation(`CULINARY_PRICE: Updated ${food.name} price: $${oldPrice} -> $${food.price}.`);
+                    this.saveState();
+                    this.renderMenu();
+                }
+            },
+            toggleFoodStatus: function(id) {
+                const food = DB.menu.find(f => f.id === id);
+                if(food) {
+                    food.available = !food.available;
+                    this.logAutomation(`CULINARY_STOCK: ${food.name} is now ${food.available?'AVAILABLE':'UNAVAILABLE'} for guest ordering.`);
+                    this.saveState();
+                    this.renderAdminTab();
+                    this.renderMenu();
+                }
             },
             getCRMHTML: function() {
                 return `
@@ -2110,27 +2491,84 @@
             },
             getSuppliesHTML: function() {
                 return `
-                    <div class="admin-header"><h2>Supply Chain & Resource Inventory</h2></div>
+                    <div class="admin-header">
+                        <div>
+                            <h2>Supply Chain & Resource Inventory</h2>
+                            <p style="font-size:0.75rem; color:var(--text-gray); margin-top:5px;"><i class="fas fa-info-circle"></i> Supplies are automatically deducted upon room sanitization completion.</p>
+                        </div>
+                    </div>
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
-                        ${DB.supplies.map(s => {
+                        ${DB.supplies.map((s, i) => {
                             const percent = Math.min((s.stock / (s.min * 2)) * 100, 100);
+                            const deductionBadge = s.isDeducted ? `<div class="usage-deduction">-${s.lastUsage} ${s.unit}</div>` : '';
+                            
                             return `
-                                <div class="supply-card">
+                                <div class="supply-card ${s.isDeducted ? 'deduction-active' : ''}">
+                                    ${deductionBadge}
                                     <div style="width: 100%">
                                         <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
-                                            <div class="supply-info"><div class="supply-icon"><i class="fas ${s.cat==='Minibar'?'fa-glass-martini-alt':(s.cat==='F&B'?'fa-coffee':'fa-pump-soap')}"></i></div><div><h4 style="color:white">${s.name}</h4><small style="color:var(--text-gray)">${s.cat}</small></div></div>
-                                            <span class="supply-status ${s.stock < s.min?'status-low':'status-ok'}">${s.stock < s.min?'REORDER':'OK'}</span>
+                                            <div class="supply-info">
+                                                <div class="supply-icon"><i class="fas ${s.cat==='Minibar'?'fa-glass-martini-alt':(s.cat==='F&B'?'fa-coffee':'fa-pump-soap')}"></i></div>
+                                                <div><h4 style="color:white">${s.name}</h4><small style="color:var(--text-gray)">Category: ${s.cat || 'General'}</small></div>
+                                            </div>
+                                            <span class="supply-status ${s.stock < s.min?'status-low':'status-ok'}">${s.stock < s.min?'REORDER REQ':'IN STOCK'}</span>
                                         </div>
                                         <div class="supply-stock-bar"><div class="supply-stock-fill" style="width: ${percent}%;"></div></div>
+                                        <div style="display:flex; justify-content:space-between; margin-top:8px; font-size:0.75rem; font-family:'Fira Code';">
+                                            <div style="color:white">CURRENT: <span style="color:var(--primary-gold)">${s.stock} ${s.unit}</span></div>
+                                            <div style="color:var(--text-gray)">SAFETY MIN: ${s.min}</div>
+                                        </div>
+                                        <div style="margin-top:10px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.05); display:flex; justify-content:space-between; align-items:center;">
+                                            <div style="font-size:0.6rem; color:var(--text-gray);">
+                                                <i class="fas fa-truck-loading"></i> Consumption: <span style="color:var(--accent-green)">${s.name.includes('Water') ? '2' : (s.cat==='Amenities' ? '1' : '0')} units/clean</span>
+                                            </div>
+                                            <button class="mood-btn" style="border-color: var(--accent-blue); color: var(--accent-blue); padding: 4px 12px;" onclick="app.openProcurement(${i})">
+                                                <i class="fas fa-plus"></i> RESTOCK
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>`;
                         }).join('')}
                     </div>`;
             },
+            activeProcIndex: null,
+            openProcurement: function(index) {
+                const item = DB.supplies[index];
+                this.activeProcIndex = index;
+                document.getElementById('proc-item-name').innerText = item.name;
+                document.getElementById('proc-current-stock').innerText = `${item.stock} ${item.unit}`;
+                document.getElementById('proc-qty-input').value = "";
+                document.getElementById('procurement-modal').classList.add('active');
+            },
+            closeProcurement: function() {
+                document.getElementById('procurement-modal').classList.remove('active');
+                this.activeProcIndex = null;
+            },
+            executeProcurement: function() {
+                const qtyInput = document.getElementById('proc-qty-input');
+                const qty = parseInt(qtyInput.value);
+                
+                if (isNaN(qty) || qty <= 0) {
+                    return Swal.fire('Invalid Input', 'Please enter a positive numeric quantity for restocking.', 'error');
+                }
+
+                const item = DB.supplies[this.activeProcIndex];
+                const prevStock = item.stock;
+                item.stock += qty;
+                
+                // Visualization logic for "Stock In"
+                this.closeProcurement();
+                this.showToast(`Procurement SUCCESS: +${qty} units of ${item.name} added.`, "success");
+                this.logAutomation(`LOGISTICS_PROC: Authorized replenishment for ${item.name}. Stock: ${prevStock} -> ${item.stock}.`);
+                
+                this.saveState();
+                this.renderAdminTab(); // Refresh the tab
+            },
             toggleAdmin: function(show) {
                 document.getElementById('admin-interface').classList.toggle('hidden', !show);
                 document.getElementById('client-app').classList.toggle('hidden', show);
                 if(show) { this.currentAdminTab = 'overview'; this.renderAdminTab(); }
+                this.logAutomation(`TERMINAL_EVENT: Administrative interface ${show?'MOUNTED':'UNMOUNTED'}. Transition secured.`);
             }
         };
         document.addEventListener('DOMContentLoaded', () => app.init());
