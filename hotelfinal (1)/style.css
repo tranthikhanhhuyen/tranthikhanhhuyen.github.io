@@ -1,0 +1,509 @@
+/* THE ARTISAN LAKEVIEW - LUXURY DESIGN SYSTEM 
+   Lead Designer: Trần Thị Khánh Huyền
+   Version: 14.0 - Auth Modal Redesign & Premium Polishing
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --primary-gold: #c5a059;
+    --gold-hover: #b08d45;
+    --deep-blue: #0f172a;
+    --bg-light: #f8fafc;
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --white: #ffffff;
+    --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+    --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* THIẾT LẬP CƠ BẢN */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    background-color: var(--bg-light);
+    color: var(--text-main);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+h1, h2, h3, h4 { font-family: 'Playfair Display', serif; }
+
+/* THANH ĐIỀU HƯỚNG (NAVBAR) */
+.navbar {
+    position: fixed; top: 0; width: 100%; z-index: 2000;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 25px 8%; transition: var(--transition);
+}
+
+.navbar.scrolled {
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 15px 8%;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+}
+
+.logo { font-size: 1.5rem; font-weight: 700; color: var(--white); letter-spacing: 2px; text-transform: uppercase; cursor: pointer; }
+.logo span { color: var(--primary-gold); }
+
+.nav-menu { display: flex; gap: 30px; list-style: none; align-items: center; }
+.nav-link { 
+    color: var(--white); font-size: 0.75rem; font-weight: 600; 
+    text-transform: uppercase; letter-spacing: 1.5px; transition: 0.3s;
+    cursor: pointer;
+}
+.nav-link:hover { color: var(--primary-gold); }
+
+.auth-trigger {
+    background: var(--primary-gold);
+    padding: 10px 22px !important;
+    border-radius: 4px;
+    color: white !important;
+}
+/* Container chính của Hero Video */
+.hero-video-container {
+    position: relative;
+    height: 100vh; /* Cao bằng toàn màn hình */
+    width: 100%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Định dạng video */
+.video-bg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    min-width: 100%; 
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    z-index: 1;
+    object-fit: cover;
+}
+
+/* Lớp phủ (Overlay) giúp chữ không bị chìm vào video */
+.video-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 23, 42, 0.5); /* Màu xanh đen mờ 50% */
+    z-index: 2;
+}
+
+/* Đảm bảo nội dung nằm trên cùng */
+.hero-content {
+    position: relative;
+    z-index: 3;
+    color: var(--white);
+    text-align: center;
+}
+
+/* Chỉnh lại logo span để tiệp màu vàng gold của bạn */
+.hero-title span {
+    color: var(--primary-gold);
+}
+
+/* PHẦN HERO (TRANG CHỦ) */
+.hero {
+    position: relative;
+    height: 100vh;
+    background: linear-gradient(rgba(15, 23, 42, 0.5), rgba(15, 23, 42, 0.5)), 
+                url('https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
+    display: flex; align-items: center; justify-content: center;
+    text-align: center; color: var(--white);
+}
+
+.hero-content { max-width: 900px; padding: 0 20px; z-index: 2; }
+.hero-subtitle { color: var(--primary-gold); font-size: 0.9rem; letter-spacing: 8px; text-transform: uppercase; margin-bottom: 25px; display: block; }
+.hero-title { font-size: clamp(2.5rem, 7vw, 5rem); margin-bottom: 35px; line-height: 1.1; font-weight: 700; }
+.hero-desc { font-size: 1.1rem; max-width: 600px; margin: 0 auto 40px; color: rgba(255,255,255,0.9); }
+
+.hero-btns { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
+
+/* THANH ĐẶT PHÒNG (BOOKING ENGINE BAR) */
+.booking-engine {
+    background: white;
+    padding: 25px 40px;
+    border-radius: 15px;
+    box-shadow: var(--shadow-lg);
+    margin: -70px auto 80px;
+    max-width: 1140px;
+    position: relative;
+    z-index: 100;
+}
+
+.engine-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr) auto;
+    align-items: center;
+    gap: 20px;
+}
+
+.engine-item {
+    padding: 0 15px;
+    border-right: 1px solid #edf2f7;
+    display: flex;
+    flex-direction: column;
+}
+
+.engine-item:nth-last-of-type(2) { border-right: none; }
+
+.engine-item label {
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: var(--primary-gold);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.engine-item input, .engine-item select {
+    border: none;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--deep-blue);
+    outline: none;
+    background: transparent;
+    cursor: pointer;
+    width: 100%;
+}
+
+.btn-search {
+    background: var(--deep-blue);
+    color: white;
+    padding: 18px 40px;
+    border-radius: 8px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    border: none;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-search:hover { background: var(--primary-gold); transform: translateY(-2px); }
+
+/* BỐ CỤC CHUNG CHO CÁC PHẦN */
+.section-padding { padding: 120px 8% 80px; }
+.section-header { text-align: center; margin-bottom: 80px; }
+.section-header span { color: var(--primary-gold); text-transform: uppercase; letter-spacing: 6px; font-weight: 700; font-size: 0.85rem; }
+.section-header h2 { font-size: 3.5rem; margin-top: 20px; color: var(--deep-blue); }
+
+/* LƯỚI DỊCH VỤ */
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+}
+
+.service-item {
+    background: var(--white);
+    padding: 60px 40px;
+    text-align: center;
+    border-radius: 20px;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+    border: 1px solid rgba(0,0,0,0.02);
+}
+
+.service-item:hover {
+    transform: translateY(-15px);
+    box-shadow: var(--shadow-lg);
+}
+
+.service-item i {
+    font-size: 3.5rem;
+    color: var(--primary-gold);
+    margin-bottom: 30px;
+    display: block;
+}
+
+.service-item h3 {
+    margin-bottom: 15px;
+    font-size: 1.6rem;
+    color: var(--deep-blue);
+}
+
+.service-item p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+/* LƯỚI PHÒNG (ROOM GRID) */
+.room-grid {
+    display: grid; 
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 40px;
+}
+
+.room-card {
+    background: var(--white); border-radius: 20px; overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05); transition: var(--transition);
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.room-card:hover { transform: translateY(-15px); box-shadow: var(--shadow-lg); }
+
+.room-img-wrapper { position: relative; height: 320px; overflow: hidden; }
+.room-img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.5s ease; }
+.room-card:hover .room-img { transform: scale(1.1); }
+
+.price-tag {
+    position: absolute; bottom: 25px; right: 25px;
+    background: var(--primary-gold); color: var(--white);
+    padding: 12px 24px; border-radius: 6px; font-weight: 700; font-size: 1.3rem;
+}
+
+.room-info { padding: 35px; }
+.room-category { color: var(--primary-gold); font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; }
+.room-title { font-size: 1.8rem; margin: 12px 0 25px; color: var(--deep-blue); }
+
+.room-review-box {
+    background: #f8fafc; padding: 20px; border-radius: 12px; margin-bottom: 25px;
+    border-left: 4px solid var(--primary-gold);
+}
+.room-review-box p { font-style: italic; font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; }
+.room-review-box .reviewer-name { display: block; margin-top: 12px; font-weight: 700; color: var(--deep-blue); font-size: 0.8rem; }
+
+.room-amenities-strip { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 30px; }
+.room-amenities-strip span { font-size: 0.7rem; font-weight: 600; background: #f1f5f9; padding: 6px 12px; border-radius: 4px; color: var(--text-muted); }
+
+.btn-book-room {
+    width: 100%; padding: 18px; background: var(--deep-blue); color: var(--white);
+    border: none; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; transition: 0.3s;
+}
+.btn-book-room:hover { background: var(--primary-gold); }
+
+/* NÚT BẤM CƠ BẢN */
+.btn-primary {
+    background: var(--primary-gold); color: var(--white); border: none;
+    padding: 18px 40px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 2px; cursor: pointer; transition: var(--transition);
+}
+.btn-primary:hover { background: var(--gold-hover); transform: translateY(-5px); }
+
+/* HỆ THỐNG MODAL (REDESIGNED) */
+.auth-modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(12px);
+    display: none; align-items: center; justify-content: center;
+    z-index: 9999; animation: fadeIn 0.4s ease; padding: 20px;
+}
+
+.auth-card {
+    background: var(--white);
+    width: 100%;
+    max-width: 480px;
+    padding: 60px 50px;
+    border-radius: 24px;
+    position: relative;
+    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    text-align: center;
+}
+
+.auth-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 6px;
+    background: var(--primary-gold);
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+.auth-header { margin-bottom: 40px; }
+.auth-header h2 { 
+    font-size: 2.2rem; 
+    color: var(--deep-blue); 
+    margin-bottom: 12px;
+    letter-spacing: -1px;
+}
+.auth-header p { 
+    color: var(--text-muted); 
+    font-size: 0.95rem; 
+    font-weight: 500;
+}
+
+.auth-body .input-group {
+    position: relative;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.auth-body .input-group i {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--primary-gold);
+    font-size: 1.1rem;
+    transition: 0.3s;
+}
+
+.auth-body .input-group input {
+    width: 100%;
+    padding: 18px 20px 18px 55px;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    border-radius: 12px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.auth-body .input-group input:focus {
+    border-color: var(--primary-gold);
+    background: var(--white);
+    box-shadow: 0 0 0 4px rgba(197, 160, 89, 0.1);
+}
+
+.auth-body .input-group input:focus + i {
+    color: var(--gold-hover);
+}
+
+.auth-btn {
+    width: 100%;
+    padding: 18px;
+    background: var(--deep-blue);
+    color: var(--white);
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: var(--transition);
+    margin-top: 10px;
+}
+
+.auth-btn:hover {
+    background: var(--primary-gold);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(197, 160, 89, 0.2);
+}
+
+.auth-footer {
+    margin-top: 35px;
+    padding-top: 25px;
+    border-top: 1px solid #f1f5f9;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+.auth-footer a {
+    color: var(--primary-gold);
+    font-weight: 700;
+    text-decoration: none;
+    margin-left: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.auth-footer a:hover {
+    color: var(--gold-hover);
+    text-decoration: underline;
+}
+
+.close-btn { 
+    position: absolute; 
+    top: 20px; 
+    right: 25px; 
+    font-size: 1.8rem; 
+    cursor: pointer; 
+    color: #cbd5e1; 
+    transition: 0.3s;
+    line-height: 1;
+}
+.close-btn:hover { color: var(--primary-gold); transform: rotate(90deg); }
+
+/* PHẦN THANH TOÁN (PAYMENT GRID) */
+.payment-card-v2 { max-width: 1050px !important; padding: 40px !important; }
+.payment-grid-layout {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 50px;
+}
+
+.payment-left-col { border-right: 1px solid #f1f5f9; padding-right: 30px; }
+.p-section-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 25px; color: var(--deep-blue); display: flex; align-items: center; gap: 10px; }
+.p-section-title::before { content: ''; width: 4px; height: 20px; background: var(--primary-gold); border-radius: 2px; }
+
+.booking-preview-card {
+    display: flex; gap: 20px; background: #f8fafc; padding: 20px; border-radius: 15px; margin-bottom: 30px;
+}
+.preview-img { width: 120px; height: 90px; object-fit: cover; border-radius: 10px; }
+
+.stay-info-box {
+    display: flex; justify-content: space-between; align-items: center;
+    background: var(--deep-blue); color: white; padding: 30px; border-radius: 15px; margin-bottom: 40px;
+}
+.stay-date span { font-size: 0.7rem; text-transform: uppercase; color: #94a3b8; letter-spacing: 1px; }
+.stay-date strong { font-size: 1.1rem; margin-top: 8px; display: block; }
+.stay-duration { text-align: center; color: var(--primary-gold); font-weight: 700; font-size: 0.9rem; }
+
+.price-summary-box { background: #f8fafc; padding: 30px; border-radius: 15px; margin-bottom: 30px; }
+.price-row { display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 0.95rem; }
+.total-row { border-top: 2px dashed #e2e8f0; margin-top: 25px; padding-top: 25px; display: flex; justify-content: space-between; font-weight: 800; font-size: 1.6rem; color: var(--primary-gold); }
+
+.method-v2-option {
+    display: flex; align-items: center; gap: 20px; padding: 18px;
+    border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 15px;
+    cursor: pointer; transition: 0.3s;
+}
+.method-v2-option:hover { border-color: var(--primary-gold); background: #fdfaf3; }
+.method-v2-option img { width: 32px; height: 32px; }
+
+.confirm-pay-btn {
+    width: 100%; padding: 22px; background: #ff5722; color: white; border: none;
+    border-radius: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;
+    cursor: pointer; transition: 0.3s; margin-top: 10px;
+}
+
+/* FOOTER */
+.footer { background: var(--deep-blue); color: var(--white); padding: 100px 0 40px; }
+.footer-container { width: 84%; margin: 0 auto; }
+.footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1.5fr; gap: 60px; margin-bottom: 80px; }
+
+/* HIỆU ỨNG HIỆN HÌNH */
+.reveal { opacity: 0; transform: translateY(30px); transition: 0.8s ease-out; }
+.reveal.active { opacity: 1; transform: translateY(0); }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+/* PHẢN HỒI (RESPONSIVE) */
+@media (max-width: 1024px) {
+    .engine-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+    .engine-item { border-right: none; border-bottom: 1px solid #edf2f7; padding: 10px 0; }
+    .btn-search { grid-column: span 2; width: 100%; margin: 10px 0 0; }
+    .payment-grid-layout { grid-template-columns: 1fr; gap: 30px; }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 768px) {
+    .booking-engine { margin-top: 20px; padding: 20px; width: 92%; }
+    .hero-title { font-size: 2.8rem; }
+    .footer-grid { grid-template-columns: 1fr; }
+    .auth-card { padding: 40px 30px; }
+    
+}

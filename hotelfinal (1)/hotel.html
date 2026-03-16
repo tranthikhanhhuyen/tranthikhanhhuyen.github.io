@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Artisan Lakeview Hotel | Luxury Reimagined</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body>
+    <!-- NAVBAR -->
+    <nav class="navbar" id="navbar">
+        <div class="logo" onclick="app.navigate('home')">
+            The Artisan <span>Lakeview</span>
+        </div>
+        <ul class="nav-menu">
+            <li><a class="nav-link" onclick="app.navigate('home')">Home</a></li>
+            <li><a class="nav-link" onclick="app.navigate('rooms')">Rooms & Suites</a></li>
+            <li><a class="nav-link" onclick="app.navigate('dining')">Dining & Spa</a></li>
+            <li><a class="nav-link" onclick="app.navigate('gallery')">Gallery</a></li>
+            <li id="auth-nav-item">
+                <a class="nav-link auth-trigger" onclick="auth.open()">
+                    <i class="fas fa-user-circle"></i> <span id="user-display-name">Login</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <div id="main-content"></div>
+    
+
+<section class="hero-video-container">
+    <video autoplay muted loop playsinline class="video-bg">
+        <source src="hotel.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <div class="video-overlay"></div>
+
+    <div class="hero-content">
+        <span class="hero-subtitle">Luxury Reimagined</span>
+        <h1 class="hero-title">The Artisan <span>Lakeview</span></h1>
+        <p class="hero-desc">The intersection of architectural art and international resort class.</p>
+        <div class="hero-btns">
+            <button class="btn-primary" onclick="app.navigate('rooms')">Book Now</button>
+        </div>
+    </div>
+</section>
+    <!-- MODAL AUTH (LOGIN/REGISTER) -->
+    <div id="authModal" class="auth-modal-overlay">
+        <div class="auth-card">
+            <span class="close-btn" onclick="auth.close()">&times;</span>
+            <div class="auth-header">
+                <h2 id="authTitle">Welcome Back</h2>
+                <p id="authSubtitle">Please enter your details to continue</p>
+            </div>
+            <div class="auth-body">
+                <div class="input-group">
+                    <i class="fas fa-envelope"></i>
+                    <input type="text" id="authUser" placeholder="Email or Username">
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="authPass" placeholder="Password">
+                </div>
+                <button class="btn-primary auth-btn" onclick="auth.submit()">Proceed</button>
+            </div>
+            <div class="auth-footer">
+                <span id="switch-text">Don't have an account?</span>
+                <a id="switch-link" onclick="auth.toggle()">Register Now</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAYMENT MODAL -->
+    <div id="paymentModal" class="auth-modal-overlay">
+        <div class="auth-card payment-card-v2" style="max-width: 1000px; width: 95%;">
+            <span class="close-btn" onclick="app.closePayment()">&times;</span>
+            
+            <div class="payment-grid-layout">
+                <div class="payment-left-col">
+                    <h3 class="p-section-title">Your Selection</h3>
+                    <div class="booking-preview-card">
+                        <img id="pay-room-img" src="" alt="Room" class="preview-img">
+                        <div class="preview-details">
+                            <h4 id="pay-room-name">...</h4>
+                            <p><i class="fas fa-map-marker-alt"></i> 123 Lakeview Blvd, West Lake District</p>
+                        </div>
+                    </div>
+
+                    <div class="stay-info-box">
+                        <div class="stay-date">
+                            <span>Check-in</span>
+                            <strong id="pay-checkin">...</strong>
+                        </div>
+                        <div class="stay-duration">
+                            <i class="fas fa-moon"></i>
+                            <span id="pay-nights">1 Night</span>
+                        </div>
+                        <div class="stay-date">
+                            <span>Check-out</span>
+                            <strong id="pay-checkout">...</strong>
+                        </div>
+                    </div>
+
+                    <div class="guest-info-box">
+                        <h3 class="p-section-title">Guest Contact</h3>
+                        <div class="info-row" style="background: white; padding: 15px; border-radius: 8px; border: 1px solid #eee;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                <span style="font-size: 0.8rem; color: #64748b;">Phone Number</span>
+                                <i class="fas fa-edit" style="color: #c5a059; cursor: pointer;"></i>
+                            </div>
+                            <strong id="user-phone" style="font-size: 1.1rem; color: #0f172a;">+84 000 000 000</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="payment-right-col">
+                    <div class="price-summary-box">
+                        <h3 class="p-section-title">Payment Summary</h3>
+                        <div class="price-row">
+                            <span><i class="fas fa-bed"></i> Room Price</span>
+                            <strong id="pay-amount">$0</strong>
+                        </div>
+                        <div class="price-row">
+                            <span><i class="fas fa-moon"></i> Stay Duration</span>
+                            <strong id="pay-nights-val">1 Night</strong>
+                        </div>
+                        <div class="total-row">
+                            <span>Total Payment</span>
+                            <strong id="pay-total">$0</strong>
+                        </div>
+                    </div>
+
+                    <div class="method-selection-box">
+                        <h3 class="p-section-title">Payment Method</h3>
+                        
+                        <label class="method-v2-option">
+                            <input type="radio" name="pay-method" value="momo" checked onclick="app.setPayMethodV2('momo')">
+                            <img src="https://img.icons8.com/color/512/momo.png" alt="MoMo">
+                            <span>MoMo Wallet</span>
+                        </label>
+
+                        <label class="method-v2-option">
+                            <input type="radio" name="pay-method" value="zalopay" onclick="app.setPayMethodV2('zalopay')">
+                            <img src="https://img.mservice.com.vn/app/img/helper/zalopay.png" alt="ZaloPay">
+                            <span>ZaloPay Wallet</span>
+                        </label>
+
+                        <label class="method-v2-option">
+                            <input type="radio" name="pay-method" value="shopeepay" onclick="app.setPayMethodV2('shopeepay')">
+                            <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/10/Logo-ShopeePay-V.png" alt="ShopeePay">
+                            <div class="method-text">
+                                <span>ShopeePay</span>
+                                <small class="promo-badge">Save $10 with ShopeePay</small>
+                            </div>
+                        </label>
+
+                        <label class="method-v2-option">
+                            <input type="radio" name="pay-method" value="at-hotel" onclick="app.setPayMethodV2('hotel')">
+                            <i class="fas fa-hotel" style="font-size: 1.5rem; color: #64748b;"></i>
+                            <span>Pay at Hotel</span>
+                        </label>
+                    </div>
+
+                    <button class="btn-primary confirm-pay-btn" onclick="app.confirmPayment()">Complete Booking</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-grid">
+                <div class="footer-col brand-col">
+                    <div class="logo">The Artisan <span>Lakeview</span></div>
+                    <p class="footer-desc">
+                        The intersection of architectural art and international resort class.
+                    </p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fab fa-tripadvisor"></i></a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h4>Explore</h4>
+                    <ul class="f-links">
+                        <li><a onclick="app.navigate('home')">Home Page</a></li>
+                        <li><a onclick="app.navigate('rooms')">Accommodations</a></li>
+                        <li><a onclick="app.navigate('dining')">Dining Experiences</a></li>
+                        <li><a onclick="app.navigate('gallery')">Media Gallery</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Concierge</h4>
+                    <ul class="f-links">
+                        <li><a>Spa & Wellness</a></li>
+                        <li><a>Airport Transfer</a></li>
+                        <li><a>Private Tours</a></li>
+                        <li><a>Membership FAQ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Newsletter</h4>
+                    <p style="font-size:0.85rem; margin-bottom:15px">Subscribe to receive exclusive offers and luxury updates.</p>
+                    <div class="newsletter-form">
+                        <input type="email" placeholder="Your Email">
+                        <button><i class="fas fa-paper-plane"></i></button>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div class="footer-contact-info">
+                    <span><i class="fas fa-map-marker-alt"></i> 123 Lakeview Blvd, West Lake District</span>
+                    <span><i class="fas fa-phone"></i> +84 24 3333 8888</span>
+                </div>
+                <div class="copyright">
+                    <p>© 2026 The Artisan Lakeview Hotel | </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

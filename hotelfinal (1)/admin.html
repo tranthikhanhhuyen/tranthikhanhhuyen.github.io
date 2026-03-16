@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | The Artisan Lakeview Hotel</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --navy: #0f172a;
+            --gold: #c5a059;
+            --gold-hover: #b08d45;
+            --light-gray: #f8fafc;
+            --accent-gold: rgba(197, 160, 89, 0.1);
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--light-gray);
+            color: #1e293b;
+        }
+
+        h1, h2, h3, .serif {
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--gold); }
+
+        .sidebar-item.active {
+            background-color: var(--gold);
+            color: white;
+            box-shadow: 0 10px 15px -3px rgba(197, 160, 89, 0.3);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .gold-gradient {
+            background: linear-gradient(135deg, #c5a059 0%, #ecd4a1 100%);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="overflow-hidden">
+
+    <div class="flex h-screen">
+        <aside class="w-72 bg-[#0f172a] text-white flex flex-col shadow-2xl z-50">
+            <div class="p-8">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 gold-gradient rounded-lg flex items-center justify-center">
+                        <span class="text-white font-bold text-xl serif">A</span>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-bold tracking-tight">The Artisan</h1>
+                        <p class="text-[10px] uppercase tracking-widest text-slate-400">Admin Portal</p>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="flex-1 px-4 space-y-1 overflow-y-auto">
+                <button onclick="switchTab('dashboard')" id="btn-dashboard" class="sidebar-item w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 group text-slate-400 hover:text-white hover:bg-white/5">
+                    <i class="fas fa-th-large w-5"></i>
+                    <span class="font-medium text-sm">Dashboard</span>
+                </button>
+                <button onclick="switchTab('rooms')" id="btn-rooms" class="sidebar-item w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 group text-slate-400 hover:text-white hover:bg-white/5">
+                    <i class="fas fa-bed w-5"></i>
+                    <span class="font-medium text-sm">Room Management</span>
+                </button>
+                <button onclick="switchTab('dining')" id="btn-dining" class="sidebar-item w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 group text-slate-400 hover:text-white hover:bg-white/5">
+                    <i class="fas fa-utensils w-5"></i>
+                    <span class="font-medium text-sm">Dining & Menu</span>
+                </button>
+                <button onclick="switchTab('bookings')" id="btn-bookings" class="sidebar-item w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 group text-slate-400 hover:text-white hover:bg-white/5">
+                    <i class="fas fa-calendar-check w-5"></i>
+                    <span class="font-medium text-sm">Bookings</span>
+                </button>
+                <button onclick="switchTab('guests')" id="btn-guests" class="sidebar-item w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 group text-slate-400 hover:text-white hover:bg-white/5">
+                    <i class="fas fa-users w-5"></i>
+                    <span class="font-medium text-sm">Guest Directory</span>
+                </button>
+                <button onclick="switchTab('reviews')" id="btn-reviews" class="sidebar-item w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 group text-slate-400 hover:text-white hover:bg-white/5">
+                    <i class="fas fa-star w-5"></i>
+                    <span class="font-medium text-sm">Guest Reviews</span>
+                </button>
+                <button onclick="switchTab('finance')" id="btn-finance" class="sidebar-item w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 group text-slate-400 hover:text-white hover:bg-white/5">
+                    <i class="fas fa-chart-line w-5"></i>
+                    <span class="font-medium text-sm">Finance & ROI</span>
+                </button>
+                <button onclick="switchTab('staff')" id="btn-staff" class="sidebar-item w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 group text-slate-400 hover:text-white hover:bg-white/5">
+                    <i class="fas fa-user-shield w-5"></i>
+                    <span class="font-medium text-sm">Staff Management</span>
+                </button>
+                <button onclick="switchTab('cms')" id="btn-cms" class="sidebar-item w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 group text-slate-400 hover:text-white hover:bg-white/5">
+                    <i class="fas fa-globe w-5"></i>
+                    <span class="font-medium text-sm">Website CMS</span>
+                </button>
+                <button onclick="switchTab('settings')" id="btn-settings" class="sidebar-item w-full flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200 group text-slate-400 hover:text-white hover:bg-white/5">
+                    <i class="fas fa-cog w-5"></i>
+                    <span class="font-medium text-sm">Settings</span>
+                </button>
+            </nav>
+
+            <div class="p-6 mt-auto border-t border-white/5">
+                <button class="flex items-center gap-4 text-slate-500 hover:text-rose-400 transition-colors px-4 py-2">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span class="font-medium text-sm">Sign Out</span>
+                </button>
+            </div>
+        </aside>
+
+        <main class="flex-1 flex flex-col overflow-hidden">
+            <header class="h-20 bg-white/80 backdrop-blur-md border-b border-slate-100 px-8 flex items-center justify-between sticky top-0 z-40">
+                <div class="flex items-center gap-4">
+                    <div class="relative hidden md:block">
+                        <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="text" placeholder="Search for bookings, rooms, guests..." class="pl-12 pr-4 py-2.5 bg-slate-50 border-none focus:ring-2 focus:ring-[#c5a059]/20 focus:bg-white rounded-xl text-sm transition-all w-80 outline-none">
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-6">
+                    <button class="relative p-2 text-slate-500 hover:bg-slate-100 rounded-lg transition-colors">
+                        <i class="far fa-bell text-xl"></i>
+                        <span class="absolute top-1.5 right-1.5 w-4 h-4 bg-rose-500 text-white text-[10px] flex items-center justify-center rounded-full border-2 border-white">5</span>
+                    </button>
+                    
+                    <div class="flex items-center gap-3 pl-6 border-l border-slate-200">
+                        <div class="text-right">
+                            <p class="text-sm font-bold text-slate-900">Isabella Victoria</p>
+                            <p class="text-[10px] font-bold text-[#c5a059] uppercase tracking-wider">General Manager</p>
+                        </div>
+                        <img src="https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg" class="w-10 h-10 rounded-xl object-cover ring-2 ring-slate-100" alt="Avatar">
+                    </div>
+                </div>
+            </header>
+
+            <div id="main-view" class="flex-1 overflow-y-auto p-8 space-y-8 animate-fade-in">
+                </div>
+        </main>
+    </div>
+
+    <div id="modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] hidden flex items-center justify-center">
+        <div class="bg-white rounded-3xl w-full max-w-2xl overflow-hidden shadow-2xl animate-fade-in">
+            <div class="p-8 border-b border-slate-100 flex justify-between items-center">
+                <h3 class="text-2xl serif font-bold text-slate-900" id="modal-title">New Entry</h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-rose-500 transition-colors text-2xl"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="p-8 space-y-4" id="modal-body">
+                </div>
+            <div class="p-8 bg-slate-50 flex justify-end gap-4">
+                <button onclick="closeModal()" class="px-6 py-2.5 text-slate-500 font-bold hover:text-slate-900">Cancel</button>
+                <button class="px-8 py-2.5 bg-[#c5a059] text-white rounded-xl font-bold shadow-lg shadow-[#c5a059]/30">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- EXPANDED MOCK DATA ---
+        const DATA = {
+            stats: [
+                { title: "Revenue Today", value: "$42,850.00", change: "+12.5%", icon: "fa-dollar-sign", trend: "up" },
+                { title: "Occupancy Rate", value: "94%", change: "+4.2%", icon: "fa-bed", trend: "up" },
+                { title: "New Bookings", value: "48", change: "+15.0%", icon: "fa-calendar-check", trend: "up" },
+                { title: "Active Guests", value: "212", change: "+18", icon: "fa-users", trend: "up" }
+            ],
+            rooms: [
+                { id: 101, name: "Grand Deluxe Ocean Front", type: "Deluxe", price: 450, status: "Available", img: "https://images.pexels.com/photos/271618/pexels-photo-271618.jpeg" },
+                { id: 102, name: "Grand Deluxe Garden View", type: "Deluxe", price: 350, status: "Available", img: "https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg" },
+                { id: 201, name: "Imperial Royal Suite", type: "Suite", price: 850, status: "Occupied", img: "https://images.pexels.com/photos/1579253/pexels-photo-1579253.jpeg" },
+                { id: 202, name: "Presidential Sky Suite", type: "Suite", price: 1200, status: "Occupied", img: "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg" },
+                { id: 203, name: "Penthouse Lakeview", type: "Suite", price: 1500, status: "Cleaning", img: "https://images.pexels.com/photos/1457842/pexels-photo-1457842.jpeg" },
+                { id: 301, name: "Cliffside Azure Villa", type: "Villa", price: 2500, status: "Occupied", img: "https://images.pexels.com/photos/189296/pexels-photo-189296.jpeg" },
+                { id: 302, name: "Sanctuary Beach Villa", type: "Villa", price: 3500, status: "Available", img: "https://images.pexels.com/photos/2467285/pexels-photo-2467285.jpeg" },
+                { id: 304, name: "Eco-Luxury Floating Villa", type: "Villa", price: 4000, status: "Available", img: "https://images.pexels.com/photos/1268855/pexels-photo-1268855.jpeg" }
+            ],
+            menu: [
+                { id: 1, name: "Sò Điệp Hokkaido Áp Chảo", price: 120, category: "Appetizer", desc: "Sốt bơ chanh béo ngậy và trứng cá tầm muối thượng hạng.", img: "https://images.pexels.com/photos/2092906/pexels-photo-2092906.jpeg" },
+        { id: 2, name: "Bò Wagyu A5 Gold Leaf", price: 550, category: "Main", desc: "Thịt bò dát vàng 24K, ăn kèm nấm Truffle đen từ Pháp.", img: "https://images.pexels.com/photos/675951/pexels-photo-675951.jpeg" },
+        { id: 3, name: "Tôm Hùm Xanh Bỏ Lò", price: 280, category: "Main", desc: "Tôm hùm đại dương phục vụ cùng sốt kem phô mai Gruyère.", img: "https://images.pexels.com/photos/699953/pexels-photo-699953.jpeg" },
+        { id: 4, name: "Gan Ngỗng Pháp Áp Chảo", price: 180, category: "Appetizer", desc: "Sốt dâu rừng chua ngọt cân bằng vị béo của gan ngỗng.", img: "https://images.pexels.com/photos/103124/pexels-photo-103124.jpeg" },
+        { id: 5, name: "Súp Nấm Truffle Trắng", price: 95, category: "Soup", desc: "Hương thơm nồng nàn từ nấm rừng quý hiếm và kem tươi.", img: "https://images.pexels.com/photos/1731535/pexels-photo-1731535.jpeg" },
+        { id: 6, name: "Cá Hồi King Salmon", price: 150, category: "Main", desc: "Cá hồi New Zealand áp chảo mặt da giòn tan, sốt miso.", img: "https://images.pexels.com/photos/46239/salmon-dish-food-meal-46239.jpeg" },
+        { id: 7, name: "Mì Ý Tôm Hùm Al Dente", price: 210, category: "Main", desc: "Sợi mì làm thủ công hòa quyện cùng thịt tôm hùm tươi rói.", img: "https://images.pexels.com/photos/12737651/pexels-photo-12737651.jpeg" },
+        { id: 8, name: "Tráng Miệng Socola Lava", price: 65, category: "Dessert", desc: "Socola nguyên chất tan chảy bên trong lớp vỏ bánh mềm.", img: "https://images.pexels.com/photos/2144112/pexels-photo-2144112.jpeg" },
+        { id: 9, name: "Salad Cầu Vồng Nhiệt Đới", price: 55, category: "Healthy", desc: "Rau củ hữu cơ và sốt hạt thông béo bùi, tốt cho sức khỏe.", img: "https://images.pexels.com/photos/1059943/pexels-photo-1059943.jpeg" },
+        { id: 10, name: "Rượu Vang Chateau Margaux", price: 1200, category: "Wine", desc: "Dòng vang đỏ huyền thoại niên đại 2015 dành cho giới thượng lưu.", img: "https://images.pexels.com/photos/290316/pexels-photo-290316.jpeg" }
+        ],
+            bookings: [
+                { id: "BK-9902", guest: "Alexander Wright", room: "201", in: "2024-05-20", out: "2024-05-25", status: "Confirmed", pay: "Paid" },
+                { id: "BK-9903", guest: "Sophia Loren", room: "101", in: "2024-05-21", out: "2024-05-22", status: "Pending", pay: "Unpaid" },
+                { id: "BK-9904", guest: "Marcus Aurelius", room: "304", in: "2024-05-18", out: "2024-05-28", status: "Checked-in", pay: "Paid" },
+                { id: "BK-9905", guest: "Isabella Ross", room: "202", in: "2024-05-15", out: "2024-05-19", status: "Confirmed", pay: "Paid" },
+                { id: "BK-9906", guest: "James Bond", room: "301", in: "2024-05-25", out: "2024-05-30", status: "Confirmed", pay: "Paid" },
+                { id: "BK-9907", guest: "Grace Kelly", room: "102", in: "2024-05-22", out: "2024-05-24", status: "Pending", pay: "Unpaid" }
+            ],
+            staff: [
+                { name: "John Smith", role: "Manager", dept: "Operations", status: "Active" },
+                { name: "Sarah Jenkins", role: "Receptionist", dept: "Front Desk", status: "Active" },
+                { name: "Robert Chen", role: "Executive Chef", dept: "Dining", status: "On Duty" },
+                { name: "Lucia Garcia", role: "Housekeeping", dept: "Maintenance", status: "On Break" },
+                { name: "David Miller", role: "Concierge", dept: "Front Desk", status: "Active" },
+                { name: "Anna White", role: "Spa Manager", dept: "Wellness", status: "Active" }
+            ],
+            guests: [
+                { name: "Alexander Wright", email: "alex.w@luxury.com", country: "UK", total: 12, status: "VIP Platinum" },
+                { name: "Sophia Loren", email: "sophia@loren.it", country: "Italy", total: 4, status: "Gold Member" },
+                { name: "Marcus Aurelius", email: "marcus@rome.eu", country: "Italy", total: 1, status: "Regular" },
+                { name: "James Bond", email: "007@mi6.gov.uk", country: "UK", total: 8, status: "VIP Platinum" },
+                { name: "Grace Kelly", email: "grace@monaco.mc", country: "Monaco", total: 3, status: "Gold Member" }
+            ],
+            reviews: [
+                { author: "Alexander Wright", rating: 5, room: "Imperial Suite", comment: "Breathtaking views and impeccable service. The butler was truly professional.", date: "May 10, 2024", status: "Published" },
+                { author: "Ngoc Lan", rating: 4, room: "Deluxe Ocean", comment: "The spa treatment was heavenly, but check-in took slightly longer than expected.", date: "May 12, 2024", status: "Pending" },
+                { author: "Hoang Gia", rating: 5, room: "Sky Suite", comment: "The smartest room I have ever stayed in. The automation is seamless.", date: "May 14, 2024", status: "Published" }
+            ]
+        };
+
+        // --- NAVIGATION LOGIC ---
+        function switchTab(tab) {
+            document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
+            document.getElementById(`btn-${tab}`).classList.add('active');
+
+            const container = document.getElementById('main-view');
+            container.innerHTML = ""; 
+
+            switch(tab) {
+                case 'dashboard': renderDashboard(); break;
+                case 'rooms': renderRooms(); break;
+                case 'dining': renderDining(); break;
+                case 'bookings': renderBookings(); break;
+                case 'guests': renderGuests(); break;
+                case 'reviews': renderReviews(); break;
+                case 'finance': renderFinance(); break;
+                case 'staff': renderStaff(); break;
+                case 'cms': renderCMS(); break;
+                case 'settings': renderSettings(); break;
+            }
+        }
+
+        // --- RENDER FUNCTIONS ---
+
+        function renderDashboard() {
+            let html = `
+                <div class="flex justify-between items-end">
+                    <div>
+                        <h2 class="text-3xl serif font-bold text-slate-900">Operations Overview</h2>
+                        <p class="text-slate-500 mt-1">Good morning, Isabella. Here is today's snapshot.</p>
+                    </div>
+                    <button class="px-6 py-2.5 bg-[#0f172a] text-white rounded-xl text-sm font-bold shadow-xl hover:bg-[#1e293b] transition-all">
+                        <i class="fas fa-file-export mr-2"></i> Export Monthly ROI
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    ${DATA.stats.map(s => `
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 group hover:shadow-xl transition-all">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="w-12 h-12 bg-slate-50 rounded-xl flex items-center justify-center text-[#c5a059] group-hover:bg-[#c5a059] group-hover:text-white transition-all">
+                                    <i class="fas ${s.icon} text-lg"></i>
+                                </div>
+                                <span class="text-[10px] font-bold px-2 py-1 rounded-full ${s.trend === 'up' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}">
+                                    ${s.change}
+                                </span>
+                            </div>
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">${s.title}</p>
+                            <h3 class="text-2xl font-bold text-slate-900 mt-1">${s.value}</h3>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-2 bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100">
+                        <div class="flex justify-between items-center mb-8">
+                            <h3 class="text-xl serif font-bold">Revenue Analytics</h3>
+                            <select class="bg-slate-50 border-none rounded-lg px-3 py-1 text-xs font-bold outline-none cursor-pointer">
+                                <option>Last 7 Days</option>
+                                <option>Last 30 Days</option>
+                            </select>
+                        </div>
+                        <div class="h-[300px] w-full relative">
+                            <canvas id="revenueChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100">
+                        <h3 class="text-xl serif font-bold mb-6">Live Notifications</h3>
+                        <div class="space-y-6">
+                            <div class="flex gap-4 group cursor-pointer">
+                                <div class="w-2 h-2 rounded-full bg-emerald-500 mt-2 shrink-0"></div>
+                                <div>
+                                    <p class="text-sm font-bold text-slate-900 group-hover:text-[#c5a059]">New Booking: BK-9908</p>
+                                    <p class="text-xs text-slate-400 mt-1">Eco-Luxury Floating Villa · 1m ago</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-4 group cursor-pointer">
+                                <div class="w-2 h-2 rounded-full bg-[#c5a059] mt-2 shrink-0"></div>
+                                <div>
+                                    <p class="text-sm font-bold text-slate-900 group-hover:text-[#c5a059]">5-Star Review Published</p>
+                                    <p class="text-xs text-slate-400 mt-1">Guest: James Bond · 12m ago</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-4 group cursor-pointer text-rose-500">
+                                <div class="w-2 h-2 rounded-full bg-rose-500 mt-2 shrink-0"></div>
+                                <div>
+                                    <p class="text-sm font-bold">Maintenance Alert: Room 203</p>
+                                    <p class="text-xs text-slate-400 mt-1">AC system requiring check · 45m ago</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('main-view').innerHTML = html;
+            initChart();
+        }
+
+        function renderRooms() {
+            let html = `
+                <div class="flex justify-between items-center mb-8">
+                    <div>
+                        <h2 class="text-3xl serif font-bold text-slate-900">Room Inventory</h2>
+                        <p class="text-slate-500 mt-1">Manage status, tiered pricing, and luxury features.</p>
+                    </div>
+                    <button onclick="openModal('Add New Room')" class="px-6 py-3 bg-[#c5a059] text-white rounded-xl font-bold shadow-lg shadow-[#c5a059]/30 hover:bg-[#b08d45] transition-all">
+                        <i class="fas fa-plus mr-2"></i> Add Property
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    ${DATA.rooms.map(r => `
+                        <div class="bg-white rounded-[2rem] overflow-hidden shadow-sm border border-slate-100 group transition-all hover:shadow-2xl">
+                            <div class="relative h-48 overflow-hidden">
+                                <img src="${r.img}" class="w-full h-full object-cover group-hover:scale-110 transition-all duration-700" alt="Room">
+                                <div class="absolute top-4 left-4">
+                                    <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest text-white shadow-lg ${
+                                        r.status === 'Available' ? 'bg-emerald-500' : r.status === 'Occupied' ? 'bg-rose-500' : 'bg-amber-500'
+                                    }">${r.status}</span>
+                                </div>
+                                <div class="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-lg font-bold text-xs text-[#0f172a]">
+                                    $${r.price}/nt
+                                </div>
+                            </div>
+                            <div class="p-6">
+                                <span class="text-[10px] text-[#c5a059] font-bold uppercase tracking-widest">${r.type}</span>
+                                <h4 class="font-bold text-slate-900 mb-6 h-12 overflow-hidden">${r.name}</h4>
+                                <div class="flex gap-2 border-t border-slate-50 pt-4 mt-2">
+                                    <button class="flex-1 py-2 bg-slate-50 text-slate-600 rounded-lg font-bold text-xs hover:bg-[#c5a059] hover:text-white transition-all"><i class="fas fa-edit"></i> Edit</button>
+                                    <button class="w-10 h-10 flex items-center justify-center bg-slate-50 text-slate-400 rounded-lg hover:text-rose-500 transition-all"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            document.getElementById('main-view').innerHTML = html;
+        }
+
+        function renderDining() {
+            let html = `
+                <div class="flex justify-between items-center mb-8">
+                    <div>
+                        <h2 class="text-3xl serif font-bold text-slate-900">Dining & Menu</h2>
+                        <p class="text-slate-500 mt-1">Manage gourmet offerings, pricing, and stock status.</p>
+                    </div>
+                    <button onclick="openModal('Add New Dish')" class="px-6 py-3 bg-[#c5a059] text-white rounded-xl font-bold shadow-lg shadow-[#c5a059]/30 hover:bg-[#b08d45] transition-all">
+                        <i class="fas fa-plus mr-2"></i> Add Menu Item
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    ${DATA.menu.map(m => `
+                        <div class="bg-white rounded-[2rem] overflow-hidden shadow-sm border border-slate-100 group transition-all hover:shadow-2xl">
+                            <div class="relative h-48 overflow-hidden">
+                                <img src="${m.img}" class="w-full h-full object-cover group-hover:scale-110 transition-all duration-700" alt="Dish">
+                                <div class="absolute top-4 left-4">
+                                    <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest text-white shadow-lg ${
+                                        m.status === 'Available' ? 'bg-emerald-500' : 'bg-rose-500'
+                                    }">${m.status}</span>
+                                </div>
+                                <div class="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-lg font-bold text-xs text-[#0f172a]">
+                                    $${m.price}
+                                </div>
+                            </div>
+                            <div class="p-6">
+                                <span class="text-[10px] text-[#c5a059] font-bold uppercase tracking-widest">${m.category}</span>
+                                <h4 class="font-bold text-slate-900 mb-6 h-12 overflow-hidden">${m.name}</h4>
+                                <div class="flex gap-2 border-t border-slate-50 pt-4 mt-2">
+                                    <button class="flex-1 py-2 bg-slate-50 text-slate-600 rounded-lg font-bold text-xs hover:bg-[#c5a059] hover:text-white transition-all"><i class="fas fa-edit"></i> Edit</button>
+                                    <button class="w-10 h-10 flex items-center justify-center bg-slate-50 text-slate-400 rounded-lg hover:text-rose-500 transition-all"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            document.getElementById('main-view').innerHTML = html;
+        }
+
+        function renderBookings() {
+            let html = `
+                <div class="flex justify-between items-center mb-8">
+                    <div>
+                        <h2 class="text-3xl serif font-bold text-slate-900">Reservations</h2>
+                        <p class="text-slate-500 mt-1">Live tracking of check-ins and high-value bookings.</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button class="px-4 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-500"><i class="fas fa-filter mr-2"></i> Filter</button>
+                        <button class="px-4 py-2 bg-[#0f172a] text-white rounded-xl text-xs font-bold shadow-lg"><i class="fas fa-plus mr-2"></i> Manual Booking</button>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-[2rem] shadow-sm border border-slate-100 overflow-hidden">
+                    <table class="w-full text-left">
+                        <thead class="bg-slate-50/50 border-b border-slate-100">
+                            <tr>
+                                <th class="px-8 py-5 text-xs font-bold text-slate-400 uppercase tracking-widest">Guest / Ref</th>
+                                <th class="px-8 py-5 text-xs font-bold text-slate-400 uppercase tracking-widest">Room</th>
+                                <th class="px-8 py-5 text-xs font-bold text-slate-400 uppercase tracking-widest">Period</th>
+                                <th class="px-8 py-5 text-xs font-bold text-slate-400 uppercase tracking-widest">Payment</th>
+                                <th class="px-8 py-5 text-xs font-bold text-slate-400 uppercase tracking-widest">Status</th>
+                                <th class="px-8 py-5 text-xs font-bold text-slate-400 uppercase tracking-widest text-right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-50">
+                            ${DATA.bookings.map(b => `
+                                <tr class="hover:bg-slate-50/50 transition-colors group">
+                                    <td class="px-8 py-5">
+                                        <p class="text-sm font-bold text-slate-900">${b.guest}</p>
+                                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">${b.id}</p>
+                                    </td>
+                                    <td class="px-8 py-5 text-sm font-medium text-slate-600">P.${b.room}</td>
+                                    <td class="px-8 py-5 text-[11px] font-bold text-slate-500">${b.in} <i class="fas fa-arrow-right mx-1 text-[#c5a059]"></i> ${b.out}</td>
+                                    <td class="px-8 py-5">
+                                        <span class="px-2.5 py-1 rounded-lg text-[10px] font-bold ${b.pay === 'Paid' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}">${b.pay}</span>
+                                    </td>
+                                    <td class="px-8 py-5">
+                                        <span class="flex items-center gap-2 text-xs font-bold text-slate-700">
+                                            <div class="w-1.5 h-1.5 rounded-full ${b.status === 'Confirmed' ? 'bg-emerald-500' : b.status === 'Checked-in' ? 'bg-[#c5a059]' : 'bg-amber-500'}"></div> ${b.status}
+                                        </span>
+                                    </td>
+                                    <td class="px-8 py-5 text-right">
+                                        <button class="p-2 text-slate-300 hover:text-[#c5a059] group-hover:scale-125 transition-all"><i class="fas fa-eye"></i></button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            document.getElementById('main-view').innerHTML = html;
+        }
+
+        function renderGuests() {
+            let html = `
+                <h2 class="text-3xl serif font-bold text-slate-900 mb-8">Guest Directory</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    ${DATA.guests.map(g => `
+                        <div class="bg-white p-6 rounded-3xl border border-slate-100 flex items-center gap-6 group hover:border-[#c5a059] transition-all cursor-pointer">
+                            <div class="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center text-[#c5a059] font-bold text-2xl serif group-hover:bg-[#c5a059] group-hover:text-white transition-all">
+                                ${g.name.split(' ').map(n => n[0]).join('')}
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-bold text-slate-900">${g.name}</h4>
+                                <p class="text-xs text-slate-400 mb-2">${g.email}</p>
+                                <div class="flex justify-between items-center">
+                                    <span class="px-2 py-0.5 bg-amber-50 text-[#c5a059] rounded text-[10px] font-bold uppercase">${g.status}</span>
+                                    <p class="text-[10px] font-bold text-slate-300 uppercase">${g.total} Stays</p>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            document.getElementById('main-view').innerHTML = html;
+        }
+
+        function renderReviews() {
+            let html = `
+                <h2 class="text-3xl serif font-bold text-slate-900 mb-8">Guest Sentiment</h2>
+                <div class="grid grid-cols-1 gap-6">
+                    ${DATA.reviews.map(r => `
+                        <div class="bg-white p-8 rounded-3xl border border-slate-100 hover:shadow-lg transition-all">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <div class="flex gap-1 text-[#c5a059] mb-2">
+                                        ${'<i class="fas fa-star text-xs"></i>'.repeat(r.rating)}
+                                    </div>
+                                    <h4 class="font-bold text-slate-900">${r.author}</h4>
+                                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">${r.room} · ${r.date}</p>
+                                </div>
+                                <span class="px-3 py-1 ${r.status === 'Published' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'} rounded-full text-[10px] font-bold">${r.status}</span>
+                            </div>
+                            <p class="text-slate-600 italic leading-relaxed text-sm">"${r.comment}"</p>
+                            <div class="mt-6 flex gap-3 border-t border-slate-50 pt-6">
+                                <button class="px-4 py-2 bg-slate-50 text-slate-900 rounded-lg text-xs font-bold hover:bg-slate-100 transition-all">Reply to Guest</button>
+                                <button class="px-4 py-2 bg-rose-50 text-rose-500 rounded-lg text-xs font-bold hover:bg-rose-100 transition-all">Remove</button>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            document.getElementById('main-view').innerHTML = html;
+        }
+
+        function renderFinance() {
+            document.getElementById('main-view').innerHTML = `
+                <h2 class="text-3xl serif font-bold text-slate-900 mb-8">Financial Hub</h2>
+                <div class="bg-[#0f172a] text-white p-12 rounded-[3rem] relative overflow-hidden mb-8 shadow-2xl">
+                    <div class="relative z-10">
+                        <p class="text-slate-400 font-bold text-xs uppercase tracking-[0.2em] mb-4">Total Assets Managed</p>
+                        <h3 class="text-6xl serif font-bold mb-8">$12,482,900.50</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+                            <div>
+                                <p class="text-slate-500 text-[10px] font-bold uppercase mb-1">MTD Revenue</p>
+                                <p class="text-xl font-bold">+$1,240,000</p>
+                            </div>
+                            <div>
+                                <p class="text-slate-500 text-[10px] font-bold uppercase mb-1">Operational Expenses</p>
+                                <p class="text-xl font-bold text-rose-400">-$350,000</p>
+                            </div>
+                            <div>
+                                <p class="text-slate-500 text-[10px] font-bold uppercase mb-1">Projected ROI (Q2)</p>
+                                <p class="text-xl font-bold text-emerald-400">18.4%</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-[#c5a059]/10 blur-[120px] -mr-32 -mt-32"></div>
+                </div>
+
+                <div class="bg-white p-8 rounded-3xl border border-slate-100">
+                    <h3 class="font-bold mb-6">Recent Transactions</h3>
+                    <div class="space-y-4">
+                        ${[1, 2, 3].map(i => `
+                            <div class="flex justify-between items-center p-4 bg-slate-50 rounded-2xl">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center text-[#c5a059] shadow-sm"><i class="fas fa-arrow-down"></i></div>
+                                    <div><p class="text-sm font-bold text-slate-900">Guest Checkout - BK-988${i}</p><p class="text-[10px] text-slate-400">Processing Fee: $12.00</p></div>
+                                </div>
+                                <p class="font-bold text-emerald-600">+$2,450.00</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderStaff() {
+            document.getElementById('main-view').innerHTML = `
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="text-3xl serif font-bold text-slate-900">Staff Management</h2>
+                    <button class="px-6 py-2.5 bg-[#c5a059] text-white rounded-xl font-bold shadow-lg shadow-[#c5a059]/30"><i class="fas fa-plus mr-2"></i> Register Employee</button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    ${DATA.staff.map(s => `
+                        <div class="bg-white p-6 rounded-2xl border border-slate-100 hover:border-[#c5a059] transition-all">
+                            <div class="flex items-center gap-4 mb-6">
+                                <div class="w-12 h-12 bg-slate-50 rounded-xl flex items-center justify-center text-slate-300 text-xl"><i class="fas fa-user-circle"></i></div>
+                                <div>
+                                    <h4 class="font-bold text-slate-900">${s.name}</h4>
+                                    <p class="text-[10px] text-[#c5a059] font-bold uppercase tracking-widest">${s.role}</p>
+                                </div>
+                            </div>
+                            <div class="space-y-2 border-t border-slate-50 pt-4 text-xs font-medium text-slate-500">
+                                <div class="flex justify-between"><span>Department:</span><span class="text-slate-900 font-bold">${s.dept}</span></div>
+                                <div class="flex justify-between"><span>Availability:</span><span class="text-emerald-500 font-bold">${s.status}</span></div>
+                            </div>
+                            <button class="w-full mt-6 py-2 bg-slate-50 text-xs font-bold text-slate-400 rounded-lg hover:bg-slate-900 hover:text-white transition-all">Assign Shift</button>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function renderCMS() {
+            document.getElementById('main-view').innerHTML = `
+                <h2 class="text-3xl serif font-bold text-slate-900 mb-8">Web Content & Brand Control</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="bg-white p-8 rounded-3xl border border-slate-100 space-y-6">
+                        <h4 class="font-bold text-slate-900 flex items-center gap-2"><i class="fas fa-home text-[#c5a059]"></i> Hero Section</h4>
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Main Headline</label>
+                            <input type="text" value="The Pinnacle of Luxury Reimagined" class="w-full mt-2 p-4 bg-slate-50 rounded-xl border-none text-sm font-medium outline-none focus:ring-2 focus:ring-[#c5a059]/10">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Global Subtitle</label>
+                            <textarea class="w-full mt-2 p-4 bg-slate-50 rounded-xl border-none text-sm font-medium outline-none h-32 focus:ring-2 focus:ring-[#c5a059]/10">Experience timeless elegance in the heart of the world's most vibrant district. Your sanctuary awaits.</textarea>
+                        </div>
+                        <button class="w-full py-4 bg-[#0f172a] text-white rounded-xl font-bold shadow-xl hover:bg-[#c5a059] transition-all">Push Changes to Live</button>
+                    </div>
+                    
+                    <div class="space-y-6">
+                        <div class="bg-white p-8 rounded-3xl border border-slate-100">
+                            <h4 class="font-bold text-slate-900 mb-4">Active Promotions</h4>
+                            <div class="p-4 bg-amber-50 rounded-xl border border-amber-100 flex justify-between items-center">
+                                <div><p class="text-xs font-bold text-amber-900">Summer Bliss - 20% OFF</p><p class="text-[10px] text-amber-600">Expires in 12 days</p></div>
+                                <button class="text-xs font-bold text-amber-900">Edit</button>
+                            </div>
+                        </div>
+                        <div class="bg-white p-8 rounded-3xl border border-dashed border-2 border-slate-200 flex flex-col items-center justify-center h-52 group cursor-pointer hover:border-[#c5a059] transition-all">
+                            <i class="fas fa-cloud-upload-alt text-4xl text-slate-200 group-hover:text-[#c5a059] transition-all"></i>
+                            <p class="text-xs font-bold text-slate-300 mt-4 uppercase tracking-widest">Upload Gallery Media</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderSettings() {
+            document.getElementById('main-view').innerHTML = `
+                <h2 class="text-3xl serif font-bold text-slate-900 mb-8">System Settings</h2>
+                <div class="bg-white rounded-3xl border border-slate-100 divide-y divide-slate-50 overflow-hidden">
+                    ${[
+                        { name: "Hotel Identity", desc: "Corporate info, logos, and address settings", icon: "fa-hotel" },
+                        { name: "Check-in Policies", desc: "Default check-in/out times and late fees", icon: "fa-clock" },
+                        { name: "Tax & Currencies", desc: "Manage VAT, service charges and currency display", icon: "fa-coins" },
+                        { name: "Global Security", desc: "2FA, login history and IP whitelisting", icon: "fa-shield-alt" },
+                        { name: "API Integrations", desc: "Sync with Booking.com, Expedia and Traveloka", icon: "fa-network-wired" }
+                    ].map(s => `
+                        <div class="p-8 flex items-center justify-between hover:bg-slate-50 transition-all cursor-pointer group">
+                            <div class="flex items-center gap-6">
+                                <div class="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-300 group-hover:text-[#c5a059] group-hover:bg-white transition-all"><i class="fas ${s.icon} text-lg"></i></div>
+                                <div><p class="font-bold text-slate-900">${s.name}</p><p class="text-xs text-slate-400 font-medium">${s.desc}</p></div>
+                            </div>
+                            <i class="fas fa-chevron-right text-slate-200 group-hover:translate-x-2 transition-transform"></i>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        // --- CHART INIT ---
+        function initChart() {
+            const ctx = document.getElementById('revenueChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Daily Revenue ($)',
+                        data: [32000, 35000, 28000, 41000, 52000, 68000, 62000],
+                        borderColor: '#c5a059',
+                        backgroundColor: 'rgba(197, 160, 89, 0.08)',
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 4,
+                        pointBackgroundColor: '#fff',
+                        pointBorderColor: '#c5a059',
+                        pointHoverRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { 
+                            grid: { color: '#f1f5f9', borderDash: [5, 5] }, 
+                            ticks: { font: { size: 10, weight: 'bold' }, color: '#94a3b8' } 
+                        },
+                        x: { 
+                            grid: { display: false }, 
+                            ticks: { font: { size: 10, weight: 'bold' }, color: '#94a3b8' } 
+                        }
+                    }
+                }
+            });
+        }
+
+        // --- MODAL CONTROLS ---
+        function openModal(title) {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-body').innerHTML = `
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="col-span-2">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Asset Name</label>
+                        <input type="text" placeholder="e.g. Royal Lakeview Suite" class="w-full mt-2 p-4 bg-slate-50 rounded-xl border-none outline-none focus:ring-2 focus:ring-[#c5a059]/10">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Inventory Category</label>
+                        <select class="w-full mt-2 p-4 bg-slate-50 rounded-xl border-none outline-none">
+                            <option>Deluxe Room</option><option>Executive Suite</option><option>Private Villa</option>
+                            <option>Appetizer</option><option>Main Course</option><option>Dessert</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Base Rate (USD)</label>
+                        <input type="number" placeholder="0.00" class="w-full mt-2 p-4 bg-slate-50 rounded-xl border-none outline-none focus:ring-2 focus:ring-[#c5a059]/10">
+                    </div>
+                    <div class="col-span-2">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Property Image URL</label>
+                        <input type="text" placeholder="https://..." class="w-full mt-2 p-4 bg-slate-50 rounded-xl border-none outline-none focus:ring-2 focus:ring-[#c5a059]/10">
+                    </div>
+                </div>
+            `;
+            document.getElementById('modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.add('hidden');
+        }
+
+        // Initial Start
+        window.onload = () => switchTab('dashboard');
+    </script>
+</body>
+</html>
