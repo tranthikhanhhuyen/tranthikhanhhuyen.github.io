@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pacman</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="game-wrapper">
+        <div class="game-container">
+            <!-- Audio Toggle Button -->
+            <button id="audio-toggle" class="audio-btn">❤️ MUSIC ON</button>
+
+            <!-- Canvas Game -->
+            <canvas id="canvas" width="500" height="500"></canvas>
+
+            <!-- Start Screen Overlay -->
+            <div id="start-screen" class="overlay-screen">
+                <h1 class="game-title">PAC-MAN<br>❤️<br>KHÁNH IU</h1>
+                <button id="start-button" class="btn-primary">START GAME</button>
+            </div>
+
+            <!-- Game Over Screen Overlay -->
+            <div id="game-over-screen" class="overlay-screen hidden">
+                <h1 class="screen-title text-red">GAME OVER</h1>
+                <p class="score-display">Score: <span id="final-score">0</span></p>
+                <button id="restart-button" class="btn-primary">PLAY AGAIN</button>
+            </div>
+
+            <!-- Victory Screen Overlay -->
+            <div id="victory-screen" class="overlay-screen hidden">
+                <h1 class="screen-title text-gold">VICTORY!</h1>
+                <p class="score-display">Score: <span id="victory-score">0</span></p>
+                <button id="win-restart-button" class="btn-primary">PLAY AGAIN</button>
+            </div>
+        </div>
+
+        <div class="controls-tip">
+            USE ARROW KEYS OR W/A/S/D TO MOVE
+        </div>
+    </div>
+
+    <!-- Hidden Assets cache -->
+    <div style="display:none;">
+        <img id="animation" src="asset/animations.png" width="140" height="20">
+        <img id="ghosts" src="asset/ghost.png" width="140" height="20">
+    </div>
+
+    <!-- Game Scripts -->
+    <script src="ghost.js"></script>
+    <script src="pacman.js"></script>
+    <script src="game.js"></script>
+</body>
+
+</html>
